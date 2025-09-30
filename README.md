@@ -186,7 +186,7 @@ Wir freuen uns über Beiträge! Bitte lesen Sie unsere [Contributing Guidelines]
 - **Name**: Raymond Demitrio Dr. Tel
 - **Callsign**: DD5BE
 - **GitHub**: [@ViewunitySystem](https://github.com/ViewunitySystem)
-- **Email**: contact@onairmultimedia.com
+- **Email**: gentlyoverdone@outlook.com
 
 ## 🌐 Community & Support
 
@@ -261,7 +261,7 @@ Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details
 
 ## 🎉 Live Status
 
-[![Live Status](https://img.shields.io/website?url=https://onairmultimedia.com&label=Live%20Status&color=green)](https://onairmultimedia.com)
+[![Live Status](https://img.shields.io/website?url=https://tel1.jouwweb.nl/servicesoftware&label=Live%20Status&color=green)](https://tel1.jouwweb.nl/servicesoftware)
 
 **OnAirMulTiMedia ist live und bereit für die Community!**
 
@@ -271,5 +271,8 @@ Dieses Projekt steht unter der MIT-Lizenz. Siehe [LICENSE](LICENSE) für Details
 **Universal Communication Platform - Version 1.0.0**
 
 [![GitHub](https://img.shields.io/badge/GitHub-ViewunitySystem-blue?logo=github)](https://github.com/ViewunitySystem)
-[![Website](https://img.shields.io/badge/Website-onairmultimedia.com-green?logo=globe)](https://onairmultimedia.com)
-[![Email](https://img.shields.io/badge/Email-contact@onairmultimedia.com-red?logo=mail)](mailto:contact@onairmultimedia.com)
+[![Website](https://img.shields.io/badge/Website-tel1.nl-green?logo=globe)](https://tel1.jouwweb.nl/servicesoftware)
+[![Email](https://img.shields.io/badge/Email-gentlyoverdone@outlook.com-red?logo=mail)](mailto:gentlyoverdone@outlook.com)
+[![Spendenaktion](https://img.shields.io/badge/Spendenaktion-GoFundMe-blue?logo=gofundme)](https://www.gofundme.com/f/magnitudo?utm_campaign=unknown&utm_medium=referral&utm_source=widget)
+[![Spotify](https://img.shields.io/badge/Spotify-Playlist-green?logo=spotify)](https://open.spotify.com/playlist/7BXr0cyoKuJSH6NUdPkrQ4)
+[![YouTube](https://img.shields.io/badge/YouTube-Playlist-red?logo=youtube)](https://www.youtube.com/watch?v=zoWHvD4S9UM&list=PLCE4Plp9QXA5y1yQDFd0l7Mrd-jZDKZZc)

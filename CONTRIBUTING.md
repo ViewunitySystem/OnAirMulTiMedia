@@ -346,12 +346,12 @@ Wir verpflichten uns, eine einladende und respektvolle Umgebung für alle zu sch
 - **GitHub Issues**: Für Bugs und Feature Requests
 - **Discussions**: Für Fragen und Ideen
 - **Wiki**: Für Dokumentation und Tutorials
-- **Email**: contact@onairmultimedia.com
+- **Email**: gentlyoverdone@outlook.com
 
 ### Maintainer Contact
 - **Name**: Raymond Demitrio Dr. Tel
 - **GitHub**: @ViewunitySystem
-- **Email**: contact@onairmultimedia.com
+- **Email**: gentlyoverdone@outlook.com
 - **Callsign**: DD5BE
 
 ## 🎉 Recognition

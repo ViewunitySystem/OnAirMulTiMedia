@@ -62,8 +62,8 @@
   ],
   "author": {
     "name": "Raymond Demitrio Dr. Tel",
-    "email": "contact@onairmultimedia.com",
-    "url": "https://onairmultimedia.com",
+    "email": "gentlyoverdone@outlook.com",
+    "url": "https://tel1.jouwweb.nl/servicesoftware",
     "callsign": "DD5BE",
     "github": "https://github.com/ViewunitySystem"
   },
@@ -75,9 +75,9 @@
   },
   "bugs": {
     "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia/issues",
-    "email": "contact@onairmultimedia.com"
+    "email": "gentlyoverdone@outlook.com"
   },
-  "homepage": "https://onairmultimedia.com",
+  "homepage": "https://tel1.jouwweb.nl/servicesoftware",
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=8.0.0"
@@ -223,7 +223,7 @@
   "contributors": [
     {
       "name": "Raymond Demitrio Dr. Tel",
-      "email": "contact@onairmultimedia.com",
+      "email": "gentlyoverdone@outlook.com",
       "callsign": "DD5BE",
       "github": "https://github.com/ViewunitySystem"
     }
@@ -231,7 +231,7 @@
   "maintainers": [
     {
       "name": "Raymond Demitrio Dr. Tel",
-      "email": "contact@onairmultimedia.com",
+      "email": "gentlyoverdone@outlook.com",
       "callsign": "DD5BE",
       "github": "https://github.com/ViewunitySystem"
     }

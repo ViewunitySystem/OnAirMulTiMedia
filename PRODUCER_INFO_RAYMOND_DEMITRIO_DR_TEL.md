@@ -10,8 +10,8 @@
 **Callsign**: DD5BE  
 **Profession**: Software Developer, Audio Producer, SDR Engineer  
 **GitHub**: [@ViewunitySystem](https://github.com/ViewunitySystem)  
-**Email**: contact@onairmultimedia.com  
-**Website**: [onairmultimedia.com](https://onairmultimedia.com)
+**Email**: gentlyoverdone@outlook.com  
+**Website**: [tel1.nl](https://tel1.jouwweb.nl/servicesoftware)
 
 ### 🎯 Spezialgebiete
 - **Software Defined Radio (SDR)**: HackRF, LimeSDR, RTL-SDR
@@ -211,8 +211,8 @@
 
 ### 🌐 Online Presence
 - **GitHub**: [github.com/ViewunitySystem](https://github.com/ViewunitySystem)
-- **Website**: [onairmultimedia.com](https://onairmultimedia.com)
-- **Email**: contact@onairmultimedia.com
+- **Website**: [tel1.nl](https://tel1.jouwweb.nl/servicesoftware)
+- **Email**: gentlyoverdone@outlook.com
 - **LinkedIn**: [linkedin.com/in/raymond-demitrio-dr-tel](https://linkedin.com/in/raymond-demitrio-dr-tel)
 
 ### 📡 Amateurfunk Kontakt

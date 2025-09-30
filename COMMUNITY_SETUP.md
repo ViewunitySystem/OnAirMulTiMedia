@@ -101,7 +101,7 @@
 ### 🆘 Support Channels
 - **GitHub Issues**: Bug Reports und Feature Requests
 - **GitHub Discussions**: Community Support
-- **Email**: contact@onairmultimedia.com
+- **Email**: gentlyoverdone@outlook.com
 - **Documentation**: GitHub Wiki
 
 ---
@@ -242,9 +242,9 @@ Join the community and start exploring the future of communication! 🌍📡🎵
 
 ### 📞 Contact Information
 - **Maintainer**: Raymond Demitrio Dr. Tel (DD5BE)
-- **Email**: contact@onairmultimedia.com
+- **Email**: gentlyoverdone@outlook.com
 - **GitHub**: [@ViewunitySystem](https://github.com/ViewunitySystem)
-- **Website**: [onairmultimedia.com](https://onairmultimedia.com)
+- **Website**: [tel1.nl](https://tel1.jouwweb.nl/servicesoftware)
 
 ---
 
