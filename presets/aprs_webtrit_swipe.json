@@ -1,0 +1,57 @@
+{
+  "name": "APRS WebTrit-Swipe",
+  "frequency": 144800000,
+  "modulation": "afsk",
+  "bandwidth": 3000,
+  "gain": 40,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "afsk_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "APRS (Automatic Packet Reporting System) mit WebTrit-Swipe zwischen Digipeatern",
+  "power_limit": 5,
+  "antenna": "APRS-Antenne",
+  "webtrit_swipe": {
+    "enabled": true,
+    "variants": [
+      {
+        "name": "APRS 144.800 MHz",
+        "frequency": 144800000,
+        "channel": "Primary",
+        "type": "APRS",
+        "digipeater": "WIDE1-1"
+      },
+      {
+        "name": "APRS 144.390 MHz",
+        "frequency": 144390000,
+        "channel": "Secondary",
+        "type": "APRS",
+        "digipeater": "WIDE2-2"
+      },
+      {
+        "name": "APRS 145.825 MHz",
+        "frequency": 145825000,
+        "channel": "International",
+        "type": "APRS",
+        "digipeater": "RELAY"
+      }
+    ],
+    "swipe_gestures": {
+      "left": "previous_digipeater",
+      "right": "next_digipeater",
+      "up": "increase_power",
+      "down": "decrease_power",
+      "double_tap": "emergency_beacon"
+    }
+  }
+}
+

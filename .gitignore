@@ -1,0 +1,133 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+target/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+.nyc_output/
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary files
+tmp/
+temp/
+
+# Rust specific
+Cargo.lock
+target/
+
+# Backup files
+*.backup
+*.bak
+
+# Large media files (keep small ones for demo)
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+
+# Keep demo files
+!webui/demo-*.mp4
+!webui/demo-*.mp3
+
+# Development files
+dev/
+development/
+
+# Production secrets
+secrets/
+*.key
+*.pem
+*.crt
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache files
+.cache/
+*.cache
+
+# Test files
+test-results/
+coverage/
+
+# Documentation build
+docs/_build/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Keep important files
+!LICENSE
+!README.md
+!CONTRIBUTING.md
+!CHANGELOG.md

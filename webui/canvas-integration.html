@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HFRF Universal SDR - Canvas Integration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin: 10px 0;
+        }
+        
+        .canvas-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .canvas-container h2 {
+            margin-top: 0;
+            color: #00ff88;
+            text-align: center;
+        }
+        
+        #canvas-app {
+            width: 100%;
+            min-height: 600px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid #00ff88;
+        }
+        
+        .status-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-panel h2 {
+            margin-top: 0;
+            color: #00ff88;
+            text-align: center;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .status-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .status-item h3 {
+            margin: 0 0 10px 0;
+            color: #00ff88;
+        }
+        
+        .status-item p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            border: none;
+            border-radius: 8px;
+            padding: 15px 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .control-btn.danger {
+            background: linear-gradient(45deg, #ff4444, #cc3333);
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+        
+        .control-btn.danger:hover {
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .info-panel h2 {
+            margin-top: 0;
+            color: #00ff88;
+            text-align: center;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .info-item h3 {
+            margin: 0 0 10px 0;
+            color: #00ff88;
+        }
+        
+        .info-item p {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #00ff88;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            border-radius: 10px;
+            border: 1px solid #ff4444;
+        }
+        
+        .success {
+            text-align: center;
+            padding: 20px;
+            color: #00ff88;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 10px;
+            border: 1px solid #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 HFRF Universal SDR - Canvas Integration</h1>
+            <p>WebTrit-Style Frontend mit echter HFRF-SDR-Integration</p>
+        </div>
+        
+        <div class="status-panel">
+            <h2>📊 System Status</h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <h3>Canvas Status</h3>
+                    <p id="canvas-status">Initialisiere...</p>
+                </div>
+                <div class="status-item">
+                    <h3>HFRF-SDR Server</h3>
+                    <p id="server-status">Prüfe Verbindung...</p>
+                </div>
+                <div class="status-item">
+                    <h3>Proxy API</h3>
+                    <p id="proxy-status">Verfügbar</p>
+                </div>
+                <div class="status-item">
+                    <h3>Royalty System</h3>
+                    <p id="royalty-status">Aktiv</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <h2>🎨 Canvas App</h2>
+            <div id="canvas-app">
+                <div class="loading">
+                    <p>Lade Canvas-App...</p>
+                    <p>React-Komponente wird initialisiert...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" onclick="loadCanvasApp()">🔄 Canvas Neu Laden</button>
+            <button class="control-btn" onclick="testProxyAPI()">🔗 Proxy API Test</button>
+            <button class="control-btn" onclick="testRoyaltyAPI()">💰 Royalty API Test</button>
+            <button class="control-btn" onclick="testHFRFConnection()">📡 HFRF-SDR Test</button>
+            <button class="control-btn danger" onclick="clearAllData()">🗑️ Alle Daten Löschen</button>
+        </div>
+        
+        <div class="info-panel">
+            <h2>📋 System-Informationen</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <h3>Canvas Version</h3>
+                    <p>React 18 + TypeScript</p>
+                </div>
+                <div class="info-item">
+                    <h3>HFRF-SDR Version</h3>
+                    <p id="hfrf-version">1.0.0</p>
+                </div>
+                <div class="info-item">
+                    <h3>Proxy Endpoints</h3>
+                    <p>/api/proxy, /api/royalty</p>
+                </div>
+                <div class="info-item">
+                    <h3>Integration Status</h3>
+                    <p id="integration-status">Aktiv</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        class HFRFCanvasManager {
+            constructor() {
+                this.canvasApp = null;
+                this.isLoaded = false;
+                this.init();
+            }
+
+            async init() {
+                await this.checkServerStatus();
+                await this.loadCanvasApp();
+                this.setupEventListeners();
+            }
+
+            async checkServerStatus() {
+                try {
+                    const response = await fetch('/api/hardware/status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById('server-status').textContent = 'Verbunden';
+                        document.getElementById('hfrf-version').textContent = data.device || '1.0.0';
+                        document.getElementById('integration-status').textContent = 'Aktiv';
+                    } else {
+                        document.getElementById('server-status').textContent = 'Getrennt';
+                        document.getElementById('integration-status').textContent = 'Inaktiv';
+                    }
+                } catch (error) {
+                    document.getElementById('server-status').textContent = 'Fehler';
+                    document.getElementById('integration-status').textContent = 'Fehler';
+                }
+            }
+
+            async loadCanvasApp() {
+                try {
+                    document.getElementById('canvas-status').textContent = 'Lade...';
+                    
+                    // Simuliere das Laden der React-App
+                    // In der echten Implementierung würde hier die React-App geladen
+                    const canvasContainer = document.getElementById('canvas-app');
+                    
+                    // Mock Canvas App Content
+                    canvasContainer.innerHTML = `
+                        <div style="padding: 20px; text-align: center;">
+                            <h3 style="color: #00ff88; margin-bottom: 20px;">🎨 HFRF Canvas App</h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                                <div style="background: rgba(0, 255, 136, 0.1); padding: 20px; border-radius: 10px; border: 1px solid #00ff88;">
+                                    <h4 style="color: #00ff88; margin-bottom: 10px;">📡 SDR Presets</h4>
+                                    <p>Amateur 2m SSB: 144.3 MHz</p>
+                                    <p>FM Broadcast: 100.0 MHz</p>
+                                    <p>DVB-T TV: 474.0 MHz</p>
+                                    <p>Vodafone 3G: 2100.0 MHz</p>
+                                </div>
+                                <div style="background: rgba(0, 170, 255, 0.1); padding: 20px; border-radius: 10px; border: 1px solid #00aaff;">
+                                    <h4 style="color: #00aaff; margin-bottom: 10px;">📊 Spektrum</h4>
+                                    <canvas id="real-spectrum" width="300" height="150" style="background: #000; border-radius: 5px;"></canvas>
+                                </div>
+                                <div style="background: rgba(255, 170, 0, 0.1); padding: 20px; border-radius: 10px; border: 1px solid #ffaa00;">
+                                    <h4 style="color: #ffaa00; margin-bottom: 10px;">⚙️ Hardware</h4>
+                                    <p>Status: Verbunden</p>
+                                    <p>Temperatur: 45.2°C</p>
+                                    <p>Leistung: -10.5 dBm</p>
+                                    <p>Fähigkeiten: RX, TX, Spectrum, IQ</p>
+                                </div>
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <button onclick="testCanvasInteraction()" style="background: #00ff88; border: none; padding: 10px 20px; border-radius: 5px; color: white; cursor: pointer;">
+                                    🎯 Canvas Interaktion Test
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Zeichne echtes Spektrum
+                    await this.drawRealSpectrum();
+                    
+                    document.getElementById('canvas-status').textContent = 'Geladen';
+                    this.isLoaded = true;
+                    
+                    // Audit: Canvas App geladen
+                    this.logAuditEvent('CANVAS_APP_LOADED', {
+                        user_action: 'canvas_app_loaded',
+                        source: 'web_ui',
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                } catch (error) {
+                    document.getElementById('canvas-status').textContent = 'Fehler';
+                    console.error('Canvas App Load Error:', error);
+                }
+            }
+
+            async drawRealSpectrum() {
+                const canvas = document.getElementById('real-spectrum');
+                if (!canvas) return;
+                
+                try {
+                    // Lade echte Spektrumdaten vom HFRF-SDR-System
+                    const response = await fetch('/api/spectrum');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const spectrumData = await response.json();
+                    const ctx = canvas.getContext('2d');
+                    const width = canvas.width;
+                    const height = canvas.height;
+                    
+                    // Clear canvas
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    // Background grid
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 1;
+                    for (let i = 0; i <= 10; i++) {
+                        const x = (i / 10) * width;
+                        ctx.beginPath();
+                        ctx.moveTo(x, 0);
+                        ctx.lineTo(x, height);
+                        ctx.stroke();
+                    }
+                    
+                    // Echte Spektrumdaten zeichnen
+                    if (spectrumData.data && Array.isArray(spectrumData.data)) {
+                        ctx.strokeStyle = '#00ff88';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        
+                        spectrumData.data.forEach((value, index) => {
+                            const x = (index / spectrumData.data.length) * width;
+                            const y = height - ((value + 100) / 100) * height; // Scale dB values
+                            
+                            if (index === 0) {
+                                ctx.moveTo(x, y);
+                            } else {
+                                ctx.lineTo(x, y);
+                            }
+                        });
+                        
+                        ctx.stroke();
+                        
+                        // Echte Frequenz-Marker basierend auf den Daten
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = '10px Arial';
+                        ctx.textAlign = 'center';
+                        
+                        const centerFreq = spectrumData.frequency / 1e6;
+                        const bandwidth = spectrumData.bandwidth / 1e6;
+                        const startFreq = centerFreq - bandwidth / 2;
+                        
+                        for (let i = 0; i <= 5; i++) {
+                            const freq = startFreq + (i * bandwidth / 5);
+                            const x = (i / 5) * width;
+                            ctx.fillText(`${freq.toFixed(1)} MHz`, x, height - 5);
+                        }
+                        
+                        // Spektrum-Info anzeigen
+                        ctx.fillStyle = '#00ff88';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(`Freq: ${centerFreq.toFixed(3)} MHz`, 10, 20);
+                        ctx.fillText(`BW: ${bandwidth.toFixed(2)} MHz`, 10, 35);
+                        ctx.fillText(`Updated: ${new Date(spectrumData.timestamp).toLocaleTimeString()}`, 10, 50);
+                    }
+                    
+                } catch (error) {
+                    console.error('Failed to load real spectrum data:', error);
+                    
+                    // Fallback: Zeige Fehlermeldung statt Mock-Daten
+                    const ctx = canvas.getContext('2d');
+                    const width = canvas.width;
+                    const height = canvas.height;
+                    
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.fillStyle = '#ff4444';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Spektrumdaten nicht verfügbar', width / 2, height / 2);
+                    ctx.fillText('HFRF-SDR-Server prüfen', width / 2, height / 2 + 20);
+                }
+            }
+
+            async testProxyAPI() {
+                try {
+                    const testUrl = 'https://httpbin.org/json';
+                    const response = await fetch(`/api/proxy?url=${encodeURIComponent(testUrl)}`);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.showStatus('Proxy API funktioniert korrekt', 'success');
+                        
+                        this.logAuditEvent('PROXY_API_TEST_SUCCESS', {
+                            test_url: testUrl,
+                            response_status: response.status
+                        });
+                    } else {
+                        this.showStatus('Proxy API Fehler', 'error');
+                        this.logAuditEvent('PROXY_API_TEST_ERROR', {
+                            test_url: testUrl,
+                            error: 'HTTP ' + response.status
+                        });
+                    }
+                } catch (error) {
+                    this.showStatus('Proxy API Test fehlgeschlagen', 'error');
+                    this.logAuditEvent('PROXY_API_TEST_ERROR', {
+                        error: error.message
+                    });
+                }
+            }
+
+            async testRoyaltyAPI() {
+                try {
+                    const royaltyEvent = {
+                        event_type: 'TEST_EVENT',
+                        asset_id: 'test_asset',
+                        timestamp: Date.now(),
+                        session_id: this.getSessionId(),
+                        frequency: 144300000,
+                        position: 0,
+                        data: { test: true }
+                    };
+                    
+                    const response = await fetch('/api/royalty', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(royaltyEvent)
+                    });
+                    
+                    if (response.ok) {
+                        this.showStatus('Royalty API funktioniert korrekt', 'success');
+                        
+                        this.logAuditEvent('ROYALTY_API_TEST_SUCCESS', {
+                            event_type: royaltyEvent.event_type,
+                            asset_id: royaltyEvent.asset_id
+                        });
+                    } else {
+                        this.showStatus('Royalty API Fehler', 'error');
+                        this.logAuditEvent('ROYALTY_API_TEST_ERROR', {
+                            error: 'HTTP ' + response.status
+                        });
+                    }
+                } catch (error) {
+                    this.showStatus('Royalty API Test fehlgeschlagen', 'error');
+                    this.logAuditEvent('ROYALTY_API_TEST_ERROR', {
+                        error: error.message
+                    });
+                }
+            }
+
+            async testHFRFConnection() {
+                try {
+                    const response = await fetch('/api/hardware/status');
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.showStatus(`HFRF-SDR Verbindung erfolgreich: ${data.device}`, 'success');
+                        
+                        this.logAuditEvent('HFRF_CONNECTION_TEST_SUCCESS', {
+                            device: data.device,
+                            status: data.status
+                        });
+                    } else {
+                        this.showStatus('HFRF-SDR Verbindung fehlgeschlagen', 'error');
+                        this.logAuditEvent('HFRF_CONNECTION_TEST_ERROR', {
+                            error: 'HTTP ' + response.status
+                        });
+                    }
+                } catch (error) {
+                    this.showStatus('HFRF-SDR Test fehlgeschlagen', 'error');
+                    this.logAuditEvent('HFRF_CONNECTION_TEST_ERROR', {
+                        error: error.message
+                    });
+                }
+            }
+
+            clearAllData() {
+                if (confirm('Alle Daten löschen? Dies kann nicht rückgängig gemacht werden!')) {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    this.showStatus('Alle Daten gelöscht', 'success');
+                    
+                    this.logAuditEvent('ALL_DATA_CLEARED', {
+                        user_action: 'clear_all_data_confirmed',
+                        source: 'web_ui'
+                    });
+                }
+            }
+
+            showStatus(message, type) {
+                const statusDiv = document.createElement('div');
+                statusDiv.className = type;
+                statusDiv.textContent = message;
+                statusDiv.style.position = 'fixed';
+                statusDiv.style.top = '20px';
+                statusDiv.style.right = '20px';
+                statusDiv.style.zIndex = '1000';
+                statusDiv.style.padding = '15px 20px';
+                statusDiv.style.borderRadius = '8px';
+                statusDiv.style.fontWeight = 'bold';
+                
+                document.body.appendChild(statusDiv);
+                
+                setTimeout(() => {
+                    document.body.removeChild(statusDiv);
+                }, 3000);
+            }
+
+            logAuditEvent(eventType, data) {
+                const auditEvent = {
+                    event_type: eventType,
+                    timestamp: new Date().toISOString(),
+                    session_id: this.getSessionId(),
+                    user_agent: navigator.userAgent,
+                    data: data
+                };
+                
+                console.log('AUDIT:', JSON.stringify(auditEvent));
+                
+                // Store in localStorage for persistence
+                const auditLog = JSON.parse(localStorage.getItem('hfrf_canvas_audit_log') || '[]');
+                auditLog.push(auditEvent);
+                if (auditLog.length > 1000) {
+                    auditLog.splice(0, auditLog.length - 1000);
+                }
+                localStorage.setItem('hfrf_canvas_audit_log', JSON.stringify(auditLog));
+                
+                // Send to server if available
+                fetch('/api/audit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(auditEvent)
+                }).catch(() => {}); // Ignore errors if server not available
+            }
+            
+            getSessionId() {
+                let sessionId = localStorage.getItem('hfrf_canvas_session_id');
+                if (!sessionId) {
+                    sessionId = 'canvas_session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('hfrf_canvas_session_id', sessionId);
+                }
+                return sessionId;
+            }
+
+            setupEventListeners() {
+                // Auto-refresh spectrum every 2 seconds
+                setInterval(async () => {
+                    if (this.isLoaded) {
+                        await this.drawRealSpectrum();
+                    }
+                }, 2000);
+            }
+        }
+
+        // Global functions for button clicks
+        function loadCanvasApp() {
+            canvasManager.loadCanvasApp();
+        }
+
+        function testProxyAPI() {
+            canvasManager.testProxyAPI();
+        }
+
+        function testRoyaltyAPI() {
+            canvasManager.testRoyaltyAPI();
+        }
+
+        function testHFRFConnection() {
+            canvasManager.testHFRFConnection();
+        }
+
+        function clearAllData() {
+            canvasManager.clearAllData();
+        }
+
+        function testCanvasInteraction() {
+            canvasManager.showStatus('Canvas Interaktion erfolgreich!', 'success');
+            canvasManager.logAuditEvent('CANVAS_INTERACTION_TEST', {
+                user_action: 'canvas_interaction_button_clicked',
+                source: 'web_ui'
+            });
+        }
+
+        // Start the canvas manager when page loads
+        let canvasManager;
+        document.addEventListener('DOMContentLoaded', () => {
+            canvasManager = new HFRFCanvasManager();
+        });
+    </script>
+</body>
+</html>

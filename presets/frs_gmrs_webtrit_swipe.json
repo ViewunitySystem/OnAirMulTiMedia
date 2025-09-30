@@ -1,0 +1,141 @@
+{
+  "name": "FRS/GMRS WebTrit-Swipe",
+  "frequency": 46256250000,
+  "modulation": "fm",
+  "bandwidth": 12500,
+  "gain": 32,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "fm_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "FRS/GMRS mit WebTrit-Swipe zwischen FRS und GMRS Kanälen",
+  "power_limit": 2,
+  "antenna": "FRS/GMRS-Antenne",
+  "webtrit_swipe": {
+    "enabled": true,
+    "variants": [
+      {
+        "name": "FRS Kanal 1",
+        "frequency": 46256250000,
+        "channel": 1,
+        "type": "FRS",
+        "power_limit": 0.5
+      },
+      {
+        "name": "FRS Kanal 2",
+        "frequency": 46258750000,
+        "channel": 2,
+        "type": "FRS",
+        "power_limit": 0.5
+      },
+      {
+        "name": "FRS Kanal 3",
+        "frequency": 46261250000,
+        "channel": 3,
+        "type": "FRS",
+        "power_limit": 0.5
+      },
+      {
+        "name": "FRS Kanal 4",
+        "frequency": 46263750000,
+        "channel": 4,
+        "type": "FRS",
+        "power_limit": 0.5
+      },
+      {
+        "name": "FRS Kanal 5",
+        "frequency": 46266250000,
+        "channel": 5,
+        "type": "FRS",
+        "power_limit": 0.5
+      },
+      {
+        "name": "FRS Kanal 6",
+        "frequency": 46268750000,
+        "channel": 6,
+        "type": "FRS",
+        "power_limit": 0.5
+      },
+      {
+        "name": "FRS Kanal 7",
+        "frequency": 46271250000,
+        "channel": 7,
+        "type": "FRS",
+        "power_limit": 0.5
+      },
+      {
+        "name": "GMRS Kanal 15",
+        "frequency": 46255000000,
+        "channel": 15,
+        "type": "GMRS",
+        "power_limit": 2
+      },
+      {
+        "name": "GMRS Kanal 16",
+        "frequency": 46257500000,
+        "channel": 16,
+        "type": "GMRS",
+        "power_limit": 2
+      },
+      {
+        "name": "GMRS Kanal 17",
+        "frequency": 46260000000,
+        "channel": 17,
+        "type": "GMRS",
+        "power_limit": 2
+      },
+      {
+        "name": "GMRS Kanal 18",
+        "frequency": 46262500000,
+        "channel": 18,
+        "type": "GMRS",
+        "power_limit": 2
+      },
+      {
+        "name": "GMRS Kanal 19",
+        "frequency": 46265000000,
+        "channel": 19,
+        "type": "GMRS",
+        "power_limit": 2
+      },
+      {
+        "name": "GMRS Kanal 20",
+        "frequency": 46267500000,
+        "channel": 20,
+        "type": "GMRS",
+        "power_limit": 2
+      },
+      {
+        "name": "GMRS Kanal 21",
+        "frequency": 46270000000,
+        "channel": 21,
+        "type": "GMRS",
+        "power_limit": 2
+      },
+      {
+        "name": "GMRS Kanal 22",
+        "frequency": 46272500000,
+        "channel": 22,
+        "type": "GMRS",
+        "power_limit": 2
+      }
+    ],
+    "swipe_gestures": {
+      "left": "previous_channel",
+      "right": "next_channel",
+      "up": "switch_to_gmrs",
+      "down": "switch_to_frs",
+      "double_tap": "emergency_channel"
+    }
+  }
+}
+

@@ -1,0 +1,68 @@
+{
+  "name": "D-STAR WebTrit-Swipe",
+  "frequency": 145600000,
+  "modulation": "dstar",
+  "bandwidth": 6000,
+  "gain": 40,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "dstar_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "D-STAR (Digital Smart Technologies for Amateur Radio) mit WebTrit-Swipe zwischen Repeatern",
+  "power_limit": 5,
+  "antenna": "D-STAR-Antenne",
+  "webtrit_swipe": {
+    "enabled": true,
+    "variants": [
+      {
+        "name": "D-STAR Repeater A",
+        "frequency": 145600000,
+        "channel": "A",
+        "type": "D-STAR",
+        "repeater": "REF001A",
+        "gateway": "REF001"
+      },
+      {
+        "name": "D-STAR Repeater B",
+        "frequency": 145600000,
+        "channel": "B",
+        "type": "D-STAR",
+        "repeater": "REF001B",
+        "gateway": "REF001"
+      },
+      {
+        "name": "D-STAR Repeater C",
+        "frequency": 145600000,
+        "channel": "C",
+        "type": "D-STAR",
+        "repeater": "REF001C",
+        "gateway": "REF001"
+      },
+      {
+        "name": "D-STAR Gateway",
+        "frequency": 145600000,
+        "channel": "Gateway",
+        "type": "D-STAR",
+        "repeater": "REF001G",
+        "gateway": "REF001"
+      }
+    ],
+    "swipe_gestures": {
+      "left": "previous_repeater",
+      "right": "next_repeater",
+      "up": "switch_to_gateway",
+      "down": "switch_to_local",
+      "double_tap": "emergency_repeater"
+    }
+  }
+}
+
