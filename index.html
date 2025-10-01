@@ -253,12 +253,11 @@
   <!-- Background layer -->
   <div class="bg" aria-hidden="true">
     <div class="fallback"></div>
-    <!-- Autoplay-freundlich: muted + playsinline + loop; poste r für erste Paints -->
-    <video id="bgVideo" autoplay muted playsinline loop poster="assets/cover.jpg">
+    <!-- Video-Hintergrund deaktiviert bis Assets verfügbar sind -->
+    <!-- <video id="bgVideo" autoplay muted playsinline loop poster="assets/cover.jpg">
       <source src="assets/hero.mp4" type="video/mp4" />
-      <!-- Fallback Text -->
       Ihr Browser unterstützt das Hintergrundvideo nicht.
-    </video>
+    </video> -->
   </div>
 
   <header>
@@ -372,15 +371,15 @@
       if (f && f.tagName === 'IFRAME') { f.src = f.src.split('#')[0].split('?')[0] + '?t=' + Date.now(); }
     });
 
-    // Background-Video Stabilität: falls Autoplay blockiert → pausieren (kein Fehler in Logs)
-    (function(){
-      const v = document.getElementById('bgVideo');
-      if(!v) return;
-      const play = v.play?.();
-      if (play && typeof play.then === 'function'){
-        play.catch(()=>{ v.removeAttribute('autoplay'); v.pause(); });
-      }
-    })();
+    // Background-Video Stabilität: Video-Element temporär deaktiviert
+    // (function(){
+    //   const v = document.getElementById('bgVideo');
+    //   if(!v) return;
+    //   const play = v.play?.();
+    //   if (play && typeof play.then === 'function'){
+    //     play.catch(()=>{ v.removeAttribute('autoplay'); v.pause(); });
+    //   }
+    // })();
 
     // Start/Exit Animation System
     class AppAnimation {
