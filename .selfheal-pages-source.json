@@ -1,0 +1,4 @@
+{
+  "error": "Could not check GitHub Pages config",
+  "recommendation": "Ensure gh-pages branch is set as Pages source"
+}
