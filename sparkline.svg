@@ -1,0 +1,29 @@
+<svg width="300" height="50" xmlns="http://www.w3.org/2000/svg">
+  <!-- GitHub Activity Sparkline -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.5" />
+      <stop offset="100%" style="stop-color:#00ff88;stop-opacity:0.1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="300" height="50" fill="#0a0e27" rx="4"/>
+  
+  <!-- Activity Line (Sample Data) -->
+  <polyline
+    fill="url(#gradient)"
+    stroke="#00ff88"
+    stroke-width="2"
+    points="0,45 15,40 30,35 45,38 60,30 75,25 90,28 105,20 120,15 135,18 150,12 165,10 180,15 195,18 210,22 225,20 240,25 255,28 270,30 285,35 300,40"
+  />
+  
+  <!-- Grid Lines -->
+  <line x1="0" y1="25" x2="300" y2="25" stroke="#ffffff" stroke-width="0.5" opacity="0.1"/>
+  
+  <!-- Label -->
+  <text x="150" y="35" font-family="monospace" font-size="10" fill="#00ff88" text-anchor="middle" opacity="0.7">
+    Activity Trend
+  </text>
+</svg>
+

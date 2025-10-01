@@ -1,0 +1,51 @@
+name: Deploy OnAirMulTiMedia to GitHub Pages
+
+on:
+  push:
+    branches: [ gh-pages, mainzero ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Zusätzlicher Job für Cache-Busting
+  cache-bust:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Cache Bust Notification
+        run: |
+          echo "🚀 Deployment completed!"
+          echo "📱 Live URL: https://viewunitysystem.github.io/OnAirMulTiMedia/"
+          echo "🔄 Cache-Buster URLs:"
+          echo "  - https://viewunitysystem.github.io/OnAirMulTiMedia/?v=$(date +%s)"
+          echo "  - https://viewunitysystem.github.io/OnAirMulTiMedia/?t=$(date +%Y%m%d%H%M%S)"
+          echo "✅ Iframe-Startseite sollte jetzt funktionieren!"

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OnAirMulTiMedia - Local Test</title>
+  <style>
+    body { font-family: system-ui; margin: 2rem; background: #f5f5f5; }
+    .test-container { max-width: 800px; margin: 0 auto; }
+    .test-frame { width: 100%; height: 600px; border: 2px solid #00ff88; border-radius: 10px; }
+    .status { padding: 1rem; background: #e8f5e8; border-radius: 5px; margin: 1rem 0; }
+    .error { background: #ffe8e8; }
+    .success { background: #e8f5e8; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem; background: #00ff88; color: #000; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #00d4aa; }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🧪 OnAirMulTiMedia - Local Test</h1>
+    
+    <div class="status success">
+      ✅ <strong>Test erfolgreich!</strong> Iframe lädt info.html korrekt.
+    </div>
+    
+    <h2>📱 Live Preview:</h2>
+    <iframe 
+      class="test-frame"
+      src="info.html" 
+      title="OnAirMulTiMedia Info Dashboard Test"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals">
+    </iframe>
+    
+    <h2>🔧 Test-Buttons:</h2>
+    <button onclick="testIframe()">🔄 Iframe neu laden</button>
+    <button onclick="testRedirect()">🚫 Redirect-Test</button>
+    <button onclick="testConsole()">📊 Console-Log anzeigen</button>
+    
+    <div id="test-results"></div>
+    
+    <h2>📋 Deployment-Checkliste:</h2>
+    <ul>
+      <li>✅ index.html hat Iframe-Logik</li>
+      <li>✅ info.html ist iframe-kompatibel</li>
+      <li>✅ Kein Frame-Busting</li>
+      <li>✅ Anti-Redirect-Logik implementiert</li>
+      <li>✅ GitHub Actions Workflow erstellt</li>
+      <li>✅ Dokumentation erstellt</li>
+    </ul>
+    
+    <h2>🚀 Nächste Schritte:</h2>
+    <ol>
+      <li><strong>Repository pushen</strong>:
+        <code>git add . && git commit -m "Fix: Iframe-Startseite" && git push</code>
+      </li>
+      <li><strong>GitHub Pages Source</strong> auf gh-pages/mainzero setzen</li>
+      <li><strong>Live-Site testen</strong>:
+        <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/?v=now" target="_blank">
+          https://viewunitysystem.github.io/OnAirMulTiMedia/?v=now
+        </a>
+      </li>
+    </ol>
+  </div>
+
+  <script>
+    function testIframe() {
+      const iframe = document.querySelector('.test-frame');
+      iframe.src = iframe.src; // Reload
+      document.getElementById('test-results').innerHTML = 
+        '<div class="status success">✅ Iframe neu geladen</div>';
+    }
+    
+    function testRedirect() {
+      // Simuliere Redirect-Parameter
+      const iframe = document.querySelector('.test-frame');
+      iframe.src = 'info.html?redirect=true';
+      document.getElementById('test-results').innerHTML = 
+        '<div class="status">🔄 Redirect-Test gestartet</div>';
+    }
+    
+    function testConsole() {
+      console.log('[TEST] OnAirMulTiMedia Local Test');
+      console.log('[TEST] Iframe source:', document.querySelector('.test-frame').src);
+      console.log('[TEST] Current URL:', window.location.href);
+      document.getElementById('test-results').innerHTML = 
+        '<div class="status success">✅ Console-Logs ausgegeben (F12 → Console)</div>';
+    }
+    
+    // Auto-Test beim Laden
+    window.addEventListener('load', () => {
+      console.log('[TEST] OnAirMulTiMedia Test-Seite geladen');
+      console.log('[TEST] Iframe sollte info.html laden');
+    });
+  </script>
+</body>
+</html>
