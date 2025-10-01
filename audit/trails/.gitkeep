@@ -1,0 +1,8 @@
+# Audit Trails Directory
+
+This directory contains audit trail summaries (.md format).
+
+Trails document changes over time for compliance.
+
+Format: `trail_YYYYMM.md`
+

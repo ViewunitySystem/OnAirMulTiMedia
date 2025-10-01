@@ -1,0 +1,8 @@
+# Audit Reports Directory
+
+This directory contains compliance reports (PDF, CSV, XML).
+
+Reports can be generated for regulatory authorities.
+
+Format: `report_<jurisdiction>_YYYYMMDD.<ext>`
+

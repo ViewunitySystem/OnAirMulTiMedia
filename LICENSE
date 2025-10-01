@@ -1,6 +1,7 @@
 MIT License
 
-Copyright (c) 2025 Raymond Demitrio Dr. Tel - OnAirMulTiMedia
+Copyright (c) 2025 Raymond Demitrio Dr. Tel
+ViewunitySystem / OnAirMulTiMedia
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,48 +23,34 @@ SOFTWARE.
 
 ---
 
-## Additional Terms for OnAirMulTiMedia
+## Additional Regulatory Notice
 
-### Community Guidelines
-- Respect all users and contributors
-- No harassment, discrimination, or hate speech
-- Constructive feedback and collaboration
-- Follow amateur radio regulations and licensing
+This software includes radio frequency (RF) transmission capabilities and is 
+subject to regulatory compliance in various jurisdictions:
 
-### Frequency Usage
-- Comply with local frequency regulations
-- Respect amateur radio licensing requirements
-- Use only authorized frequency bands
-- Follow ITU regulations for international usage
+### Germany (BNetzA)
+- Licensed operation required for amateur radio frequencies
+- AFuG (Amateurfunkgesetz) compliance mandatory
+- Callsign: DD5BE (Raymond Demitrio Dr. Tel)
 
-### Commercial Use
-Commercial use is permitted under the MIT license, but:
-- Attribution to Raymond Demitrio Dr. Tel required
-- No warranty or support provided for commercial use
-- User assumes all liability for compliance with regulations
+### European Union (CE)
+- RED (Radio Equipment Directive) 2014/53/EU compliance
+- EN 300 086 / EN 300 220 / EN 300 328 standards
 
-### Amateur Radio Compliance
-This software is designed for educational and amateur radio purposes:
-- Users must have appropriate amateur radio licenses where required
-- Frequency usage must comply with local regulations
-- No interference with commercial or emergency communications
-- Respect for other radio operators and services
+### United States (FCC)
+- Part 15 / Part 97 compliance required
+- SDR operation under FCC Part 15.117
 
-### Disclaimer
-This software is provided for educational and experimental purposes.
-Users are responsible for:
-- Compliance with all applicable laws and regulations
-- Obtaining necessary licenses and permissions
-- Safe and responsible operation
-- Respecting others' rights and property
+### Netherlands (RDI NL)
+- Telecommunications Act compliance
+- Agentschap Telecom registration where applicable
 
-### Support
-Community support is available through GitHub Issues and Discussions.
-No commercial support or warranty is provided.
+**IMPORTANT**: Users are responsible for ensuring compliance with local 
+regulations before operating any radio transmission features.
 
 ---
 
-**For questions about licensing or usage, please contact:**
-Raymond Demitrio Dr. Tel
-GitHub: @ViewunitySystem
-Email: gentlyoverdone@outlook.com
+© 2025 Raymond Demitrio Dr. Tel - TEL Portal System
+Website: https://tel1.jouwweb.nl/servicesoftware
+Contact: gentlyoverdone@outlook.com
+Callsign: DD5BE
