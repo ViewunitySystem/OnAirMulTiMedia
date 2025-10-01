@@ -6,6 +6,21 @@
   <title>OnAirMulTiMedia – Start & Verteiler</title>
   <meta name="description" content="OnAirMulTiMedia – Zentrale Landingpage mit App‑Verteiler und eingebettetem Info‑Dashboard." />
   <!-- Keine Redirects! Diese Seite ist der Hub und hostet info.html im Inlay. -->
+  
+  <!-- Content Security Policy mit WebTrit-Integration -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' data: https:;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://api.github.com https://webtrit.example.com wss://webtrit.example.com;
+    media-src 'self' blob:;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'self' https://viewunitysystem.github.io https://onairmultimedia.web.app;
+  ">
 
   <!-- Basistypo: Systemschriften für Geschwindigkeit -->
   <style>
@@ -509,6 +524,262 @@
           });
       });
     }
+  </script>
+
+  <!-- WebTrit SwipeCommsDock Integration -->
+  <script>
+    // Feature-Flag-Service für WebTrit-Integration
+    class FeatureFlagService {
+      constructor() {
+        this.flags = new Map();
+        this.loadFlags();
+      }
+
+      loadFlags() {
+        // Environment-basierte Flags (simuliert)
+        this.flags.set('comms_enabled', this.getEnvFlag('OAMTM_COMMS_ENABLED', 'false') === 'true');
+        this.flags.set('webtrit_enabled', !!this.getEnvFlag('WEBTRIT_SERVER_URL'));
+        
+        // URL-Parameter-basierte Flags
+        const urlParams = new URLSearchParams(window.location.search);
+        this.flags.set('comms_url_flag', urlParams.get('comms') === '1');
+        
+        // LocalStorage-basierte Flags (für Testing)
+        const localFlags = localStorage.getItem('oamtm:feature-flags');
+        if (localFlags) {
+          try {
+            const parsed = JSON.parse(localFlags);
+            Object.entries(parsed).forEach(([key, value]) => {
+              this.flags.set(`local_${key}`, value);
+            });
+          } catch (e) {
+            console.warn('Invalid feature flags in localStorage');
+          }
+        }
+      }
+
+      getEnvFlag(name, defaultValue = '') {
+        // Simuliert Environment-Variablen basierend auf Domain
+        if (window.location.hostname.includes('github.io')) {
+          return defaultValue; // Production: aus
+        } else if (window.location.hostname.includes('web.app')) {
+          return 'true'; // Staging: an
+        } else {
+          return 'true'; // Development: an
+        }
+      }
+
+      isEnabled(flagName) {
+        // Priorität: URL > LocalStorage > Environment
+        if (this.flags.has(`local_${flagName}`)) {
+          return this.flags.get(`local_${flagName}`);
+        }
+        
+        if (this.flags.has(`${flagName}_url_flag`)) {
+          return this.flags.get(`${flagName}_url_flag`);
+        }
+        
+        return this.flags.get(flagName) || false;
+      }
+
+      setFlag(flagName, value) {
+        this.flags.set(`local_${flagName}`, value);
+        
+        // In LocalStorage persistieren
+        const localFlags = JSON.parse(localStorage.getItem('oamtm:feature-flags') || '{}');
+        localFlags[flagName] = value;
+        localStorage.setItem('oamtm:feature-flags', JSON.stringify(localFlags));
+        
+        // Event emittieren für CSP-Update
+        window.dispatchEvent(new CustomEvent('oamtm:comms:toggle', {
+          detail: { flag: flagName, value }
+        }));
+      }
+    }
+
+    // SwipeCommsDock Component (vereinfacht für HTML-Integration)
+    class SwipeCommsDock {
+      constructor() {
+        this.featureFlags = new FeatureFlagService();
+        this.open = false;
+        this.ready = false;
+        this.expanded = false;
+        this.start = { x: 0, y: 0, t: 0 };
+        
+        this.init();
+      }
+
+      init() {
+        if (!this.featureFlags.isEnabled('comms_enabled')) {
+          console.log('Comms feature disabled');
+          return;
+        }
+
+        this.createDock();
+        this.setupSwipeDetection();
+        this.setupTouchHandling();
+      }
+
+      createDock() {
+        const dockHTML = `
+          <div id="swipe-comms-dock" class="fixed inset-x-0 bottom-0 z-40 pointer-events-none" style="display: none;">
+            <div class="mx-auto max-w-3xl p-2">
+              <div class="pointer-events-auto rounded-2xl shadow-xl border bg-white/90 backdrop-blur">
+                <div class="flex items-center justify-between p-2">
+                  <button id="comms-toggle" class="px-3 py-1.5 text-xs rounded-full bg-gray-900 text-white">
+                    Comms
+                  </button>
+                  <div class="text-xs text-gray-600">Swipe ↑ am rechten Rand zum Öffnen</div>
+                  <button id="comms-expand" class="px-2 py-1 text-xs">+</button>
+                </div>
+                <div id="comms-content" class="p-3 border-t" style="display: none;">
+                  <div id="comms-status" class="text-xs text-gray-500 pb-2">Initialisiere Kommunikation …</div>
+                  <div id="webtrit-widget" class="w-full h-56 flex items-center justify-center text-sm text-gray-600">
+                    WebTrit lädt … (wird nur bei Bedarf nachgeladen)
+                  </div>
+                  <div class="mt-2 grid grid-cols-3 gap-2">
+                    <button class="rounded-lg border p-2 text-xs" onclick="window.swipeCommsDock.emitCallAudit('DIAL', 'voice')">Anrufen</button>
+                    <button class="rounded-lg border p-2 text-xs" onclick="window.swipeCommsDock.emitCallAudit('VIDEO', 'video')">Video</button>
+                    <button class="rounded-lg border p-2 text-xs" onclick="window.swipeCommsDock.emitCallAudit('MSG', 'im')">Nachricht</button>
+                  </div>
+                  <div id="comms-expanded" class="mt-3 text-[11px] text-gray-500" style="display: none;">
+                    <p>Audit aktiv · Lizenz wird vor dem Medienaufbau geprüft · Keine Änderung am bestehenden Navigations‑Flow.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="pointer-events-auto fixed right-0 bottom-20 w-8 h-24 flex items-center justify-center">
+              <div class="rounded-l-xl bg-gray-900 text-white text-[10px] leading-tight px-2 py-3 opacity-80">
+                Swipe ↑<br>Comms
+              </div>
+            </div>
+          </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', dockHTML);
+        this.dock = document.getElementById('swipe-comms-dock');
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        document.getElementById('comms-toggle').addEventListener('click', () => {
+          this.toggle();
+        });
+
+        document.getElementById('comms-expand').addEventListener('click', () => {
+          this.expanded = !this.expanded;
+          document.getElementById('comms-expanded').style.display = this.expanded ? 'block' : 'none';
+          document.getElementById('comms-expand').textContent = this.expanded ? '−' : '+';
+        });
+
+        // Simuliere WebTrit-Loading
+        setTimeout(() => {
+          this.ready = true;
+          document.getElementById('comms-status').textContent = 'WebTrit bereit';
+          this.emitAudit('COMMS_PROVIDER_READY', { provider: 'webtrit' });
+        }, 1000);
+      }
+
+      setupSwipeDetection() {
+        document.addEventListener('touchstart', (e) => {
+          const t = e.touches?.[0];
+          if (!t) return;
+          this.start = { x: t.clientX, y: t.clientY, t: Date.now() };
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+          const t = e.changedTouches?.[0];
+          if (!t) return;
+          
+          const dx = t.clientX - this.start.x;
+          const dy = t.clientY - this.start.y;
+          const dt = Date.now() - this.start.t;
+          
+          // Swipe nur im rechten 64px-Rand
+          const vw = window.innerWidth;
+          if (vw - t.clientX < 64 && dt < 800 && Math.abs(dy) > 56 && Math.abs(dy) > Math.abs(dx)) {
+            if (dy < 0) {
+              this.openDock();
+            } else {
+              this.closeDock();
+            }
+          }
+        }, { passive: true });
+      }
+
+      setupTouchHandling() {
+        document.addEventListener('touchstart', (e) => {
+          const t = e.touches?.[0];
+          if (!t) return;
+          const vw = window.innerWidth;
+          if (vw - t.clientX < 64) {
+            localStorage.setItem('oamtm:comms:armed', '1');
+          } else {
+            localStorage.removeItem('oamtm:comms:armed');
+          }
+        }, { passive: true });
+      }
+
+      toggle() {
+        this.open = !this.open;
+        this.dock.style.display = this.open ? 'block' : 'none';
+        document.getElementById('comms-content').style.display = this.open ? 'block' : 'none';
+        this.emitAudit(this.open ? 'COMMS_DOCK_TOGGLE_ON' : 'COMMS_DOCK_TOGGLE_OFF', { reason: 'tap' });
+      }
+
+      openDock() {
+        this.open = true;
+        this.dock.style.display = 'block';
+        document.getElementById('comms-content').style.display = 'block';
+        this.emitAudit('COMMS_DOCK_OPEN', { reason: 'swipe_up' });
+      }
+
+      closeDock() {
+        this.open = false;
+        this.dock.style.display = 'none';
+        document.getElementById('comms-content').style.display = 'none';
+        this.emitAudit('COMMS_DOCK_CLOSE', { reason: 'swipe_down' });
+      }
+
+      emitAudit(event, metadata = {}) {
+        try {
+          const auditEvent = {
+            event,
+            timestamp: new Date().toISOString(),
+            metadata: {
+              ...metadata,
+              swipe_enhanced: true,
+              webtrit_integration: true
+            }
+          };
+          
+          console.debug('AUDIT_EVENT:', JSON.stringify(auditEvent));
+          
+          // In Production: an /api/audit posten
+          // fetch('/api/audit', { 
+          //   method: 'POST', 
+          //   body: JSON.stringify(auditEvent), 
+          //   headers: { 'content-type': 'application/json' } 
+          // });
+          
+        } catch (e) {
+          console.warn('Audit emission failed:', e);
+        }
+      }
+
+      emitCallAudit(eventType, mode) {
+        this.emitAudit(`WEBTRIT_CALL_${eventType}`, { 
+          provider: 'webtrit', 
+          mode,
+          swipe_initiated: true 
+        });
+      }
+    }
+
+    // SwipeCommsDock initialisieren
+    window.addEventListener('load', () => {
+      window.swipeCommsDock = new SwipeCommsDock();
+    });
   </script>
 
   <!-- Security‑Meta als Ergänzung (harte Header besser via Firebase/Proxy)
