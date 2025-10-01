@@ -1,0 +1,105 @@
+# Caddyfile for OAMTM Hackathon Bridge
+# Replace example.com with your domain
+
+example.com {
+    # Enable automatic HTTPS
+    tls {
+        protocols tls1.2 tls1.3
+    }
+
+    # Security headers
+    header {
+        # Security
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        
+        # CORS for development
+        Access-Control-Allow-Origin "*"
+        Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers "Content-Type, Authorization"
+    }
+
+    # Rate limiting
+    rate_limit {
+        zone static {
+            key {remote_host}
+            events 100
+            window 1m
+        }
+    }
+
+    # Main reverse proxy
+    reverse_proxy hackathon-bridge:8080 {
+        # WebSocket support for Socket.IO
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+        
+        # WebSocket upgrade
+        header_up Connection {>Connection}
+        header_up Upgrade {>Upgrade}
+    }
+
+    # File upload size limit
+    request_body {
+        max_size 50MB
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+
+    # Error handling
+    handle_errors {
+        @502 expression {http.error.status_code} == 502
+        handle @502 {
+            respond "Service temporarily unavailable" 502
+        }
+        
+        @404 expression {http.error.status_code} == 404
+        handle @404 {
+            respond "Not found" 404
+        }
+    }
+}
+
+# Development configuration (localhost)
+localhost:8080 {
+    # Disable HTTPS for local development
+    tls internal
+
+    # CORS for development
+    header Access-Control-Allow-Origin "*"
+    header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    header Access-Control-Allow-Headers "Content-Type, Authorization"
+
+    # Reverse proxy to Node.js app
+    reverse_proxy hackathon-bridge:8080 {
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
+
+# Subfolder configuration for OnAirMulTiMedia integration
+# yourdomain.com/hackathon-bridge/ {
+#     tls {
+#         protocols tls1.2 tls1.3
+#     }
+#
+#     # Strip the /hackathon-bridge prefix before proxying
+#     uri strip_prefix /hackathon-bridge
+#
+#     reverse_proxy hackathon-bridge:8080 {
+#         header_up Host {host}
+#         header_up X-Real-IP {remote}
+#         header_up X-Forwarded-For {remote}
+#         header_up X-Forwarded-Proto {scheme}
+#     }
+# }
