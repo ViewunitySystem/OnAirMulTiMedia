@@ -159,20 +159,6 @@ app.use('/uploads', express.static(UPLOAD_DIR));
 
 // COOP/COEP not set to allow 3rd-party embeds like YouTube in inlay
 
-if (!fs.existsSync(PRIV_PEM) || !fs.existsSync(PUB_PEM)) {
-  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
-  fs.writeFileSync(PRIV_PEM, privateKey.export({ type: 'pkcs8', format: 'pem' }));
-  fs.writeFileSync(PUB_PEM, publicKey.export({ type: 'spki', format: 'pem' }));
-  console.log('✅ Ed25519 keys generated');
-}
-
-function signBuffer(buf) {
-  const priv = fs.readFileSync(PRIV_PEM);
-  const hashHex = crypto.createHash('sha256').update(buf).digest('hex');
-  const sig = crypto.sign(null, Buffer.from(hashHex, 'utf8'), priv).toString('base64');
-  return { alg: 'Ed25519', key_id: 'oamtm-2025', hash: hashHex, sig };
-}
-
 app.get('/api/keys/public', (req, res) => res.type('text/plain').send(fs.readFileSync(PUB_PEM)));
 
 // Multer for file uploads
