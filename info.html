@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="refresh" content="0; url=/index.html" />
+  <meta http-equiv="refresh" content="0; url=./" />
   <title>OnAirMulTiMedia – Info & GitHub Monitoring</title>
   <script>
     // Redirect to main page with Aurora video
-    window.location.replace('/index.html');
+    window.location.replace('./');
   </script>
   <style>
     :root { color-scheme: dark; }
@@ -31,7 +31,7 @@
   <div style="text-align: center; padding: 50px; background: #0b1020; color: #e5e7eb; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
     <h1>🌍 OnAirMulTiMedia</h1>
     <p>Weiterleitung zur Hauptseite mit Aurora Video...</p>
-    <p>Falls die Weiterleitung nicht funktioniert, klicken Sie <a href="/index.html" style="color: #93c5fd;">hier</a></p>
+    <p>Falls die Weiterleitung nicht funktioniert, klicken Sie <a href="./" style="color: #93c5fd;">hier</a></p>
     <div style="margin-top: 20px;">
       <div style="width: 40px; height: 40px; border: 4px solid #374151; border-top: 4px solid #93c5fd; border-radius: 50%; animation: spin 1s linear infinite;"></div>
     </div>
@@ -61,7 +61,7 @@
       <div class="card">
         <div class="muted">Stars</div>
         <div id="stars" class="big">–</div>
-        <img src="/api/github/history/sparkline.svg?metric=stars&points=60" style="width:100%;margin-top:8px;" alt="Stars Trend">
+        <!-- Sparkline removed - GitHub API doesn't provide historical data without auth -->
       </div>
       <div class="card"><div class="muted">Forks</div><div id="forks" class="big">–</div></div>
       <div class="card"><div class="muted">Watcher</div><div id="watchers" class="big">–</div></div>
@@ -70,13 +70,13 @@
       <div class="card">
         <div class="muted">Release-Downloads</div>
         <div id="downloads" class="big">–</div>
-        <img src="/api/github/history/sparkline.svg?metric=release_downloads&points=60" style="width:100%;margin-top:8px;" alt="Downloads Trend">
+        <!-- Downloads trend removed - GitHub API doesn't provide historical data without auth -->
       </div>
       <div class="card"><div class="muted">Letztes Release</div><div id="latest" class="big" style="font-size:20px;">–</div></div>
       <div class="card">
         <div class="muted">Stand</div>
         <div id="ts" class="big" style="font-size:20px;">–</div>
-        <a href="/api/github/history.csv" download style="font-size:12px;margin-top:8px;display:block;">📊 CSV Export</a>
+        <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia" target="_blank" style="font-size:12px;margin-top:8px;display:block;">📊 GitHub Repository</a>
       </div>
     </section>
 
@@ -129,43 +129,51 @@
     </section>
   </main>
 
-  <script src="/webtrit-swipe.js"></script>
+  <!-- Service Worker temporarily disabled for cache clearing -->
   <script>
     function fmt(ts){ try { return new Date(ts).toLocaleString(); } catch { return '–'; } }
     function esc(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.textContent; }
 
     async function loadStats(){
-      const r = await fetch('/api/github/stats'); if (!r.ok) return;
-      const s = await r.json();
-      document.getElementById('stars').textContent = s.stars;
-      document.getElementById('forks').textContent = s.forks;
-      document.getElementById('watchers').textContent = s.watchers;
-      document.getElementById('issues').textContent = s.open_issues;
-      document.getElementById('releases').textContent = s.release_count;
-      document.getElementById('downloads').textContent = s.release_downloads;
-      document.getElementById('latest').textContent = s.latest_release_tag || '–';
-      document.getElementById('ts').textContent = fmt(s.ts);
+      try {
+        // Use GitHub REST API directly (no backend needed)
+        const [repoResponse, releasesResponse] = await Promise.all([
+          fetch('https://api.github.com/repos/ViewunitySystem/OnAirMulTiMedia'),
+          fetch('https://api.github.com/repos/ViewunitySystem/OnAirMulTiMedia/releases')
+        ]);
+        
+        if (!repoResponse.ok || !releasesResponse.ok) return;
+        
+        const repo = await repoResponse.json();
+        const releases = await releasesResponse.json();
+        
+        // Calculate downloads from release assets
+        const totalDownloads = releases.reduce((sum, release) => {
+          return sum + release.assets.reduce((assetSum, asset) => assetSum + asset.download_count, 0);
+        }, 0);
+        
+        document.getElementById('stars').textContent = repo.stargazers_count || 0;
+        document.getElementById('forks').textContent = repo.forks_count || 0;
+        document.getElementById('watchers').textContent = repo.watchers_count || 0;
+        document.getElementById('issues').textContent = repo.open_issues_count || 0;
+        document.getElementById('releases').textContent = releases.length || 0;
+        document.getElementById('downloads').textContent = totalDownloads;
+        document.getElementById('latest').textContent = releases[0]?.tag_name || '–';
+        document.getElementById('ts').textContent = fmt(new Date().toISOString());
+      } catch (error) {
+        console.error('Error loading GitHub stats:', error);
+      }
     }
 
     async function loadContribs(){
-      const r = await fetch('/api/contribs'); if (!r.ok) return;
-      const list = await r.json();
-      const root = document.getElementById('contribs'); root.innerHTML = '';
-      list.forEach(c => {
-        const el = document.createElement('div'); el.className='item';
-        const u = c.user_id ? `<strong>${esc(c.user_id)}</strong>` : '<strong>anon</strong>';
-        el.innerHTML = `${u} <span class="muted">• ${fmt(c.created_at)}</span><br/>${esc(c.content)}`;
-        root.appendChild(el);
-      });
+      // Community contributions temporarily disabled - no backend available on GitHub Pages
+      const root = document.getElementById('contribs'); 
+      root.innerHTML = '<div class="item"><em>Community-Beiträge sind temporär deaktiviert. Verwenden Sie GitHub Issues für Feedback.</em></div>';
     }
 
     document.getElementById('send').onclick = async ()=>{
-      const user = document.getElementById('user').value;
-      const text = document.getElementById('text').value;
-      const r = await fetch('/api/contribs', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ user_id: user, content: text }) });
       const msg = document.getElementById('msg');
-      if (r.ok){ msg.textContent = 'Danke! Dein Beitrag wurde übermittelt und erscheint nach Freigabe.'; document.getElementById('text').value=''; }
-      else { const j = await r.json().catch(()=>({error:'Fehler'})); msg.textContent = `Fehler: ${j.error}`; }
+      msg.textContent = 'Community-Beiträge sind temporär deaktiviert. Verwenden Sie GitHub Issues für Feedback.';
     };
 
     // Moderation UI
