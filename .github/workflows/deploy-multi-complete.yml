@@ -345,11 +345,10 @@ jobs:
         run: |
           echo "🚀 Deploying to Firebase ${{ steps.site-select.outputs.target }}..."
           firebase deploy --only hosting:${{ steps.site-select.outputs.site }} --non-interactive
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          
           echo "✅ Firebase ${{ steps.site-select.outputs.target }} deployment completed!"
           echo "🌐 URL: https://${{ steps.site-select.outputs.site }}.web.app/"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
       - name: 📊 Firebase Deployment Status
         run: |
