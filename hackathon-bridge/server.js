@@ -159,10 +159,6 @@ app.use('/uploads', express.static(UPLOAD_DIR));
 
 // COOP/COEP not set to allow 3rd-party embeds like YouTube in inlay
 
-// --- Ed25519 Key Generation ---
-const PUB_PEM = path.join(KEY_DIR, 'public.pem');
-const PRIV_PEM = path.join(KEY_DIR, 'private.pem');
-
 if (!fs.existsSync(PRIV_PEM) || !fs.existsSync(PUB_PEM)) {
   const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
   fs.writeFileSync(PRIV_PEM, privateKey.export({ type: 'pkcs8', format: 'pem' }));
