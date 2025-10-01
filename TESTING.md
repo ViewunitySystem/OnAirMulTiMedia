@@ -1,0 +1,315 @@
+# 🧪 Testing Documentation - OnAirMulTiMedia / HFRF Universal SDR
+
+## Overview
+Comprehensive CI/CD testing pipeline for the OnAirMulTiMedia platform, including frontend validation, RF/SDR regulatory compliance, and security scanning.
+
+**Last Updated:** 2025-10-01  
+**Version:** 2.0.0  
+**Project:** OnAirMulTiMedia - Globales Tor zur Welt by Raymond Demitrio Dr. Tel (DD5BE)
+
+---
+
+## 🎯 Test Categories
+
+### 1. Frontend Validation (`frontend-check`)
+Validates all HTML, CSS, JavaScript, and multimedia features.
+
+**Tests Include:**
+- ✅ HTML5 validation (DOCTYPE, meta tags, structure)
+- ✅ JSON schema and blueprint validation
+- ✅ JavaScript syntax checking
+- ✅ Multimedia features (video/audio controls)
+- ✅ Responsive design verification
+- ✅ Service Worker registration
+- ✅ Performance monitoring presence
+- ✅ Internal link validation
+
+**Example Output:**
+```bash
+🔍 Validating HTML files...
+✅ index.html has DOCTYPE
+✅ index.html has charset
+✅ index.html has viewport
+✅ Video controls present
+✅ Audio controls present
+✅ Responsive CSS present
+✅ Service Worker registration present
+```
+
+---
+
+### 2. RF/SDR Regulatory Compliance (`regulatory-compliance`)
+**NEW in v2.0.0** - Critical for amateur radio and SDR applications.
+
+**Tests Include:**
+- 📡 Blueprint schema validation (JSON Schema)
+- 📡 RF frequency range compliance
+- 📡 Amateur radio license verification
+- 📡 Regulatory reference validation
+- 📡 Callsign verification (DD5BE)
+- 📡 Required disclaimer checks
+
+**Regulatory Bands Checked:**
+```python
+HF:  1.8-2.0, 3.5-4.0, 7.0-7.3, 10.1-10.15, 14.0-14.35, 18.068-18.168, 
+     21.0-21.45, 24.89-24.99, 28.0-29.7 MHz
+VHF: 50.0-54.0, 144.0-148.0 MHz
+UHF: 420.0-450.0, 902.0-928.0, 1240.0-1300.0 MHz
+```
+
+**Blueprint Validation:**
+- Validates against `schemas/blueprint.schema.json`
+- Checks required fields: `module`, `interfaces`, `validation`, `regulatory`
+- Verifies RF modules have proper licensing documentation
+
+**Example Output:**
+```bash
+🔍 Validating blueprints against JSON schema...
+✅ rf_validation_engine.json is valid
+📡 RFValidationEngine: RF module detected
+   License required: True
+   Regulatory references: 2
+   ✅ Regulatory compliance documented
+✅ Valid amateur radio callsign DD5BE found
+```
+
+---
+
+### 3. Node.js Build & Test (`nodejs-build`)
+Tests Node.js components across multiple versions.
+
+**Matrix Strategy:**
+- Node.js 16.x
+- Node.js 18.x ✨ (Primary)
+- Node.js 20.x
+
+**Tests Include:**
+- ✅ Dependency installation
+- ✅ Build process
+- ✅ Unit tests (if configured)
+- ✅ Integration tests
+
+**Conditionally Runs:** Only if `package.json` exists
+
+---
+
+### 4. Rust Build & Test (`rust-build`)
+Tests Rust/SDR backend components.
+
+**Matrix Strategy:**
+- Ubuntu Latest
+- Windows Latest
+
+**Tests Include:**
+- ✅ Cargo build (release mode)
+- ✅ Cargo test suite
+- ✅ Clippy linting (strict mode)
+- ✅ Cross-platform compatibility
+
+**Conditionally Runs:** Only if `Cargo.toml` exists
+
+---
+
+### 5. Security Scanning (`security-scan`)
+Snyk security vulnerability scanning.
+
+**Tests Include:**
+- 🔒 Node.js dependency vulnerabilities
+- 🔒 Rust dependency vulnerabilities
+- 🔒 Severity threshold: HIGH
+- 🔒 Continuous monitoring
+
+**Note:** Requires `SNYK_TOKEN` secret configured in repository settings.
+
+---
+
+### 6. Dependency Review (`dependency-review`)
+Automated dependency review for pull requests.
+
+**Tests Include:**
+- 📦 New dependency analysis
+- 📦 License compatibility
+- 📦 Security vulnerability detection
+- 📦 Fail threshold: MODERATE
+
+**Runs On:** Pull requests only
+
+---
+
+### 7. GitHub Pages Deployment (`deploy-pages`)
+Automated deployment to GitHub Pages.
+
+**Deployment Process:**
+1. Setup GitHub Pages
+2. Upload artifact (complete project)
+3. Deploy to: `https://viewunitysystem.github.io/OnAirMulTiMedia/`
+4. Generate deployment summary
+
+**Runs On:** Push to `gh-pages` branch only
+
+---
+
+## 🚀 Running Tests Locally
+
+### Frontend Tests
+```bash
+# Validate HTML files
+for file in *.html; do
+  grep -q "<!DOCTYPE html>" "$file" && echo "✅ $file" || echo "❌ $file"
+done
+
+# Validate JSON
+python3 -m json.tool schemas/blueprint.schema.json
+python3 -m json.tool blueprints/rf_validation_engine.json
+
+# Check JavaScript syntax
+node --check *.js
+```
+
+### Regulatory Compliance Tests
+```bash
+# Install Python dependencies
+pip install jsonschema
+
+# Run blueprint validation
+python3 << 'EOF'
+import json, jsonschema
+with open('schemas/blueprint.schema.json') as f:
+    schema = json.load(f)
+with open('blueprints/rf_validation_engine.json') as f:
+    blueprint = json.load(f)
+jsonschema.validate(instance=blueprint, schema=schema)
+print("✅ Blueprint is valid")
+EOF
+```
+
+### Node.js Tests
+```bash
+# Install dependencies
+npm ci
+
+# Run tests
+npm test
+
+# Run build
+npm run build
+```
+
+### Rust Tests
+```bash
+# Build project
+cargo build --release
+
+# Run tests
+cargo test
+
+# Run clippy
+cargo clippy -- -D warnings
+```
+
+---
+
+## 📊 Test Status Badges
+
+Add to your README.md:
+
+```markdown
+![CI/CD Pipeline](https://github.com/ViewUnitySystem/OnAirMulTiMedia/actions/workflows/ci.yml/badge.svg)
+```
+
+---
+
+## 🔧 Configuration
+
+### Required Files
+- `.github/workflows/ci.yml` - Main CI/CD workflow
+- `schemas/blueprint.schema.json` - Blueprint validation schema
+- `blueprints/*.json` - RF/SDR module blueprints
+
+### Optional Secrets
+- `SNYK_TOKEN` - For security scanning (optional but recommended)
+
+### Environment Variables
+```yaml
+NODE_VERSION: '18.x'  # Primary Node.js version
+RUST_VERSION: 'stable'  # Rust toolchain version
+```
+
+---
+
+## ✅ Success Criteria
+
+All tests pass when:
+- ✅ All HTML files are valid HTML5
+- ✅ All JSON files are valid JSON
+- ✅ All blueprints pass schema validation
+- ✅ RF modules have regulatory documentation
+- ✅ Amateur radio callsign is present
+- ✅ JavaScript syntax is valid
+- ✅ No high-severity security vulnerabilities
+- ✅ All builds complete successfully
+
+---
+
+## 🐛 Troubleshooting
+
+### "Unrecognized function: hashFiles" Error
+**Status:** ⚠️ Linter false positive  
+**Solution:** Ignore - `hashFiles()` is a valid GitHub Actions function
+
+### "Context access might be invalid: SNYK_TOKEN" Warning
+**Status:** ⚠️ Expected warning  
+**Solution:** Configure `SNYK_TOKEN` in repository secrets or continue without (tests will skip)
+
+### Blueprint Validation Fails
+**Check:**
+1. All required fields present: `module`, `interfaces`, `validation`, `regulatory`
+2. JSON syntax is valid
+3. Matches schema in `schemas/blueprint.schema.json`
+
+### RF Module Missing Regulatory Info
+**Fix:**
+```json
+{
+  "regulatory": {
+    "license_required": true,
+    "references": [
+      { "jurisdiction": "DE", "section": "BNetzA 226.4.5" }
+    ]
+  }
+}
+```
+
+---
+
+## 📚 References
+
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- [JSON Schema Specification](https://json-schema.org/)
+- [Bundesnetzagentur (BNetzA) Regulations](https://www.bundesnetzagentur.de/)
+- [Amateur Radio Licensing](https://www.darc.de/)
+
+---
+
+## 📝 Changelog
+
+### v2.0.0 (2025-10-01)
+- ✨ Added RF/SDR Regulatory Compliance job
+- ✨ Added blueprint schema validation
+- ✨ Added amateur radio callsign verification
+- ✨ Enhanced frontend validation
+- ✨ Added multimedia feature checks
+- 🔧 Improved test summary reporting
+
+### v1.0.0 (Initial)
+- Basic HTML/JS validation
+- Node.js and Rust build tests
+- Security scanning
+- GitHub Pages deployment
+
+---
+
+**Maintained by:** Raymond Demitrio Dr. Tel (DD5BE)  
+**Project:** OnAirMulTiMedia - ET MUNDO ARIAL MAGNITUDO MUSICAL LIVE LIFE 24/7  
+**License:** Follow amateur radio regulations and licensing requirements
+
