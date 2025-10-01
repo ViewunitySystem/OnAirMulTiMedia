@@ -777,6 +777,22 @@
                     </div>
                   </div>
                   
+                  <!-- Matrix Rooms -->
+                  <div id="matrix-rooms" class="mt-4">
+                    <h4 class="text-sm font-semibold text-gray-800 mb-2">🏠 Matrix Rooms</h4>
+                    <div id="matrix-room-list">
+                      <!-- Matrix rooms werden hier dynamisch eingefügt -->
+                    </div>
+                  </div>
+                  
+                  <!-- Matrix Bridges -->
+                  <div id="matrix-bridges" class="mt-4">
+                    <h4 class="text-sm font-semibold text-gray-800 mb-2">🌉 Matrix Bridges</h4>
+                    <div id="matrix-bridge-list">
+                      <!-- Matrix bridges werden hier dynamisch eingefügt -->
+                    </div>
+                  </div>
+                  
                   <!-- PeerLink Tools -->
                   <div id="peerlink-tools" class="mt-4">
                     <h4 class="text-sm font-semibold text-gray-800 mb-2">🎵 PeerLink Tools</h4>
@@ -1157,6 +1173,8 @@
         this.initializeCollaborativeSystem();
         this.initializeMatrixDiscovery();
         this.initializePeerLinkTools();
+        this.initializeMatrixRooms();
+        this.initializeMatrixBridges();
       }
 
       async initializeCollaborativeSystem() {
@@ -1179,14 +1197,61 @@
         }
       }
 
-      async initializePeerLinkTools() {
+      async initializeMatrixRooms() {
         try {
-          const tools = await this.collaborativeComm.initializePeerLinkTools();
-          this.peerLinkTools = tools;
-          console.log('PeerLink Tools initialized:', Array.from(tools.keys()));
-          this.updatePeerLinkUI();
+          const rooms = await this.collaborativeComm.initializeMatrixRooms();
+          console.log('Matrix Rooms initialized:', Array.from(rooms.keys()));
+          this.updateMatrixRoomsUI();
         } catch (error) {
-          console.error('PeerLink initialization failed:', error);
+          console.error('Matrix Rooms initialization failed:', error);
+        }
+      }
+
+      async initializeMatrixBridges() {
+        try {
+          const bridges = await this.collaborativeComm.initializeMatrixBridges();
+          console.log('Matrix Bridges initialized:', Array.from(bridges.keys()));
+          this.updateMatrixBridgesUI();
+        } catch (error) {
+          console.error('Matrix Bridges initialization failed:', error);
+        }
+      }
+
+      updateMatrixRoomsUI() {
+        const roomsSection = document.getElementById('matrix-room-list');
+        if (roomsSection) {
+          roomsSection.innerHTML = '';
+          const rooms = this.collaborativeComm.getAllMatrixRooms();
+          for (const room of rooms) {
+            const roomDiv = document.createElement('div');
+            roomDiv.className = `matrix-room ${room.status} p-2 mb-2 rounded border`;
+            roomDiv.innerHTML = `
+              <div class="room-name text-sm font-semibold">${room.name}</div>
+              <div class="room-topic text-xs text-gray-600">${room.topic}</div>
+              <div class="room-members text-xs text-gray-500">${room.memberCount} members</div>
+              <div class="room-bridges text-xs text-gray-500">Bridges: ${room.bridges?.join(', ') || 'None'}</div>
+            `;
+            roomsSection.appendChild(roomDiv);
+          }
+        }
+      }
+
+      updateMatrixBridgesUI() {
+        const bridgesSection = document.getElementById('matrix-bridge-list');
+        if (bridgesSection) {
+          bridgesSection.innerHTML = '';
+          const bridges = this.collaborativeComm.getAllMatrixBridges();
+          for (const bridge of bridges) {
+            const bridgeDiv = document.createElement('div');
+            bridgeDiv.className = `matrix-bridge ${bridge.status} p-2 mb-2 rounded border`;
+            bridgeDiv.innerHTML = `
+              <div class="bridge-name text-sm font-semibold">${bridge.name}</div>
+              <div class="bridge-type text-xs text-gray-600">${bridge.type}</div>
+              <div class="bridge-status text-xs text-gray-500">Status: ${bridge.status}</div>
+              <div class="bridge-health text-xs text-gray-500">Health: ${bridge.health}</div>
+            `;
+            bridgesSection.appendChild(bridgeDiv);
+          }
         }
       }
 

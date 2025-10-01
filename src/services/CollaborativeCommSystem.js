@@ -768,6 +768,143 @@ class CollaborativeCommSystem {
         github: 'https://github.com/sonobus/sonobus',
         status: 'available',
         swipeEnabled: true
+      },
+      // Erweiterte PeerLink-Tools
+      audacity: {
+        name: 'Audacity',
+        type: 'audio_editing',
+        capabilities: ['recording', 'editing', 'effects', 'export'],
+        github: 'https://github.com/audacity/audacity',
+        status: 'available',
+        swipeEnabled: true
+      },
+      ardour: {
+        name: 'Ardour',
+        type: 'digital_audio_workstation',
+        capabilities: ['recording', 'mixing', 'mastering', 'midi'],
+        github: 'https://github.com/Ardour/ardour',
+        status: 'available',
+        swipeEnabled: true
+      },
+      reaper: {
+        name: 'Reaper',
+        type: 'digital_audio_workstation',
+        capabilities: ['recording', 'mixing', 'mastering', 'midi', 'video'],
+        github: 'https://github.com/cockos/reaper',
+        status: 'available',
+        swipeEnabled: true
+      },
+      obs_studio: {
+        name: 'OBS Studio',
+        type: 'streaming_recording',
+        capabilities: ['live_streaming', 'recording', 'mixing', 'effects'],
+        github: 'https://github.com/obsproject/obs-studio',
+        status: 'available',
+        swipeEnabled: true
+      },
+      ffmpeg: {
+        name: 'FFmpeg',
+        type: 'media_processing',
+        capabilities: ['encoding', 'decoding', 'streaming', 'conversion'],
+        github: 'https://github.com/FFmpeg/FFmpeg',
+        status: 'available',
+        swipeEnabled: true
+      },
+      gstreamer: {
+        name: 'GStreamer',
+        type: 'multimedia_framework',
+        capabilities: ['streaming', 'processing', 'pipeline', 'plugins'],
+        github: 'https://github.com/GStreamer/gstreamer',
+        status: 'available',
+        swipeEnabled: true
+      },
+      webrtc_native: {
+        name: 'WebRTC Native',
+        type: 'real_time_communication',
+        capabilities: ['voice', 'video', 'data', 'p2p'],
+        github: 'https://github.com/webrtc/webrtc',
+        status: 'available',
+        swipeEnabled: true
+      },
+      janus: {
+        name: 'Janus WebRTC Gateway',
+        type: 'webrtc_gateway',
+        capabilities: ['gateway', 'proxy', 'recording', 'streaming'],
+        github: 'https://github.com/meetecho/janus-gateway',
+        status: 'available',
+        swipeEnabled: true
+      },
+      kurento: {
+        name: 'Kurento Media Server',
+        type: 'media_server',
+        capabilities: ['media_server', 'processing', 'streaming', 'recording'],
+        github: 'https://github.com/Kurento/kurento-media-server',
+        status: 'available',
+        swipeEnabled: true
+      },
+      mediasoup: {
+        name: 'mediasoup',
+        type: 'sfu_server',
+        capabilities: ['sfu', 'conference', 'streaming', 'recording'],
+        github: 'https://github.com/versatica/mediasoup',
+        status: 'available',
+        swipeEnabled: true
+      },
+      jitsi_meet: {
+        name: 'Jitsi Meet',
+        type: 'video_conference',
+        capabilities: ['video_conference', 'screen_share', 'recording', 'chat'],
+        github: 'https://github.com/jitsi/jitsi-meet',
+        status: 'available',
+        swipeEnabled: true
+      },
+      bigbluebutton: {
+        name: 'BigBlueButton',
+        type: 'web_conferencing',
+        capabilities: ['web_conference', 'presentation', 'recording', 'breakout'],
+        github: 'https://github.com/bigbluebutton/bigbluebutton',
+        status: 'available',
+        swipeEnabled: true
+      },
+      openvidu: {
+        name: 'OpenVidu',
+        type: 'video_conference_platform',
+        capabilities: ['video_conference', 'streaming', 'recording', 'moderation'],
+        github: 'https://github.com/OpenVidu/openvidu',
+        status: 'available',
+        swipeEnabled: true
+      },
+      livekit: {
+        name: 'LiveKit',
+        type: 'real_time_communication',
+        capabilities: ['rtc', 'sfu', 'streaming', 'recording'],
+        github: 'https://github.com/livekit/livekit',
+        status: 'available',
+        swipeEnabled: true
+      },
+      agora: {
+        name: 'Agora SDK',
+        type: 'real_time_communication',
+        capabilities: ['voice', 'video', 'streaming', 'analytics'],
+        github: 'https://github.com/AgoraIO',
+        status: 'available',
+        swipeEnabled: true
+      },
+      twilio: {
+        name: 'Twilio Communications',
+        type: 'communication_platform',
+        capabilities: ['voice', 'video', 'sms', 'chat', 'notifications'],
+        github: 'https://github.com/twilio',
+        status: 'available',
+        swipeEnabled: true
+      },
+      agora_rtc: {
+        name: 'Agora RTC SDK',
+        type: 'real_time_communication',
+        capabilities: ['rtc', 'voice', 'video', 'streaming'],
+        github: 'https://github.com/AgoraIO/Agora-RTC-SDK',
+        status: 'available',
+        swipeEnabled: true
       }
     };
     
@@ -880,7 +1017,347 @@ class CollaborativeCommSystem {
     };
   }
 
-  // Carrier-Status abrufen
+  // Matrix Rooms und Bridges erweitern
+  async initializeMatrixRooms() {
+    const matrixRooms = {
+      'general': {
+        name: 'General Discussion',
+        topic: 'General communication and collaboration',
+        type: 'public',
+        members: [],
+        capabilities: ['voice', 'video', 'im', 'file_transfer'],
+        bridges: ['webtrit', 'telegram', 'discord']
+      },
+      'music_collaboration': {
+        name: 'Music Collaboration',
+        topic: 'Real-time music collaboration and jamming',
+        type: 'public',
+        members: [],
+        capabilities: ['voice', 'audio_streaming', 'file_transfer'],
+        bridges: ['jamsession', 'jamulus', 'sonobus']
+      },
+      'video_conference': {
+        name: 'Video Conference',
+        topic: 'Video conferencing and screen sharing',
+        type: 'public',
+        members: [],
+        capabilities: ['voice', 'video', 'screen_share', 'recording'],
+        bridges: ['jitsi', 'bigbluebutton', 'openvidu']
+      },
+      'development': {
+        name: 'Development Team',
+        topic: 'Development discussions and code reviews',
+        type: 'private',
+        members: ['@dev:matrix.org'],
+        capabilities: ['voice', 'video', 'im', 'file_transfer'],
+        bridges: ['github', 'gitlab', 'slack']
+      },
+      'support': {
+        name: 'Support Channel',
+        topic: 'User support and technical assistance',
+        type: 'public',
+        members: [],
+        capabilities: ['voice', 'im', 'file_transfer'],
+        bridges: ['zendesk', 'freshdesk', 'intercom']
+      },
+      'emergency': {
+        name: 'Emergency Communications',
+        topic: 'Emergency and critical communications',
+        type: 'private',
+        members: ['@admin:matrix.org'],
+        capabilities: ['voice', 'video', 'im', 'emergency_broadcast'],
+        bridges: ['sms', 'phone', 'pager']
+      }
+    };
+
+    this.matrixRooms = new Map();
+    
+    for (const [roomId, room] of Object.entries(matrixRooms)) {
+      this.matrixRooms.set(roomId, {
+        ...room,
+        id: roomId,
+        created: new Date().toISOString(),
+        lastActivity: new Date().toISOString(),
+        status: 'active'
+      });
+      
+      this.emitAudit('MATRIX_ROOM_CREATED', { roomId, room });
+    }
+
+    console.log('Matrix Rooms initialized:', Array.from(this.matrixRooms.keys()));
+    return this.matrixRooms;
+  }
+
+  // Matrix Bridges zu externen Plattformen
+  async initializeMatrixBridges() {
+    const matrixBridges = {
+      'webtrit': {
+        name: 'WebTrit Bridge',
+        type: 'communication',
+        status: 'active',
+        capabilities: ['voice', 'video', 'im'],
+        config: {
+          serverUrl: 'https://webtrit.example.com',
+          apiKey: 'webtrit_api_key',
+          webhookUrl: 'https://matrix.org/webhooks/webtrit'
+        }
+      },
+      'telegram': {
+        name: 'Telegram Bridge',
+        type: 'messaging',
+        status: 'active',
+        capabilities: ['im', 'file_transfer', 'voice'],
+        config: {
+          botToken: 'telegram_bot_token',
+          chatId: 'telegram_chat_id',
+          webhookUrl: 'https://matrix.org/webhooks/telegram'
+        }
+      },
+      'discord': {
+        name: 'Discord Bridge',
+        type: 'gaming_communication',
+        status: 'active',
+        capabilities: ['voice', 'video', 'im', 'screen_share'],
+        config: {
+          botToken: 'discord_bot_token',
+          guildId: 'discord_guild_id',
+          webhookUrl: 'https://matrix.org/webhooks/discord'
+        }
+      },
+      'slack': {
+        name: 'Slack Bridge',
+        type: 'business_communication',
+        status: 'active',
+        capabilities: ['im', 'file_transfer', 'voice', 'video'],
+        config: {
+          botToken: 'slack_bot_token',
+          channelId: 'slack_channel_id',
+          webhookUrl: 'https://matrix.org/webhooks/slack'
+        }
+      },
+      'github': {
+        name: 'GitHub Bridge',
+        type: 'development',
+        status: 'active',
+        capabilities: ['im', 'file_transfer', 'notifications'],
+        config: {
+          accessToken: 'github_access_token',
+          repoId: 'github_repo_id',
+          webhookUrl: 'https://matrix.org/webhooks/github'
+        }
+      },
+      'jitsi': {
+        name: 'Jitsi Bridge',
+        type: 'video_conference',
+        status: 'active',
+        capabilities: ['voice', 'video', 'screen_share', 'recording'],
+        config: {
+          serverUrl: 'https://meet.jit.si',
+          roomName: 'matrix-jitsi-room',
+          webhookUrl: 'https://matrix.org/webhooks/jitsi'
+        }
+      },
+      'sms': {
+        name: 'SMS Bridge',
+        type: 'mobile_communication',
+        status: 'active',
+        capabilities: ['sms', 'voice'],
+        config: {
+          provider: 'twilio',
+          apiKey: 'sms_api_key',
+          phoneNumber: '+1234567890',
+          webhookUrl: 'https://matrix.org/webhooks/sms'
+        }
+      },
+      'email': {
+        name: 'Email Bridge',
+        type: 'email_communication',
+        status: 'active',
+        capabilities: ['email', 'file_transfer'],
+        config: {
+          smtpServer: 'smtp.example.com',
+          username: 'email_username',
+          password: 'email_password',
+          webhookUrl: 'https://matrix.org/webhooks/email'
+        }
+      }
+    };
+
+    this.matrixBridges = new Map();
+    
+    for (const [bridgeId, bridge] of Object.entries(matrixBridges)) {
+      this.matrixBridges.set(bridgeId, {
+        ...bridge,
+        id: bridgeId,
+        created: new Date().toISOString(),
+        lastActivity: new Date().toISOString(),
+        health: 'healthy'
+      });
+      
+      this.emitAudit('MATRIX_BRIDGE_CREATED', { bridgeId, bridge });
+    }
+
+    console.log('Matrix Bridges initialized:', Array.from(this.matrixBridges.keys()));
+    return this.matrixBridges;
+  }
+
+  // Matrix Room beitreten
+  async joinMatrixRoom(roomId, userId) {
+    const room = this.matrixRooms.get(roomId);
+    if (!room) {
+      throw new Error(`Matrix room ${roomId} not found`);
+    }
+
+    if (!room.members.includes(userId)) {
+      room.members.push(userId);
+      room.lastActivity = new Date().toISOString();
+      
+      this.emitAudit('MATRIX_ROOM_JOINED', { 
+        roomId, 
+        userId, 
+        memberCount: room.members.length 
+      });
+    }
+
+    return {
+      roomId,
+      room,
+      joined: true,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // Matrix Room verlassen
+  async leaveMatrixRoom(roomId, userId) {
+    const room = this.matrixRooms.get(roomId);
+    if (!room) {
+      throw new Error(`Matrix room ${roomId} not found`);
+    }
+
+    const memberIndex = room.members.indexOf(userId);
+    if (memberIndex > -1) {
+      room.members.splice(memberIndex, 1);
+      room.lastActivity = new Date().toISOString();
+      
+      this.emitAudit('MATRIX_ROOM_LEFT', { 
+        roomId, 
+        userId, 
+        memberCount: room.members.length 
+      });
+    }
+
+    return {
+      roomId,
+      room,
+      left: true,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // Matrix Bridge aktivieren
+  async activateMatrixBridge(bridgeId) {
+    const bridge = this.matrixBridges.get(bridgeId);
+    if (!bridge) {
+      throw new Error(`Matrix bridge ${bridgeId} not found`);
+    }
+
+    bridge.status = 'active';
+    bridge.lastActivity = new Date().toISOString();
+    
+    this.emitAudit('MATRIX_BRIDGE_ACTIVATED', { bridgeId, bridge });
+    
+    return {
+      bridgeId,
+      bridge,
+      activated: true,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // Matrix Bridge deaktivieren
+  async deactivateMatrixBridge(bridgeId) {
+    const bridge = this.matrixBridges.get(bridgeId);
+    if (!bridge) {
+      throw new Error(`Matrix bridge ${bridgeId} not found`);
+    }
+
+    bridge.status = 'inactive';
+    bridge.lastActivity = new Date().toISOString();
+    
+    this.emitAudit('MATRIX_BRIDGE_DEACTIVATED', { bridgeId, bridge });
+    
+    return {
+      bridgeId,
+      bridge,
+      deactivated: true,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // Matrix Room Status abrufen
+  getMatrixRoomStatus(roomId) {
+    const room = this.matrixRooms.get(roomId);
+    if (!room) {
+      return null;
+    }
+
+    return {
+      id: room.id,
+      name: room.name,
+      topic: room.topic,
+      type: room.type,
+      memberCount: room.members.length,
+      capabilities: room.capabilities,
+      bridges: room.bridges,
+      status: room.status,
+      lastActivity: room.lastActivity,
+      created: room.created
+    };
+  }
+
+  // Matrix Bridge Status abrufen
+  getMatrixBridgeStatus(bridgeId) {
+    const bridge = this.matrixBridges.get(bridgeId);
+    if (!bridge) {
+      return null;
+    }
+
+    return {
+      id: bridge.id,
+      name: bridge.name,
+      type: bridge.type,
+      status: bridge.status,
+      capabilities: bridge.capabilities,
+      health: bridge.health,
+      lastActivity: bridge.lastActivity,
+      created: bridge.created
+    };
+  }
+
+  // Alle Matrix Rooms auflisten
+  getAllMatrixRooms() {
+    return Array.from(this.matrixRooms.values()).map(room => ({
+      id: room.id,
+      name: room.name,
+      topic: room.topic,
+      type: room.type,
+      memberCount: room.members.length,
+      status: room.status,
+      lastActivity: room.lastActivity
+    }));
+  }
+
+  // Alle Matrix Bridges auflisten
+  getAllMatrixBridges() {
+    return Array.from(this.matrixBridges.values()).map(bridge => ({
+      id: bridge.id,
+      name: bridge.name,
+      type: bridge.type,
+      status: bridge.status,
+      health: bridge.health,
+      lastActivity: bridge.lastActivity
+    }));
+  }
   getSystemStatus() {
     return {
       collaborationMode: this.collaborationMode,
@@ -891,9 +1368,13 @@ class CollaborativeCommSystem {
       auditEvents: this.auditEvents.length,
       matrixServers: Object.fromEntries(this.matrixServers),
       peerLinkTools: Object.fromEntries(this.peerLinkTools),
+      matrixRooms: this.matrixRooms ? this.getAllMatrixRooms() : [],
+      matrixBridges: this.matrixBridges ? this.getAllMatrixBridges() : [],
       totalCarriers: Object.keys(this.carriers).length,
       totalMatrixServers: this.matrixServers.size,
-      totalPeerLinkTools: this.peerLinkTools.size
+      totalPeerLinkTools: this.peerLinkTools.size,
+      totalMatrixRooms: this.matrixRooms ? this.matrixRooms.size : 0,
+      totalMatrixBridges: this.matrixBridges ? this.matrixBridges.size : 0
     };
   }
 

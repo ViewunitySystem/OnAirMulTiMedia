@@ -9,7 +9,15 @@ class SwipePerformanceOptimizer {
     this.cache = new Map();
     this.cacheTimeout = 5 * 60 * 1000; // 5 Minuten
     
+    // Machine Learning & Adaptive Optimierung
+    this.swipeHistory = [];
+    this.adaptiveLearning = true;
+    this.learningRate = 0.1;
+    this.confidenceThreshold = 0.7;
+    this.patternRecognition = new Map();
+    
     this.initializeOptimizationRules();
+    this.initializeMachineLearning();
   }
 
   // Optimierungsregeln basierend auf Swipe-Patterns initialisieren
@@ -454,6 +462,45 @@ class SwipePerformanceOptimizer {
     
     console.debug('PERFORMANCE_AUDIT:', JSON.stringify(auditEvent));
     return auditEvent;
+  }
+
+  // Machine Learning & Adaptive Optimierung aktivieren/deaktivieren
+  setAdaptiveLearning(enabled) {
+    this.adaptiveLearning = enabled;
+    console.log(`Adaptive Learning ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  // Lernrate anpassen
+  setLearningRate(rate) {
+    this.learningRate = Math.max(0, Math.min(1, rate));
+    console.log(`Learning rate set to ${this.learningRate}`);
+  }
+
+  // Performance-Metriken zurücksetzen
+  resetMetrics() {
+    this.swipeHistory = [];
+    this.performanceMetrics.clear();
+    this.cache.clear();
+    console.log('Performance metrics reset');
+  }
+
+  // Vollständigen Performance-Report generieren
+  generatePerformanceReport() {
+    const report = {
+      timestamp: new Date().toISOString(),
+      totalSamples: this.swipeHistory.length,
+      performanceMetrics: Object.fromEntries(this.performanceMetrics),
+      learningInsights: this.getLearningInsights(),
+      optimizationRules: Object.fromEntries(this.optimizationRules),
+      patternRecognition: Object.fromEntries(this.patternRecognition),
+      adaptiveLearning: this.adaptiveLearning,
+      learningRate: this.learningRate,
+      confidenceThreshold: this.confidenceThreshold,
+      cacheSize: this.cache.size,
+      cacheHitRate: this.calculateCacheHitRate()
+    };
+
+    return report;
   }
 
   // Cache-Hit-Rate berechnen
