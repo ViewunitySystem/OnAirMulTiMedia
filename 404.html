@@ -1,148 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Seite nicht gefunden | OnAirMulTiMedia</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        .container {
-            max-width: 600px;
-            padding: 2rem;
-        }
-        .error-code {
-            font-size: 8rem;
-            font-weight: 900;
-            opacity: 0.8;
-            margin-bottom: 1rem;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-        p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-        .actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .btn {
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-        .btn:hover {
-            background: rgba(255,255,255,0.3);
-            border-color: rgba(255,255,255,0.5);
-            transform: translateY(-2px);
-        }
-        .btn-primary {
-            background: rgba(255,255,255,0.9);
-            color: #667eea;
-        }
-        .btn-primary:hover {
-            background: white;
-        }
-        .suggestions {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(255,255,255,0.2);
-        }
-        .suggestions h3 {
-            margin-bottom: 1rem;
-            opacity: 0.8;
-        }
-        .suggestions ul {
-            list-style: none;
-            text-align: left;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .suggestions li {
-            padding: 0.5rem 0;
-            opacity: 0.8;
-        }
-        .suggestions a {
-            color: white;
-            text-decoration: underline;
-        }
-        .suggestions a:hover {
-            opacity: 0.7;
-        }
-        @media (max-width: 600px) {
-            .error-code { font-size: 6rem; }
-            h1 { font-size: 1.5rem; }
-            .actions { flex-direction: column; align-items: center; }
-            .btn { width: 100%; max-width: 300px; }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seite nicht gefunden – OnAirMulTiMedia</title>
+  <meta name="robots" content="noindex" />
+  <style>
+    :root{--bg:#0b0f17;--fg:#eaf0ff;--muted:#a6b0c9;--accent:#7dd3fc}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto}
+    main{min-height:100%;display:grid;place-items:center;padding:2rem}
+    .card{max-width:720px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:2rem;text-align:center}
+    h1{margin:0 0 .5rem;font-size:clamp(28px,4vw,48px)}p{margin:.2rem 0;color:var(--muted)}
+    a.btn{display:inline-block;margin-top:1rem;padding:.8rem 1.1rem;border-radius:14px;background:linear-gradient(135deg,var(--accent),#f472b6);color:#001020;font-weight:700;text-decoration:none}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="error-code">404</div>
-        <h1>Seite nicht gefunden</h1>
-        <p>Die angeforderte Seite existiert nicht oder wurde verschoben.</p>
-        
-        <div class="actions">
-            <a href="/" class="btn btn-primary">🏠 Zur Startseite</a>
-            <a href="/info.html" class="btn">📊 Info Dashboard</a>
-            <a href="javascript:history.back()" class="btn">⬅️ Zurück</a>
-        </div>
-        
-        <div class="suggestions">
-            <h3>Möglicherweise suchen Sie nach:</h3>
-            <ul>
-                <li><a href="/info.html">📊 Info & Monitoring Dashboard</a></li>
-                <li><a href="/blueprints.html">🔧 Blueprints & Module</a></li>
-                <li><a href="/regulatory.html">⚖️ Regulatory & Compliance</a></li>
-                <li><a href="/dashboard.html">📈 Telemetry Dashboard</a></li>
-                <li><a href="/test.html">🧪 Test Suite</a></li>
-            </ul>
-        </div>
-    </div>
-
-    <script>
-        // Audit-Logging für 404-Events
-        try {
-            const auditEvent = {
-                event: '404_ERROR',
-                url: window.location.href,
-                referrer: document.referrer,
-                userAgent: navigator.userAgent,
-                timestamp: new Date().toISOString(),
-                session: sessionStorage.getItem('oamtm:session') || 'anonymous'
-            };
-            
-            console.log('AUDIT 404:', JSON.stringify(auditEvent));
-            
-            // Optional: an Audit-Service senden
-            if (navigator.sendBeacon) {
-                navigator.sendBeacon('/api/audit', JSON.stringify(auditEvent));
-            }
-        } catch (e) {
-            console.warn('Audit logging failed:', e);
-        }
-    </script>
+  <main>
+    <section class="card" data-404>
+      <h1>404 – Seite nicht gefunden</h1>
+      <p>Die angeforderte Adresse existiert nicht oder ist umgezogen.</p>
+      <a class="btn" href="./">Zur Startseite</a>
+      <p style="margin-top:1rem">Fehlercode: <code>404</code></p>
+    </section>
+  </main>
 </body>
 </html>

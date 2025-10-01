@@ -15,6 +15,15 @@
 2. **info.html** - Frame-Busting entfernt, Iframe-kompatibel
 3. **Repository-Struktur** - Klare Branch-Organisation
 4. **GitHub Actions** - Automatisches Deployment
+5. **404/Offline-Handling** - Robuste Fallback-Mechanismen
+
+### 🛡️ 404/Offline-Fallback System:
+
+- **404.html** - Schöne, barrierearme 404-Seite für GitHub Pages
+- **offline.html** - App-Shell Fallback für Offline-Szenarien
+- **Service Worker** - Intelligente 404/Offline-Behandlung
+- **Playwright-Tests** - Automatische 404/Offline-Validierung
+- **Firebase-Integration** - Optimierte Caching-Header
 
 ## 🎯 Live-URLs (nach Deployment):
 

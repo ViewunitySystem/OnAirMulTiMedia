@@ -1383,6 +1383,11 @@
     // Enhanced SwipeCommsDock initialisieren
     window.addEventListener('load', () => {
       window.swipeCommsDock = new EnhancedSwipeCommsDock();
+      
+      // Service Worker registrieren für 404/Offline-Fallback
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/public/sw.js').catch(()=>{});
+      }
     });
   </script>
 

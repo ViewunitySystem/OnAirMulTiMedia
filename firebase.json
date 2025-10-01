@@ -53,6 +53,33 @@
               "value": "public, max-age=3600"
             }
           ]
+        },
+        {
+          "source": "public/sw.js",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "404.html",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=300"
+            }
+          ]
+        },
+        {
+          "source": "offline.html",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=300"
+            }
+          ]
         }
       ],
       "rewrites": [
