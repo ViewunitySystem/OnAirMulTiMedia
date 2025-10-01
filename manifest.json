@@ -1,23 +1,28 @@
 {
-  "version": "v1.0.0-audit",
-  "branch": "mainzero",
-  "author": "DD5BE",
-  "ethics": "Communication is Peace",
-  "philosophy": {
-    "mainzero": "mainzero ist nicht nur ein Branch – es ist der Ursprung auditierter Wahrheit.",
-    "aether": "Der Aether vergisst nicht. OAMTM archiviert Stimmen – auditierbar, wiederherstellbar, unvergessen."
-  },
+  "version": "2025.10.01",
   "modules": [
-    "GlobalMeetingClock",
+    "AuditQR",
+    "CanvasAuditOverlay",
     "CanvasSwipe",
+    "ConsentLedger",
+    "DiscoveryEngine",
+    "EdgeRelay",
+    "GeoFenceGate",
+    "GlobalMeetingClock",
+    "KeyVaultBridge",
+    "LicensePulse",
+    "NEMO_PATHFINDER",
+    "NomadicMap",
+    "OutageSimulator",
+    "QRMeetingGenerator",
+    "RegulatorySync",
+    "RFPolicyWatch",
     "RFValidationEngine",
-    "NEMO_PATHFINDER"
+    "SignalMirror",
+    "TelemetryLens",
+    "TimeSyncGuardian",
+    "VoiceEcho",
+    "WebRTCSwitchboard"
   ],
-  "regulatory": ["RDI NL", "BNetzA"],
-  "exports": {
-    "keys_public": "/api/keys/public",
-    "audit_export": "/api/audit/export?format=json|md|pdf",
-    "license_qr": "/api/license/qr.png?module=<MODULE>&license=<ID>"
-  }
+  "generatedAt": "2025-10-01T20:04:50.424Z"
 }
-

@@ -31,7 +31,13 @@
     "clean": "rm -rf dist node_modules/.vite .selfheal-*.json jscpd-report selfheal-reports",
     "setup": "npm install && npx playwright install --with-deps",
     "ci": "npm run lint && npm run test && npm run selfheal",
-    "ci:full": "npm run ci && npm run duplication && npm run security"
+    "ci:full": "npm run ci && npm run duplication && npm run security",
+    "discovery:scan": "node tools/discovery/scan.js --root modules --out audit/events/discovery.jsonl",
+    "manifest:build": "node tools/manifest/build.js > manifest.json",
+    "manifest:validate": "node tools/manifest/validate.js manifest.json",
+    "manifest:sign": "node tools/manifest/sign.js manifest.json > manifest.sig",
+    "license:pulse": "node modules/LicensePulse/pulse.js --export audit/exports/license-$(date +%F).json",
+    "recovery:beacon": "node tools/recovery/beacon.js"
   },
   "keywords": [
     "self-healing",

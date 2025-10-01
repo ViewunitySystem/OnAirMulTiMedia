@@ -1,0 +1,73 @@
+name: OAMTM Blueprints CI
+
+on:
+  push:
+    branches: [ gh-pages, mainzero, main ]
+  pull_request:
+    branches: [ gh-pages, mainzero, main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: oamtm-blueprints-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Discovery Scan
+        run: npm run discovery:scan
+
+      - name: Build Manifest
+        run: npm run manifest:build
+
+      - name: Validate Manifest
+        run: npm run manifest:validate
+
+      - name: Sign Manifest
+        run: npm run manifest:sign
+
+      - name: License Pulse
+        run: npm run license:pulse
+
+      - name: Recovery Beacon
+        run: npm run recovery:beacon success
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: oamtm-blueprints
+          path: |
+            manifest.json
+            manifest.sig
+            audit/events/
+            audit/exports/
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
