@@ -246,6 +246,74 @@
             transform: scale(1.1);
         }
         
+        /* App Inlay Modal */
+        .app-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .app-modal.active {
+            display: flex;
+        }
+        
+        .app-modal-content {
+            position: relative;
+            width: 95%;
+            height: 90vh;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            border: 2px solid rgba(0, 255, 136, 0.3);
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 255, 136, 0.4);
+        }
+        
+        .app-modal-iframe {
+            width: 100%;
+            height: calc(100% - 50px);
+            border: none;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        .app-modal-header {
+            background: rgba(0, 255, 136, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+        }
+        
+        .app-modal-title {
+            color: #00ff88;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .app-close-btn {
+            background: #ff4444;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .app-close-btn:hover {
+            background: #ff0000;
+            transform: scale(1.05);
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .nav-grid {
@@ -511,6 +579,23 @@
         </div>
     </div>
     
+    <!-- App Inlay Modal -->
+    <div class="app-modal" id="appModal">
+        <div class="app-modal-content">
+            <div class="app-modal-header">
+                <div class="app-modal-title" id="appModalTitle">📊 Info Dashboard</div>
+                <button class="app-close-btn" onclick="closeAppModal()">✕ Schließen</button>
+            </div>
+            <iframe 
+                id="app-modal-iframe"
+                class="app-modal-iframe"
+                src=""
+                title="App Content"
+                frameborder="0">
+            </iframe>
+        </div>
+    </div>
+    
     <script>
         let isMuted = true;
         let isPaused = false;
@@ -557,8 +642,44 @@
         
         // Navigation
         function openPage(url) {
-            window.open(url, '_blank');
+            // info.html im Inlay-Modal öffnen
+            if (url === 'info.html') {
+                openAppModal(url, '📊 Info Dashboard');
+            } else {
+                // Andere Seiten in neuem Tab
+                window.open(url, '_blank');
+            }
         }
+        
+        function openAppModal(url, title) {
+            const modal = document.getElementById('appModal');
+            const iframe = document.getElementById('app-modal-iframe');
+            const titleEl = document.getElementById('appModalTitle');
+            
+            titleEl.textContent = title;
+            iframe.src = url;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeAppModal() {
+            const modal = document.getElementById('appModal');
+            const iframe = document.getElementById('app-modal-iframe');
+            
+            modal.classList.remove('active');
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // ESC-Taste zum Schließen des App-Modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const appModal = document.getElementById('appModal');
+                if (appModal.classList.contains('active')) {
+                    closeAppModal();
+                }
+            }
+        });
         
         // Keyboard Controls
         document.addEventListener('keydown', (e) => {
