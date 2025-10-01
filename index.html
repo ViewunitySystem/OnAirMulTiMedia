@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OnAirMulTiMedia - Amateur Radio SDR Platform</title>
   
-  <!-- FIX: Iframe-Einbettung statt Redirect -->
-  <!-- KEINE Meta-Refresh oder JS-Redirects! -->
+  <!-- WICHTIG: KEINE Meta-Refresh oder JS-Redirects mehr! -->
   
   <meta name="description" content="Open-source Software-Defined Radio platform with regulatory compliance, audit trails, and modular architecture">
   <meta name="author" content="Raymond Demitrio Dr. Tel">
@@ -35,7 +34,7 @@
       flex-direction: column;
     }
     
-    /* Ladeanzeige während iframe lädt */
+    /* Optional: Ladeanzeige während iframe lädt */
     #loading {
       position: absolute;
       top: 50%;
@@ -90,13 +89,13 @@
 </head>
 <body>
   <div id="app">
-    <!-- Ladeanzeige -->
+    <!-- Ladeanzeige (optional) -->
     <div id="loading">
       <div class="spinner"></div>
       <p>Loading Info Dashboard...</p>
     </div>
     
-    <!-- HAUPT-IFRAME für Info Dashboard -->
+    <!-- Haupt-Iframe für Info Dashboard -->
     <iframe
       id="inlay"
       name="inlay"
@@ -117,7 +116,7 @@
   </noscript>
 
   <script>
-    // Iframe-Logik ohne Redirect
+    // Optional: Query-Parameter an die Info-Seite durchreichen
     const iframe = document.getElementById('inlay');
     const loading = document.getElementById('loading');
     const params = new URLSearchParams(location.search).toString();
@@ -148,6 +147,7 @@
     
     // ROBUSTE ANTI-REDIRECT-LOGIK
     if (window.history && window.history.replaceState) {
+      // Clean URL if it came from a redirect
       const cleanUrl = window.location.pathname;
       if (window.location.search.includes('redirect') || 
           window.location.search.includes('redirecting') ||
@@ -168,3 +168,4 @@
   </script>
 </body>
 </html>
+
