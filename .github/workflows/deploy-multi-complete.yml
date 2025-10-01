@@ -312,7 +312,7 @@ jobs:
           - branch: main
             site: onairmultimedia-dev
             target: development
-    if: ${{ github.ref == 'refs/heads/' + matrix.branch }}
+    if: ${{ github.ref == format('refs/heads/{0}', matrix.branch) }}
     steps:
       - name: 📋 Checkout Repository
         uses: actions/checkout@v4
@@ -326,10 +326,8 @@ jobs:
         run: npm install -g firebase-tools
 
       - name: 🔑 Firebase Authentication
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          if [ -z "$FIREBASE_TOKEN" ]; then
+          if [ -z "${{ secrets.FIREBASE_TOKEN }}" ]; then
             echo "❌ FIREBASE_TOKEN not set in repository secrets"
             echo "Please set FIREBASE_TOKEN in GitHub Secrets"
             exit 1
@@ -344,11 +342,11 @@ jobs:
           echo "target=${{ matrix.target }}" >> $GITHUB_OUTPUT
 
       - name: 🚀 Deploy to Firebase Hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           echo "🚀 Deploying to Firebase ${{ steps.site-select.outputs.target }}..."
           firebase deploy --only hosting:${{ steps.site-select.outputs.site }} --non-interactive
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           
           echo "✅ Firebase ${{ steps.site-select.outputs.target }} deployment completed!"
           echo "🌐 URL: https://${{ steps.site-select.outputs.site }}.web.app/"
@@ -378,10 +376,8 @@ jobs:
         run: npm install -g firebase-tools
 
       - name: 🔍 Create Preview Channel
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          if [ -z "$FIREBASE_TOKEN" ]; then
+          if [ -z "${{ secrets.FIREBASE_TOKEN }}" ]; then
             echo "❌ FIREBASE_TOKEN not set - skipping preview channel"
             exit 0
           fi
@@ -403,6 +399,8 @@ jobs:
           This preview will expire in 7 days.
           
           **Status**: ✅ Ready for review"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
   # 📊 DEPLOYMENT SUMMARY
   deployment-summary:

@@ -20,12 +20,15 @@ concurrency:
 jobs:
   build-test-heal:
     runs-on: ubuntu-latest
+    env:
+      # Manifest-Felder als env statt nicht-existierendem manifest-Context
+      APP_NAME: OnAirMulTiMedia
+      PAGES_SOURCE: gh-pages
     outputs:
       selfheal-outcome: ${{ steps.selfheal.outputs.selfheal-outcome }}
       discovery-outcome: ${{ steps.discovery.outputs.discovery-outcome }}
       audit-outcome: ${{ steps.audit.outputs.audit-outcome }}
       ethics-outcome: ${{ steps.ethics.outputs.ethics-outcome }}
-      manifest-outcome: ${{ steps.manifest.outputs.manifest-outcome }}
       liveapi-outcome: ${{ steps.liveapi.outputs.liveapi-outcome }}
     steps:
       - uses: actions/checkout@v4
@@ -138,15 +141,18 @@ jobs:
             echo "::error::FIREBASE_TOKEN secret is not set"
             exit 1
           fi
-          echo "FIREBASE_TOKEN=${{ secrets.FIREBASE_TOKEN }}" >> $GITHUB_ENV
           echo "Firebase token is set and valid"
       - name: Deploy to Firebase Hosting (prod site)
         run: |
           firebase use tel1nl
           firebase deploy --only hosting:onairmultimedia --non-interactive
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       - name: Deploy to Firebase Hosting (staging site)
         run: |
           firebase deploy --only hosting:onairmultimedia-staging --non-interactive
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 
   deploy-firebase-preview:
     needs: build-test-heal
@@ -164,13 +170,14 @@ jobs:
             echo "::error::FIREBASE_TOKEN secret is not set"
             exit 1
           fi
-          echo "FIREBASE_TOKEN=${{ secrets.FIREBASE_TOKEN }}" >> $GITHUB_ENV
           echo "Firebase token is set and valid"
       - name: PR Preview Channel
         run: |
           CH="pr-${{ github.event.number }}"
           firebase hosting:channel:deploy $CH --site onairmultimedia --expires 7d
           echo "Preview URL: https://$CH---onairmultimedia.web.app"
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       - name: Comment PR with Preview URL
         uses: actions/github-script@v7
         with:

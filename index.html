@@ -192,7 +192,7 @@
 
     /* Background video */
     .bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
-    .bg video{position:absolute;min-width:100%;min-height:100%;top:50%;left:50%;transform:translate(-50%,-50%);filter:brightness(.4) saturate(1.1)}
+    .bg video, .bg iframe{position:absolute;min-width:100%;min-height:100%;top:50%;left:50%;transform:translate(-50%,-50%);filter:brightness(.4) saturate(1.1)}
     .bg .fallback{position:absolute;inset:0;background:radial-gradient(1000px 600px at 10% 10%, #1f3a8a, transparent 60%),radial-gradient(1000px 600px at 90% 90%, #831843, transparent 60%),linear-gradient(#0b0f17,#0b0f17)}
 
     header{position:sticky;top:0;backdrop-filter:saturate(180%) blur(8px);background:linear-gradient(to bottom, var(--glass-strong), transparent);z-index:10}
@@ -234,7 +234,7 @@
       .cards{grid-template-columns:1fr}
     }
     @media (prefers-reduced-motion: reduce){
-      .bg video{display:none}
+      .bg video, .bg iframe{display:none}
     }
   </style>
 </head>
@@ -253,11 +253,17 @@
   <!-- Background layer -->
   <div class="bg" aria-hidden="true">
     <div class="fallback"></div>
-    <!-- Video-Hintergrund deaktiviert bis Assets verfügbar sind -->
-    <!-- <video id="bgVideo" autoplay muted playsinline loop poster="assets/cover.jpg">
-      <source src="assets/hero.mp4" type="video/mp4" />
-      Ihr Browser unterstützt das Hintergrundvideo nicht.
-    </video> -->
+    <!-- YouTube-Video als Hintergrund -->
+    <iframe 
+      id="bgVideo" 
+      src="https://www.youtube.com/embed/ryuS7tFFn2g?autoplay=1&mute=1&loop=1&playlist=ryuS7tFFn2g&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&start=0" 
+      title="Aurora Background Video" 
+      frameborder="0" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      referrerpolicy="strict-origin-when-cross-origin" 
+      allowfullscreen
+      style="position: absolute; min-width: 100%; min-height: 100%; top: 50%; left: 50%; transform: translate(-50%, -50%); filter: brightness(0.4) saturate(1.1); z-index: -1;">
+    </iframe>
   </div>
 
   <header>
@@ -371,15 +377,19 @@
       if (f && f.tagName === 'IFRAME') { f.src = f.src.split('#')[0].split('?')[0] + '?t=' + Date.now(); }
     });
 
-    // Background-Video Stabilität: Video-Element temporär deaktiviert
-    // (function(){
-    //   const v = document.getElementById('bgVideo');
-    //   if(!v) return;
-    //   const play = v.play?.();
-    //   if (play && typeof play.then === 'function'){
-    //     play.catch(()=>{ v.removeAttribute('autoplay'); v.pause(); });
-    //   }
-    // })();
+    // Background-Video Stabilität: YouTube iframe-Video
+    (function(){
+      const v = document.getElementById('bgVideo');
+      if(!v) return;
+      
+      // YouTube iframe lädt asynchron - keine Play/Pause-Kontrolle nötig
+      console.log('YouTube Background Video geladen');
+      
+      // Fallback für reduzierte Bewegung
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        v.style.display = 'none';
+      }
+    })();
 
     // Start/Exit Animation System
     class AppAnimation {
