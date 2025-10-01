@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blueprints – Module & Checklisten</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
+    header { background:#121a34; padding:16px; position:sticky; top:0; z-index:10; display:flex; gap:12px; align-items:center; }
+    main { padding:16px; display:grid; gap:16px; max-width:1100px; margin:0 auto; }
+    .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:12px; }
+    textarea, input, button { width:100%; padding:8px; border-radius:8px; border:1px solid #374151; background:#0b1020; color:#e5e7eb; }
+    button { cursor:pointer; }
+    table { width:100%; border-collapse: collapse; }
+    th, td { border-bottom:1px solid #1f2a52; padding:6px; text-align:left; }
+    .muted { opacity:.8; font-size:12px; }
+    .ok { color:#10b981; }
+    .bad { color:#ef4444; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
+    a { color:#93c5fd; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>Blueprints & Checklisten</strong>
+    <a href="/schemas/blueprint.schema.json" target="_blank">Schema</a>
+    <a href="/client.html" target="_blank">Test-Client</a>
+    <a href="/overlay.html" target="_blank">Overlay</a>
+    <a href="/info.html" target="_blank">Info</a>
+  </header>
+
+  <main>
+    <section class="card">
+      <h3>Module</h3>
+      <table id="mods"><thead><tr><th>ID</th><th>Beschreibung</th><th>Stand</th></tr></thead><tbody></tbody></table>
+    </section>
+
+    <section class="card">
+      <h3>Blueprint registrieren</h3>
+      <div class="muted">JSON per Schema einreichen. Beispiel: <a href="/blueprints/global_meeting_clock.json" target="_blank">GlobalMeetingClock</a></div>
+      <textarea id="bp" rows="12"></textarea>
+      <button id="reg">Registrieren</button>
+      <div id="regMsg" class="muted"></div>
+    </section>
+
+    <section class="card" id="checklistSec" style="display:none;">
+      <h3>Audit-Checklist</h3>
+      <div class="muted">Für Modul: <span id="curMod"></span></div>
+      <div id="items"></div>
+    </section>
+  </main>
+
+  <script>
+    async function loadMods(){
+      const r = await fetch('/api/modules'); if (!r.ok) return;
+      const rows = await r.json();
+      const tb = document.querySelector('#mods tbody'); tb.innerHTML='';
+      rows.forEach(m=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><a href="#" data-id="${m.id}">${m.id}</a></td><td>${m.description||''}</td><td>${new Date(m.updated_at||m.created_at).toLocaleString()}</td>`;
+        tb.appendChild(tr);
+      });
+      tb.querySelectorAll('a').forEach(a=> a.onclick = (e)=> { e.preventDefault(); openChecklist(a.getAttribute('data-id')); } );
+    }
+
+    async function openChecklist(id){
+      const r = await fetch(`/api/modules/${id}/checklist`); if (!r.ok) return;
+      const list = await r.json();
+      document.getElementById('curMod').textContent = id;
+      const items = document.getElementById('items'); items.innerHTML='';
+      list.forEach(c=>{
+        const div = document.createElement('div');
+        div.style.marginBottom = '8px';
+        div.innerHTML = `<label><input type="checkbox" ${c.status? 'checked':''} data-id="${c.id}"> ${c.item}</label>`;
+        const cb = div.querySelector('input');
+        cb.onchange = async ()=>{
+          await fetch(`/api/modules/${id}/checklist`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: c.id, status: cb.checked?1:0 }) });
+        };
+        items.appendChild(div);
+      });
+      document.getElementById('checklistSec').style.display='block';
+    }
+
+    document.getElementById('reg').onclick = async ()=>{
+      const txt = document.getElementById('bp').value;
+      try {
+        const json = JSON.parse(txt);
+        const r = await fetch('/api/modules/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(json) });
+        const out = document.getElementById('regMsg');
+        if (r.ok){ out.textContent = 'Registriert.'; loadMods(); }
+        else { const j = await r.json().catch(()=>({})); out.textContent = 'Fehler: '+(j.error||''); }
+      } catch(e){ document.getElementById('regMsg').textContent = 'Ungültiges JSON'; }
+    };
+
+    loadMods();
+  </script>
+</body>
+</html>
+

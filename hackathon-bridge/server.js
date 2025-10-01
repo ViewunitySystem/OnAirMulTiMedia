@@ -10,6 +10,9 @@ import { Server as IOServer } from 'socket.io';
 import Database from 'better-sqlite3';
 import { fileURLToPath } from 'url';
 import { nanoid } from 'nanoid';
+import Ajv from 'ajv';
+import PDFDocument from 'pdfkit';
+import QRCode from 'qrcode';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -104,6 +107,30 @@ CREATE TABLE IF NOT EXISTS user_contribs (
   created_at INTEGER,
   approved INTEGER DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS modules (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  blueprint_json TEXT NOT NULL,
+  regulatory_json TEXT,
+  created_at INTEGER,
+  updated_at INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS module_checklists (
+  id TEXT PRIMARY KEY,
+  module_id TEXT NOT NULL,
+  item TEXT NOT NULL,
+  status INTEGER DEFAULT 0,
+  updated_at INTEGER
+);
+
+CREATE TABLE IF NOT EXISTS open_core_manifest (
+  version TEXT PRIMARY KEY,
+  markdown TEXT NOT NULL,
+  created_at INTEGER
+);
 `);
 
 // --- Express app ---
@@ -117,12 +144,7 @@ app.use(morgan('dev'));
 app.use(express.static(PUBLIC_DIR));
 app.use('/uploads', express.static(UPLOAD_DIR));
 
-// Basic security headers for iframes from known hosts
-app.use((req,res,next)=>{
-  res.setHeader('Cross-Origin-Opener-Policy','same-origin');
-  res.setHeader('Cross-Origin-Embedder-Policy','require-corp');
-  next();
-});
+// COOP/COEP not set to allow 3rd-party embeds like YouTube in inlay
 
 // Multer for file uploads
 const storage = multer.diskStorage({
@@ -304,6 +326,187 @@ app.post('/api/contribs/:id/approve', (req,res)=>{
   res.json({ ok: true });
 });
 
+// ---------------- Blueprint Validation ----------------
+const schemaPath = path.join(PUBLIC_DIR, 'schemas', 'blueprint.schema.json');
+const ensureDir = (p)=> {try{fs.mkdirSync(p,{recursive:true})}catch(e){}};
+ensureDir(path.dirname(schemaPath));
+
+let blueprintSchema = {};
+let validateBlueprint = ()=>true;
+
+try {
+  if (fs.existsSync(schemaPath)) {
+    blueprintSchema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
+    const ajv = new Ajv({ allErrors: true, strict: false });
+    validateBlueprint = ajv.compile(blueprintSchema);
+  }
+} catch(e){ console.warn('Blueprint schema not loaded:', e.message); }
+
+const insertModule = db.prepare('INSERT INTO modules (id, name, description, blueprint_json, regulatory_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?);');
+const updateModule = db.prepare('UPDATE modules SET name=?, description=?, blueprint_json=?, regulatory_json=?, updated_at=? WHERE id=?;');
+const getModule = db.prepare('SELECT * FROM modules WHERE id = ?;');
+const listModulesStmt = db.prepare('SELECT id, name, description, created_at, updated_at FROM modules ORDER BY created_at DESC;');
+const insertChecklist = db.prepare('INSERT INTO module_checklists (id, module_id, item, status, updated_at) VALUES (?, ?, ?, ?, ?);');
+const listChecklist = db.prepare('SELECT id, item, status, updated_at FROM module_checklists WHERE module_id = ? ORDER BY updated_at DESC;');
+const updateChecklistItem = db.prepare('UPDATE module_checklists SET status = ?, updated_at = ? WHERE id = ? AND module_id = ?;');
+
+function seedChecklist(module_id){
+  const defaults = ['Modul initialisiert korrekt','Lizenzprüfung erfolgt lokal','Signalpfad dokumentiert','Recovery bei Fehler getestet'];
+  for (const item of defaults){
+    insertChecklist.run(nanoid(), module_id, item, 0, Date.now());
+  }
+}
+
+app.get('/api/schema/blueprint', (req,res)=> res.json(blueprintSchema));
+
+app.post('/api/modules/register', (req,res)=>{
+  const bp = req.body;
+  const valid = validateBlueprint(bp);
+  if (!valid) return res.status(400).json({ error: 'invalid_blueprint', details: validateBlueprint.errors });
+  const id = bp.module;
+  const name = bp.module;
+  const desc = bp.description || '';
+  const now = Date.now();
+  const reg = JSON.stringify(bp.regulatory || {});
+  const existing = getModule.get(id);
+  if (existing) {
+    updateModule.run(name, desc, JSON.stringify(bp), reg, now, id);
+  } else {
+    insertModule.run(id, name, desc, JSON.stringify(bp), reg, now, now);
+    seedChecklist(id);
+  }
+  audit({ type:'module_register', payload:{ id, name } });
+  res.json({ id, ok: true });
+});
+
+app.get('/api/modules', (req,res)=>{ res.json(listModulesStmt.all()); });
+app.get('/api/modules/:id', (req,res)=>{
+  const row = getModule.get(req.params.id);
+  if (!row) return res.status(404).json({ error:'not_found' });
+  res.json({ ...row, blueprint_json: JSON.parse(row.blueprint_json||'{}'), regulatory_json: JSON.parse(row.regulatory_json||'{}') });
+});
+app.get('/api/modules/:id/checklist', (req,res)=>{ res.json(listChecklist.all(req.params.id)); });
+app.post('/api/modules/:id/checklist', (req,res)=>{
+  const { id, status } = req.body || {};
+  if (!id || typeof status !== 'number') return res.status(400).json({ error:'id+status required' });
+  updateChecklistItem.run(status ? 1 : 0, Date.now(), id, req.params.id);
+  audit({ type:'checklist_update', payload:{ module_id: req.params.id, item_id: id, status: !!status } });
+  res.json({ ok:true });
+});
+
+// ---------------- Audit Export (JSON, Markdown, PDF+QR) ----------------
+function fetchEvents({ type=null, room_id=null, session_id=null, limit=1000 }){
+  const clauses=[]; const params={};
+  if (type) { clauses.push('type = @type'); params.type = type; }
+  if (room_id) { clauses.push('room_id = @room_id'); params.room_id = room_id; }
+  if (session_id) { clauses.push('session_id = @session_id'); params.session_id = session_id; }
+  const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+  const stmt = db.prepare(`SELECT * FROM events ${where} ORDER BY ts ASC LIMIT @limit;`);
+  const rows = stmt.all({ ...params, limit });
+  return rows.map(r => ({ ...r, payload: JSON.parse(r.payload || '{}') }));
+}
+
+function toMarkdown(title, events){
+  const lines = [`# ${title}`, '', `Export: ${new Date().toISOString()}`, '', '| time | level | type | session | room | payload |', '|---|---|---|---|---|---|'];
+  for (const e of events){
+    lines.push(`| ${new Date(e.ts).toISOString()} | ${e.level} | ${e.type} | ${e.session_id||''} | ${e.room_id||''} | \`${JSON.stringify(e.payload)}\` |`);
+  }
+  return lines.join('\n');
+}
+
+async function generatePDF(title, events, jsonLink){
+  const outDir = path.join(DATA_DIR, 'exports'); ensureDir(outDir);
+  const file = path.join(outDir, `export-${nanoid()}.pdf`);
+  return new Promise(async (resolve, reject)=>{
+    try {
+      const doc = new PDFDocument({ size: 'A4', margin: 40 });
+      const stream = fs.createWriteStream(file);
+      doc.pipe(stream);
+
+      doc.fontSize(18).text(title, { underline: true });
+      doc.moveDown(0.5);
+      doc.fontSize(10).fillColor('#666').text(`Export: ${new Date().toISOString()}`);
+      doc.moveDown(0.5);
+
+      if (jsonLink){
+        const qrDataUrl = await QRCode.toDataURL(jsonLink, { margin: 1, scale: 4 });
+        const base64 = qrDataUrl.split(',')[1];
+        const buf = Buffer.from(base64, 'base64');
+        doc.image(buf, { fit: [120,120], align: 'left' });
+        doc.text('JSON Export', 170, 100);
+        doc.moveDown(2);
+      }
+
+      doc.fillColor('black');
+      doc.fontSize(12).text('Timeline', { underline: true });
+      doc.moveDown(0.5);
+      doc.fontSize(9);
+      for (const e of events){
+        doc.text(`${new Date(e.ts).toISOString()}  [${e.level}]  ${e.type}`);
+        if (e.session_id || e.room_id) doc.fillColor('#555').text(`session:${e.session_id||'-'}  room:${e.room_id||'-'}`);
+        doc.fillColor('#333').text(JSON.stringify(e.payload));
+        doc.fillColor('#999').moveDown(0.2).text('—');
+        doc.fillColor('black');
+      }
+
+      doc.end();
+      stream.on('finish', ()=> resolve(file));
+      stream.on('error', reject);
+    } catch (err){ reject(err); }
+  });
+}
+
+app.get('/api/audit/export', async (req,res)=>{
+  try {
+    const { format = 'json', type = null, room_id = null, session_id = null, title = 'Audit Export' } = req.query;
+    const limit = Math.min(Number(req.query.limit || 1000), 5000);
+    const events = fetchEvents({ type, room_id, session_id, limit });
+    if (format === 'json') return res.json({ title, generated_at: Date.now(), events });
+    if (format === 'md')  return res.type('text/markdown').send(toMarkdown(title, events));
+    if (format === 'pdf'){
+      const jsonURL = `${req.protocol}://${req.get('host')}${req.path}?${new URLSearchParams({ format: 'json', type: type||'', room_id: room_id||'', session_id: session_id||'', limit: String(limit), title })}`;
+      const file = await generatePDF(String(title), events, jsonURL);
+      return res.download(file, path.basename(file));
+    }
+    return res.status(400).json({ error:'unsupported format' });
+  } catch (e){ res.status(500).json({ error: e.message }); }
+});
+
+// ---------------- Open-Core Manifest ----------------
+const insertManifest = db.prepare('INSERT OR REPLACE INTO open_core_manifest (version, markdown, created_at) VALUES (?, ?, ?);');
+const getManifest = db.prepare('SELECT * FROM open_core_manifest ORDER BY created_at DESC LIMIT 1;');
+const listManifest = db.prepare('SELECT version, created_at FROM open_core_manifest ORDER BY created_at DESC;');
+const readManifest = db.prepare('SELECT * FROM open_core_manifest WHERE version = ?;');
+
+(function seedManifest(){
+  const row = getManifest.get();
+  if (!row){
+    const md = `# Open-Core Manifest für auditierbare Kommunikation\n\n**Kernprinzipien**: Modularität • Auditierbarkeit • Legalität • Community-Validierung\n\n## §1 Architektur\n- Bridge, Overlay, Info-Board, Blueprints\n\n## §2 Audit-Trail\n- Ereignisse mit Zeitstempel, Export JSON/MD/PDF+QR\n\n## §3 Lizenzierung\n- Modul-bezogene Lizenzfelder im Blueprint\n\n## §4 Regulatorische Pfade\n- Referenzen je Modul\n\n## §5 UI als Kommunikationsraum\n- Inlay/Embeds, Gruppenräume, Synchronisation`;
+    insertManifest.run('v1.0.0-audit', md, Date.now());
+  }
+})();
+
+app.get('/api/manifest', (req,res)=>{
+  const row = getManifest.get();
+  if (!row) return res.status(404).json({ error:'not_found' });
+  res.json(row);
+});
+app.get('/api/manifest/versions', (req,res)=>{ res.json(listManifest.all()); });
+app.get('/api/manifest/:version', (req,res)=>{
+  const row = readManifest.get(req.params.version);
+  if (!row) return res.status(404).json({ error:'not_found' });
+  res.json(row);
+});
+app.post('/api/manifest', (req,res)=>{
+  const key = req.headers['x-admin-key'] || '';
+  if (process.env.ADMIN_KEY && key !== process.env.ADMIN_KEY) return res.status(403).json({ error: 'forbidden' });
+  const { version, markdown } = req.body || {};
+  if (!version || !markdown) return res.status(400).json({ error:'version+markdown required' });
+  insertManifest.run(version, markdown, Date.now());
+  audit({ type:'manifest_update', payload:{ version } });
+  res.json({ ok: true });
+});
+
 // --- HTTP + Socket.IO ---
 const server = http.createServer(app);
 const io = new IOServer(server, {
@@ -432,4 +635,8 @@ server.listen(PORT, () => {
   console.log(`Overlay UI: http://localhost:${PORT}/overlay.html`);
   console.log(`Test Client: http://localhost:${PORT}/client.html`);
   console.log(`Info Dashboard: http://localhost:${PORT}/info.html`);
+  console.log(`Blueprints & Checklisten: http://localhost:${PORT}/blueprints.html`);
+  console.log(`Manifest (versioniert): http://localhost:${PORT}/manifest.html`);
+  console.log(`Regulatory: http://localhost:${PORT}/regulatory.html`);
+  console.log(`Audit Export: http://localhost:${PORT}/audit-export.html`);
 });
