@@ -1,33 +1,49 @@
 {
-  "name": "oamtm-nemo-pathfinder",
+  "name": "onairmultimedia-selfheal",
   "version": "1.0.0",
-  "description": "NEMO Pathfinder - Zeit-/Pfad-Kompass für Nomaden | DD5BE",
-  "main": "server-nemo.js",
+  "description": "Self-Healing & Auto-Maintenance System for OnAirMulTiMedia",
+  "main": "scripts/selfheal.ts",
   "scripts": {
-    "start": "node server-nemo.js",
-    "dev": "node server-nemo.js",
-    "test": "echo \"✅ Tests ready for CI/CD\"",
-    "ci:validate": "node -e \"const fs=require('fs');const glob=require('glob')||{sync:p=>fs.readdirSync('blueprints').filter(f=>f.endsWith('.json')).map(f=>'blueprints/'+f)};glob.sync('blueprints/*.json').forEach(f=>{try{const d=JSON.parse(fs.readFileSync(f,'utf8'));console.log('✅',f,'valid');}catch(e){console.error('❌',f,e.message);process.exit(1);}});console.log('✅ All blueprints valid');\""
+    "selfheal": "tsx scripts/selfheal.ts",
+    "test": "playwright test",
+    "test:e2e": "playwright test tests/e2e.spec.ts",
+    "lint": "eslint .",
+    "duplication": "jscpd --reporters json --output jscpd-report",
+    "build": "tsc",
+    "dev": "tsx scripts/selfheal.ts --watch"
   },
   "keywords": [
-    "nemo",
-    "pathfinder",
-    "compass",
-    "nomadic",
-    "swipe",
-    "audit-trail",
-    "dd5be",
-    "amateur-radio"
+    "self-healing",
+    "auto-maintenance",
+    "github-pages",
+    "sdr",
+    "amateur-radio",
+    "telemetry",
+    "webrtc"
   ],
-  "author": "Raymond Demitrio Dr. Tel (DD5BE)",
-  "license": "Amateur Radio Compliant",
-  "dependencies": {
-    "express": "^4.18.2",
-    "socket.io": "^4.6.1"
+  "author": "Raymond Demitrio Dr. Tel",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.0.0",
+    "jscpd": "^3.5.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   },
-  "devDependencies": {},
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "globby": "^13.0.0"
+  },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia/issues"
+  },
+  "homepage": "https://viewunitysystem.github.io/OnAirMulTiMedia/"
 }
-

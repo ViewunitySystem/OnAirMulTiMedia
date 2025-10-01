@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OnAirMulTiMedia - Telemetry Integration</title>
+  
+  <!-- Sentry Error Tracking -->
+  <script src="https://browser.sentry-cdn.com/7.120.0/bundle.tracing.min.js" crossorigin="anonymous"></script>
+  <script>
+    Sentry.init({
+      dsn: 'YOUR_SENTRY_DSN_HERE', // Ersetze mit echtem DSN
+      tracesSampleRate: 0.1,
+      environment: 'production',
+      beforeSend(event) {
+        // Filtere sensitive Daten
+        if (event.exception) {
+          event.exception.values.forEach(exception => {
+            if (exception.stacktrace) {
+              exception.stacktrace.frames.forEach(frame => {
+                if (frame.filename && frame.filename.includes('password')) {
+                  frame.filename = '[FILTERED]';
+                }
+              });
+            }
+          });
+        }
+        return event;
+      }
+    });
+  </script>
+  
+  <!-- OpenTelemetry (optional) -->
+  <script>
+    // OpenTelemetry Browser SDK
+    // Beispiel-Implementation für Tracing
+    class SimpleTracer {
+      constructor() {
+        this.spans = new Map();
+        this.traces = [];
+      }
+      
+      startSpan(name, options = {}) {
+        const span = {
+          id: Math.random().toString(36).substr(2, 9),
+          name,
+          startTime: performance.now(),
+          attributes: options.attributes || {},
+          parentId: options.parentId
+        };
+        
+        this.spans.set(span.id, span);
+        return span;
+      }
+      
+      endSpan(spanId) {
+        const span = this.spans.get(spanId);
+        if (span) {
+          span.endTime = performance.now();
+          span.duration = span.endTime - span.startTime;
+          this.traces.push(span);
+          this.spans.delete(spanId);
+        }
+      }
+      
+      getTraces() {
+        return this.traces;
+      }
+    }
+    
+    window.telemetry = new SimpleTracer();
+  </script>
+  
+  <style>
+    body { font-family: system-ui; margin: 2rem; background: #0a0e27; color: #fff; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .status { padding: 1rem; background: #1a1e37; border-radius: 10px; margin: 1rem 0; }
+    .success { background: #00ff88; color: #000; }
+    .error { background: #ff6b6b; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem; background: #00ff88; color: #000; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #00d4aa; }
+    pre { background: #1a1e37; padding: 1rem; border-radius: 5px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 OnAirMulTiMedia Telemetry Dashboard</h1>
+    
+    <div id="status" class="status">
+      Telemetry-System initialisiert
+    </div>
+    
+    <h2>🧪 Test-Funktionen:</h2>
+    <button onclick="testError()">❌ Test-Fehler generieren</button>
+    <button onclick="testPerformance()">⚡ Performance-Test</button>
+    <button onclick="testTracing()">🔍 Tracing-Test</button>
+    <button onclick="showTraces()">📈 Traces anzeigen</button>
+    
+    <h2>📊 Telemetry-Daten:</h2>
+    <pre id="telemetry-data">Warten auf Daten...</pre>
+    
+    <h2>🔧 Konfiguration:</h2>
+    <div>
+      <label>Sentry DSN:</label>
+      <input type="text" id="sentry-dsn" placeholder="https://..." style="width: 100%; padding: 0.5rem; margin: 0.5rem 0;">
+      <button onclick="updateSentryDSN()">Sentry DSN aktualisieren</button>
+    </div>
+  </div>
+
+  <script>
+    // Telemetry-Funktionen
+    function testError() {
+      const span = window.telemetry.startSpan('test-error');
+      
+      try {
+        // Simuliere einen Fehler
+        throw new Error('Test-Fehler für Telemetry-Demo');
+      } catch(e) {
+        // Sentry fängt den Fehler automatisch ab
+        console.error('Test-Fehler:', e);
+        window.telemetry.endSpan(span.id);
+      }
+    }
+    
+    function testPerformance() {
+      const span = window.telemetry.startSpan('performance-test');
+      
+      // Simuliere Performance-Messung
+      const start = performance.now();
+      
+      // Simuliere Arbeit
+      for (let i = 0; i < 1000000; i++) {
+        Math.random();
+      }
+      
+      const end = performance.now();
+      const duration = end - start;
+      
+      // Sentry Performance-Tracking
+      Sentry.addBreadcrumb({
+        message: 'Performance Test',
+        category: 'performance',
+        data: { duration }
+      });
+      
+      window.telemetry.endSpan(span.id);
+      
+      document.getElementById('status').textContent = `Performance-Test abgeschlossen: ${duration.toFixed(2)}ms`;
+      document.getElementById('status').className = 'status success';
+    }
+    
+    function testTracing() {
+      const parentSpan = window.telemetry.startSpan('parent-operation');
+      
+      // Simuliere verschachtelte Operationen
+      setTimeout(() => {
+        const childSpan = window.telemetry.startSpan('child-operation', { parentId: parentSpan.id });
+        
+        setTimeout(() => {
+          window.telemetry.endSpan(childSpan.id);
+          window.telemetry.endSpan(parentSpan.id);
+          
+          document.getElementById('status').textContent = 'Tracing-Test abgeschlossen';
+          document.getElementById('status').className = 'status success';
+        }, 100);
+      }, 50);
+    }
+    
+    function showTraces() {
+      const traces = window.telemetry.getTraces();
+      document.getElementById('telemetry-data').textContent = JSON.stringify(traces, null, 2);
+    }
+    
+    function updateSentryDSN() {
+      const dsn = document.getElementById('sentry-dsn').value;
+      if (dsn) {
+        Sentry.init({
+          dsn: dsn,
+          tracesSampleRate: 0.1
+        });
+        document.getElementById('status').textContent = 'Sentry DSN aktualisiert';
+        document.getElementById('status').className = 'status success';
+      }
+    }
+    
+    // Automatische Telemetry-Sammlung
+    window.addEventListener('load', () => {
+      const loadSpan = window.telemetry.startSpan('page-load');
+      
+      // Simuliere Ladezeit-Messung
+      setTimeout(() => {
+        window.telemetry.endSpan(loadSpan.id);
+        
+        // Sentry Breadcrumb
+        Sentry.addBreadcrumb({
+          message: 'Page loaded',
+          category: 'navigation',
+          data: { url: window.location.href }
+        });
+      }, 1000);
+    });
+    
+    // Fehler-Tracking
+    window.addEventListener('error', (event) => {
+      Sentry.addBreadcrumb({
+        message: 'JavaScript Error',
+        category: 'error',
+        data: {
+          message: event.message,
+          filename: event.filename,
+          lineno: event.lineno
+        }
+      });
+    });
+    
+    // Performance-Observer
+    if ('PerformanceObserver' in window) {
+      const observer = new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          Sentry.addBreadcrumb({
+            message: 'Performance Entry',
+            category: 'performance',
+            data: {
+              name: entry.name,
+              duration: entry.duration,
+              entryType: entry.entryType
+            }
+          });
+        }
+      });
+      
+      observer.observe({ entryTypes: ['navigation', 'resource', 'paint'] });
+    }
+    
+    console.log('[Telemetry] OnAirMulTiMedia Telemetry-System geladen');
+    console.log('[Telemetry] Sentry:', typeof Sentry !== 'undefined' ? 'Aktiv' : 'Inaktiv');
+    console.log('[Telemetry] OpenTelemetry:', typeof window.telemetry !== 'undefined' ? 'Aktiv' : 'Inaktiv');
+  </script>
+</body>
+</html>

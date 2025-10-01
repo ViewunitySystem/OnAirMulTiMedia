@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "pagesSingleSource": { "enabled": true },
+    "indexNoRedirect": { "enabled": true, "iframeSrc": "./info.html" },
+    "infoNoFramebust": { "enabled": true },
+    "serviceWorkerFallback": { "enabled": true, "offlinePath": "public/offline.html" },
+    "duplication": { "enabled": true, "maxPercent": 1 },
+    "mocksPlaceholders": { "enabled": true, "patterns": ["TODO", "XXX", "CHANGEME", "MOCK", "DUMMY", "PLACEHOLDER"] },
+    "htmlValidators": { "enabled": true }
+  }
+}

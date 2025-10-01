@@ -1,0 +1,70 @@
+name: CI & Self-Healing
+
+on:
+  push:
+    branches: [ main, mainzero, gh-pages ]
+  pull_request:
+    branches: [ main, mainzero, gh-pages ]
+  schedule:
+    - cron: '*/30 * * * *'  # alle 30 Minuten Maintenance-Lauf
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: selfheal-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-test-heal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: |
+          npm ci || npm i
+          npx playwright install --with-deps
+
+      - name: Lint & basic checks
+        run: |
+          npx eslint . || true
+
+      - name: Run unit/e2e tests
+        run: |
+          npm test --silent || true
+          npx playwright test || true
+
+      - name: Run Self-Healing orchestrator
+        id: selfheal
+        run: |
+          npx tsx scripts/selfheal.ts || true
+
+      - name: Create PR with fixes (if any)
+        if: ${{ steps.selfheal.outcome == 'success' && hashFiles('.selfheal-changed') != '' }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/selfheal-${{ github.run_id }}
+          title: "chore(selfheal): automated fixes"
+          commit-message: "chore(selfheal): automated fixes"
+          body: |
+            Automated Self-Healing run.
+            - Detectors/Fixes applied
+            - Please review
+
+      - name: Upload reports (artifacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selfheal-reports
+          path: |
+            reports/**
+            .selfheal-*.json
+            jscpd-report/**

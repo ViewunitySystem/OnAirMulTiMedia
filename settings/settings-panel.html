@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OnAirMulTiMedia - Settings</title>
+  <style>
+    body { font-family: system-ui; margin: 0; background: #0a0e27; color: #fff; }
+    .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+    .settings-panel { background: #1a1e37; border-radius: 15px; padding: 2rem; margin: 1rem 0; }
+    .form-group { margin: 1rem 0; }
+    label { display: block; margin-bottom: 0.5rem; color: #00ff88; }
+    input, textarea, select { width: 100%; padding: 0.75rem; background: #0a0e27; color: #fff; border: 1px solid #333; border-radius: 5px; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: #00ff88; }
+    button { padding: 0.75rem 1.5rem; background: #00ff88; color: #000; border: none; border-radius: 5px; cursor: pointer; margin: 0.5rem 0.5rem 0.5rem 0; }
+    button:hover { background: #00d4aa; }
+    button.danger { background: #ff6b6b; color: #fff; }
+    button.danger:hover { background: #ff5252; }
+    .warning { background: #ff6b6b; color: #fff; padding: 1rem; border-radius: 5px; margin: 1rem 0; }
+    .success { background: #00ff88; color: #000; padding: 1rem; border-radius: 5px; margin: 1rem 0; }
+    .toggle { display: flex; align-items: center; gap: 1rem; }
+    .toggle input[type="checkbox"] { width: auto; }
+    .api-status { display: flex; align-items: center; gap: 0.5rem; margin: 0.5rem 0; }
+    .status-indicator { width: 10px; height: 10px; border-radius: 50%; }
+    .status-online { background: #00ff88; }
+    .status-offline { background: #ff6b6b; }
+    .status-unknown { background: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ OnAirMulTiMedia Settings</h1>
+    
+    <div class="warning">
+      ⚠️ <strong>Sicherheitshinweis:</strong> Diese Einstellungen werden nur lokal gespeichert. 
+      Für Produktionsumgebungen sollten API-Keys serverseitig verwaltet werden.
+    </div>
+    
+    <!-- API Keys Section -->
+    <div class="settings-panel">
+      <h2>🔑 API-Konfiguration</h2>
+      
+      <div class="form-group">
+        <label for="sentry-dsn">Sentry DSN (Error Tracking):</label>
+        <input type="text" id="sentry-dsn" placeholder="https://..." />
+        <div class="api-status">
+          <div id="sentry-status" class="status-indicator status-unknown"></div>
+          <span id="sentry-text">Status unbekannt</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="openai-key">OpenAI API Key:</label>
+        <input type="password" id="openai-key" placeholder="sk-..." />
+        <div class="api-status">
+          <div id="openai-status" class="status-indicator status-unknown"></div>
+          <span id="openai-text">Status unbekannt</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="github-token">GitHub Token:</label>
+        <input type="password" id="github-token" placeholder="ghp_..." />
+        <div class="api-status">
+          <div id="github-status" class="status-indicator status-unknown"></div>
+          <span id="github-text">Status unbekannt</span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="notary-api">Notary API Endpoint:</label>
+        <input type="url" id="notary-api" placeholder="https://api.notary-service.com" />
+        <div class="api-status">
+          <div id="notary-status" class="status-indicator status-unknown"></div>
+          <span id="notary-text">Status unbekannt</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Feature Toggles -->
+    <div class="settings-panel">
+      <h2>🎛️ Feature-Toggles</h2>
+      
+      <div class="form-group toggle">
+        <input type="checkbox" id="telemetry-enabled" />
+        <label for="telemetry-enabled">Telemetry aktiviert</label>
+      </div>
+      
+      <div class="form-group toggle">
+        <input type="checkbox" id="auto-updates" />
+        <label for="auto-updates">Automatische Updates</label>
+      </div>
+      
+      <div class="form-group toggle">
+        <input type="checkbox" id="debug-mode" />
+        <label for="debug-mode">Debug-Modus</label>
+      </div>
+      
+      <div class="form-group toggle">
+        <input type="checkbox" id="service-worker" />
+        <label for="service-worker">Service Worker aktiviert</label>
+      </div>
+    </div>
+    
+    <!-- WebRTC Remote Control -->
+    <div class="settings-panel">
+      <h2>📡 Remote Control</h2>
+      
+      <div class="form-group">
+        <label for="stun-server">STUN Server:</label>
+        <input type="text" id="stun-server" value="stun:stun.l.google.com:19302" />
+      </div>
+      
+      <div class="form-group">
+        <label for="turn-server">TURN Server (optional):</label>
+        <input type="text" id="turn-server" placeholder="turn:turn-server.com:3478" />
+      </div>
+      
+      <div class="form-group">
+        <label for="turn-username">TURN Username:</label>
+        <input type="text" id="turn-username" />
+      </div>
+      
+      <div class="form-group">
+        <label for="turn-password">TURN Password:</label>
+        <input type="password" id="turn-password" />
+      </div>
+    </div>
+    
+    <!-- Database Settings -->
+    <div class="settings-panel">
+      <h2>🗄️ Datenbank-Konfiguration</h2>
+      
+      <div class="form-group">
+        <label for="db-type">Datenbank-Typ:</label>
+        <select id="db-type">
+          <option value="supabase">Supabase</option>
+          <option value="firebase">Firebase</option>
+          <option value="postgres">PostgreSQL</option>
+          <option value="mongodb">MongoDB</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="db-url">Datenbank-URL:</label>
+        <input type="url" id="db-url" placeholder="https://..." />
+      </div>
+      
+      <div class="form-group">
+        <label for="db-key">API-Key:</label>
+        <input type="password" id="db-key" />
+      </div>
+    </div>
+    
+    <!-- Actions -->
+    <div class="settings-panel">
+      <h2>🔧 Aktionen</h2>
+      
+      <button onclick="saveSettings()">💾 Einstellungen speichern</button>
+      <button onclick="loadSettings()">📂 Einstellungen laden</button>
+      <button onclick="exportSettings()">📤 Exportieren</button>
+      <button onclick="importSettings()">📥 Importieren</button>
+      <button onclick="resetSettings()" class="danger">🗑️ Zurücksetzen</button>
+      
+      <div id="status-message"></div>
+    </div>
+  </div>
+
+  <script>
+    // Settings-Manager
+    class SettingsManager {
+      constructor() {
+        this.defaultSettings = {
+          sentryDsn: '',
+          openaiKey: '',
+          githubToken: '',
+          notaryApi: '',
+          telemetryEnabled: true,
+          autoUpdates: true,
+          debugMode: false,
+          serviceWorker: true,
+          stunServer: 'stun:stun.l.google.com:19302',
+          turnServer: '',
+          turnUsername: '',
+          turnPassword: '',
+          dbType: 'supabase',
+          dbUrl: '',
+          dbKey: ''
+        };
+        
+        this.loadSettings();
+        this.setupEventListeners();
+        this.checkApiStatus();
+      }
+      
+      loadSettings() {
+        const saved = localStorage.getItem('onairmultimedia-settings');
+        const settings = saved ? JSON.parse(saved) : this.defaultSettings;
+        
+        // Lade Einstellungen in UI
+        Object.keys(settings).forEach(key => {
+          const element = document.getElementById(key.replace(/([A-Z])/g, '-$1').toLowerCase());
+          if (element) {
+            if (element.type === 'checkbox') {
+              element.checked = settings[key];
+            } else {
+              element.value = settings[key] || '';
+            }
+          }
+        });
+      }
+      
+      saveSettings() {
+        const settings = {};
+        
+        // Sammle Einstellungen aus UI
+        Object.keys(this.defaultSettings).forEach(key => {
+          const element = document.getElementById(key.replace(/([A-Z])/g, '-$1').toLowerCase());
+          if (element) {
+            if (element.type === 'checkbox') {
+              settings[key] = element.checked;
+            } else {
+              settings[key] = element.value;
+            }
+          }
+        });
+        
+        localStorage.setItem('onairmultimedia-settings', JSON.stringify(settings));
+        this.showStatus('Einstellungen gespeichert!', 'success');
+        
+        // API-Status neu prüfen
+        this.checkApiStatus();
+      }
+      
+      exportSettings() {
+        const settings = JSON.parse(localStorage.getItem('onairmultimedia-settings') || '{}');
+        const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'onairmultimedia-settings.json';
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        this.showStatus('Einstellungen exportiert!', 'success');
+      }
+      
+      importSettings() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              try {
+                const settings = JSON.parse(e.target.result);
+                localStorage.setItem('onairmultimedia-settings', JSON.stringify(settings));
+                this.loadSettings();
+                this.showStatus('Einstellungen importiert!', 'success');
+              } catch (error) {
+                this.showStatus('Fehler beim Importieren: ' + error.message, 'error');
+              }
+            };
+            reader.readAsText(file);
+          }
+        };
+        
+        input.click();
+      }
+      
+      resetSettings() {
+        if (confirm('Alle Einstellungen zurücksetzen?')) {
+          localStorage.removeItem('onairmultimedia-settings');
+          this.loadSettings();
+          this.showStatus('Einstellungen zurückgesetzt!', 'success');
+        }
+      }
+      
+      async checkApiStatus() {
+        const settings = JSON.parse(localStorage.getItem('onairmultimedia-settings') || '{}');
+        
+        // Sentry Status
+        if (settings.sentryDsn) {
+          this.updateApiStatus('sentry', 'online', 'Verbunden');
+        } else {
+          this.updateApiStatus('sentry', 'offline', 'Nicht konfiguriert');
+        }
+        
+        // OpenAI Status (simuliert)
+        if (settings.openaiKey) {
+          this.updateApiStatus('openai', 'online', 'Konfiguriert');
+        } else {
+          this.updateApiStatus('openai', 'offline', 'Nicht konfiguriert');
+        }
+        
+        // GitHub Status (simuliert)
+        if (settings.githubToken) {
+          this.updateApiStatus('github', 'online', 'Konfiguriert');
+        } else {
+          this.updateApiStatus('github', 'offline', 'Nicht konfiguriert');
+        }
+        
+        // Notary Status (simuliert)
+        if (settings.notaryApi) {
+          this.updateApiStatus('notary', 'online', 'Endpoint konfiguriert');
+        } else {
+          this.updateApiStatus('notary', 'offline', 'Nicht konfiguriert');
+        }
+      }
+      
+      updateApiStatus(service, status, text) {
+        const statusEl = document.getElementById(`${service}-status`);
+        const textEl = document.getElementById(`${service}-text`);
+        
+        if (statusEl && textEl) {
+          statusEl.className = `status-indicator status-${status}`;
+          textEl.textContent = text;
+        }
+      }
+      
+      showStatus(message, type) {
+        const statusEl = document.getElementById('status-message');
+        statusEl.textContent = message;
+        statusEl.className = type;
+        statusEl.style.display = 'block';
+        
+        setTimeout(() => {
+          statusEl.style.display = 'none';
+        }, 3000);
+      }
+      
+      setupEventListeners() {
+        // Auto-save bei Änderungen
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+          input.addEventListener('change', () => {
+            this.saveSettings();
+          });
+        });
+      }
+    }
+    
+    // Global Functions
+    function saveSettings() {
+      window.settingsManager.saveSettings();
+    }
+    
+    function loadSettings() {
+      window.settingsManager.loadSettings();
+    }
+    
+    function exportSettings() {
+      window.settingsManager.exportSettings();
+    }
+    
+    function importSettings() {
+      window.settingsManager.importSettings();
+    }
+    
+    function resetSettings() {
+      window.settingsManager.resetSettings();
+    }
+    
+    // Initialize
+    window.addEventListener('load', () => {
+      window.settingsManager = new SettingsManager();
+      console.log('[Settings] OnAirMulTiMedia Settings-Panel geladen');
+    });
+  </script>
+</body>
+</html>
