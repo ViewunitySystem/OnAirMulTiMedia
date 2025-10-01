@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 OnAirMulTiMedia - Globales Tor zur Welt | Raymond Demitrio Dr. Tel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #000;
+            color: white;
+        }
+        
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+        
+        .video-background iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 177.77777778vh; /* 16:9 aspect ratio */
+            height: 56.25vw; /* 16:9 aspect ratio */
+            min-width: 100%;
+            min-height: 100%;
+            transform: translate(-50%, -50%);
+            border: none;
+        }
+        
+        /* Video Overlay */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+            backdrop-filter: blur(1px);
+        }
+        
+        /* Main Container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00ff88, #00aaff, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+        }
+        
+        .header p {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .subtitle {
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        /* Navigation Grid */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        
+        .nav-card {
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .nav-card:hover::before {
+            left: 100%;
+        }
+        
+        .nav-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #00ff88;
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.3);
+        }
+        
+        .nav-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #00ff88;
+        }
+        
+        .nav-card p {
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+        
+        .nav-card .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        /* Video Player Controls */
+        .video-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            background: rgba(0, 255, 136, 0.3);
+            transform: scale(1.1);
+        }
+        
+        /* Video Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .video-modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            max-height: 80vh;
+        }
+        
+        .modal-video {
+            width: 100%;
+            height: 56.25vw;
+            max-height: 80vh;
+            border-radius: 10px;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: #ff4444;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            background: #ff6666;
+            transform: scale(1.1);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .nav-card {
+                padding: 20px;
+            }
+            
+            .nav-card h3 {
+                font-size: 1.2rem;
+            }
+            
+            .nav-card .icon {
+                font-size: 2.5rem;
+            }
+            
+            .video-controls {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                justify-content: center;
+            }
+            
+            .header {
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .nav-card {
+                padding: 15px;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .nav-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .nav-card:nth-child(1) { animation-delay: 0.1s; }
+        .nav-card:nth-child(2) { animation-delay: 0.2s; }
+        .nav-card:nth-child(3) { animation-delay: 0.3s; }
+        .nav-card:nth-child(4) { animation-delay: 0.4s; }
+        .nav-card:nth-child(5) { animation-delay: 0.5s; }
+        .nav-card:nth-child(6) { animation-delay: 0.6s; }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #00ff88;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .volume-slider {
+            width: 100px;
+            margin: 0 10px;
+        }
+        
+        /* Donation Section */
+        .donation-section {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .donation-btn {
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .donation-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <div class="video-background">
+        <iframe 
+            id="background-video"
+            src="https://www.youtube.com/embed/ryuS7tFFn2g?autoplay=1&mute=1&loop=1&playlist=ryuS7tFFn2g&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&fs=0&cc_load_policy=0&start=0&end=0"
+            title="Aurora - Globales Tor zur Welt"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+        </iframe>
+    </div>
+    
+    <!-- Video Overlay -->
+    <div class="video-overlay"></div>
+    
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌍 OnAirMulTiMedia</h1>
+            <p>ET MUNDO ARIAL MAGNITUDO MUSICAL LIVE LIFE 24/7</p>
+            <div class="subtitle">
+                Globales Tor zur Welt | Raymond Demitrio Dr. Tel (DD5BE)
+            </div>
+        </div>
+        
+        <!-- Navigation Grid -->
+        <div class="nav-grid">
+            <div class="nav-card" onclick="openPage('info.html')">
+                <span class="icon">📊</span>
+                <h3>Info Dashboard</h3>
+                <p>Live-Metriken, Community-Beiträge und System-Status</p>
+            </div>
+            
+            <div class="nav-card" onclick="openPage('webui/index.html')">
+                <span class="icon">🚀</span>
+                <h3>HFRF Universal SDR</h3>
+                <p>Software-Defined Radio Stack mit Vodafone Integration</p>
+            </div>
+            
+            <div class="nav-card" onclick="openPage('webui/test-canvas-app.html')">
+                <span class="icon">🧪</span>
+                <h3>Canvas Test App</h3>
+                <p>HTML5 Canvas Visualisierung und API-Tests</p>
+            </div>
+            
+            <div class="nav-card" onclick="openPage('webui/universal-international-app.html')">
+                <span class="icon">🌐</span>
+                <h3>International App</h3>
+                <p>Vollständig internationalisiert • Auto-rekursiv kompatibel</p>
+            </div>
+            
+            <div class="nav-card" onclick="openPage('webui/timemanagement-integration.html')">
+                <span class="icon">⏰</span>
+                <h3>Time Management</h3>
+                <p>Globale Meeting-Uhr und Verabredungen</p>
+            </div>
+            
+            <div class="nav-card" onclick="openPage('webui/multimedia-global-swipe.html')">
+                <span class="icon">📺</span>
+                <h3>Multimedia Global</h3>
+                <p>Weltweite Radio, TV und Galerien</p>
+            </div>
+        </div>
+        
+        <!-- Donation Section -->
+        <div class="donation-section">
+            <h3>💰 Unterstützen Sie das Projekt</h3>
+            <p>Für nur 5€ können Sie das globale Tor zur Welt unterstützen</p>
+            <a href="https://gofundme.com" class="donation-btn" target="_blank">
+                💝 5€ Spende - Dankswert
+            </a>
+            <p style="font-size: 0.9rem; opacity: 0.7; margin-top: 10px;">
+                Freiwillige Zuwendung • Keine Gegenleistung geschuldet
+            </p>
+        </div>
+    </div>
+    
+    <!-- Video Controls -->
+    <div class="video-controls">
+        <button class="control-btn" onclick="toggleVideoMute()">
+            <span id="mute-icon">🔇</span>
+        </button>
+        <button class="control-btn" onclick="openVideoModal()">
+            📺 Vollbild
+        </button>
+        <button class="control-btn" onclick="toggleVideoPause()">
+            <span id="pause-icon">⏸️</span>
+        </button>
+    </div>
+    
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <span>🔊</span>
+        <input type="range" class="volume-slider" min="0" max="100" value="50" onchange="setVolume(this.value)">
+        <span>🔊</span>
+    </div>
+    
+    <!-- Video Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeVideoModal()">×</button>
+            <iframe 
+                id="modal-video"
+                class="modal-video"
+                src="https://www.youtube.com/embed/ryuS7tFFn2g?autoplay=1&controls=1&showinfo=1&rel=0"
+                title="Aurora - Globales Tor zur Welt"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+    
+    <script>
+        let isMuted = true;
+        let isPaused = false;
+        let backgroundVideo = document.getElementById('background-video');
+        let modalVideo = document.getElementById('modal-video');
+        
+        // Video Controls
+        function toggleVideoMute() {
+            isMuted = !isMuted;
+            const muteIcon = document.getElementById('mute-icon');
+            muteIcon.textContent = isMuted ? '🔇' : '🔊';
+            
+            // YouTube API would be needed for actual mute control
+            // This is a visual indicator only
+            console.log('Video mute toggled:', isMuted);
+        }
+        
+        function toggleVideoPause() {
+            isPaused = !isPaused;
+            const pauseIcon = document.getElementById('pause-icon');
+            pauseIcon.textContent = isPaused ? '▶️' : '⏸️';
+            
+            // YouTube API would be needed for actual pause control
+            // This is a visual indicator only
+            console.log('Video pause toggled:', isPaused);
+        }
+        
+        function openVideoModal() {
+            const modal = document.getElementById('videoModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        function setVolume(value) {
+            console.log('Volume set to:', value + '%');
+            // Volume control would require YouTube API
+        }
+        
+        // Navigation
+        function openPage(url) {
+            window.open(url, '_blank');
+        }
+        
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    e.preventDefault();
+                    toggleVideoPause();
+                    break;
+                case 'm':
+                case 'M':
+                    toggleVideoMute();
+                    break;
+                case 'f':
+                case 'F':
+                    openVideoModal();
+                    break;
+                case 'Escape':
+                    closeVideoModal();
+                    break;
+            }
+        });
+        
+        // Responsive Video
+        function adjustVideoSize() {
+            const video = document.querySelector('.video-background iframe');
+            const aspectRatio = 16 / 9;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            if (windowWidth / windowHeight > aspectRatio) {
+                video.style.width = '177.77777778vh';
+                video.style.height = '56.25vw';
+            } else {
+                video.style.width = '100vw';
+                video.style.height = '56.25vw';
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            adjustVideoSize();
+            console.log('🌍 OnAirMulTiMedia - Globales Tor zur Welt geladen');
+            console.log('🎵 Aurora Video läuft im Hintergrund');
+            console.log('⌨️ Tastenkürzel: Leertaste (Pause), M (Stumm), F (Vollbild), ESC (Schließen)');
+        });
+        
+        window.addEventListener('resize', adjustVideoSize);
+        
+        // Touch Controls for Mobile
+        let touchStartY = 0;
+        let touchEndY = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.changedTouches[0].screenY;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartY - touchEndY;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe up - open video modal
+                    openVideoModal();
+                } else {
+                    // Swipe down - close video modal
+                    closeVideoModal();
+                }
+            }
+        }
+        
+        // Performance Monitoring
+        if ('performance' in window) {
+            window.addEventListener('load', () => {
+                const perfData = {
+                    loadTime: performance.now(),
+                    memory: performance.memory ? {
+                        used: performance.memory.usedJSHeapSize,
+                        total: performance.memory.totalJSHeapSize,
+                        limit: performance.memory.jsHeapSizeLimit
+                    } : null,
+                    timing: performance.timing ? {
+                        domContentLoaded: performance.timing.domContentLoadedEventEnd - performance.timing.navigationStart,
+                        loadComplete: performance.timing.loadEventEnd - performance.timing.navigationStart
+                    } : null
+                };
+                
+                console.log('📊 Performance Data:', perfData);
+                localStorage.setItem('oamtm_performance_data', JSON.stringify(perfData));
+            });
+        }
+        
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('🔧 Service Worker registered:', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('❌ Service Worker registration failed:', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
