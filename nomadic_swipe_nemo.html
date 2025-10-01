@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NEMO Pathfinder – NomadicSwipe | DD5BE</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin:0; font-family: system-ui, sans-serif; background:#0b1020; color:#e5e7eb; }
+    header { padding:12px 16px; background:#121a34; position:sticky; top:0; z-index:10; display:flex; gap:12px; align-items:center; border-bottom: 2px solid #1f2a52;}
+    header strong { color:#3b82f6; }
+    main { display:grid; gap:12px; padding:12px; max-width:980px; margin:0 auto;}
+    .grid { display:grid; grid-template-columns: 1fr 320px; gap:12px; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+    .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:12px; }
+    canvas { width:100%; height:100%; background:#0b1020; border-radius:12px; }
+    .muted { opacity:.8; font-size:12px; color:#9ca3af; }
+    .tabs { display:flex; gap:8px; margin-bottom:8px; overflow-x: auto;}
+    .tab { padding:6px 10px; border-radius:999px; border:1px solid #1f2a52; cursor:pointer; white-space: nowrap;}
+    .tab.active { background:#1f2a52; border-color:#3b82f6;}
+    input, select, button, textarea { width:100%; background:#0b1020; color:#e5e7eb; border:1px solid #1f2a52; border-radius:8px; padding:8px; font-family: inherit;}
+    button { cursor:pointer; transition: all 0.3s; }
+    button:hover { background:#1f2a52; border-color:#3b82f6; }
+    .row { display:grid; grid-template-columns: 1fr 1fr; gap:8px; }
+    .eta { font-size:28px; font-weight:700; color:#3b82f6; }
+    .advice { font-size:14px; opacity:.9; margin-top:8px; }
+    .good { color:#10b981; } .warn { color:#f59e0b; } .bad { color:#ef4444; }
+    label { display:block; margin-bottom:4px; font-size:12px; color:#9ca3af; }
+    a { color:#93c5fd; text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    pre { background:#0b1020; padding:8px; border-radius:4px; overflow:auto; font-size:11px; border:1px solid #1f2a52;}
+    .status-badge { display:inline-block; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:600; text-transform:uppercase;}
+    .status-on_course { background:rgba(16,185,129,0.2); color:#10b981;}
+    .status-drift { background:rgba(251,191,36,0.2); color:#fbbf24;}
+    .status-arrived { background:rgba(59,130,246,0.2); color:#3b82f6;}
+    .telemetry-box { background:#0b1020; padding:8px; border-radius:4px; margin-top:8px; border:1px solid #1f2a52;}
+    .telemetry-box small { color:#6b7280; }
+    .icon { font-size:20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="icon">🧭</span>
+    <strong>NEMO Pathfinder</strong>
+    <span class="muted">Zeit-Kompass • mainzero</span>
+    <div style="margin-left:auto; display:flex; gap:12px;">
+      <a href="test-dashboard.html">Test Dashboard ↗</a>
+      <a href="client.html">Test-Client ↗</a>
+      <a href="overlay.html">Overlay ↗</a>
+    </div>
+  </header>
+  <main>
+    <div class="grid">
+      <!-- Canvas Kompass -->
+      <section class="card" style="min-height:420px; display:grid;">
+        <canvas id="compass" width="640" height="420"></canvas>
+      </section>
+      
+      <!-- Control Panel -->
+      <section class="card">
+        <div class="tabs">
+          <div class="tab active" data-tab="time">⏰ Zeit</div>
+          <div class="tab" data-tab="coords">📍 Koordinaten</div>
+          <div class="tab" data-tab="trail">📜 Trail</div>
+          <div class="tab" data-tab="recovery">🩹 Recovery</div>
+        </div>
+        
+        <!-- Zeit Panel -->
+        <div id="pane-time">
+          <div class="row">
+            <div>
+              <label>Zielzeit (UTC/ISO)</label>
+              <input id="target" type="datetime-local" />
+            </div>
+            <div>
+              <label>Raum (optional)</label>
+              <input id="room" placeholder="alpha" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <div>
+              <label>Lizenz (DD5BE)</label>
+              <input id="license" placeholder="DD5BE-VALID" value="DD5BE-VALID" />
+            </div>
+            <div>
+              <label>Verbindung</label>
+              <select id="comm">
+                <option value="online">🟢 Online</option>
+                <option value="degraded">🟡 Degraded</option>
+                <option value="offline">🔴 Offline</option>
+              </select>
+            </div>
+          </div>
+          
+          <button id="apply" style="margin-top:12px; background:#3b82f6;">🚀 Kurs setzen</button>
+          
+          <div style="margin-top:16px; padding:12px; background:#0b1020; border-radius:8px;">
+            <div class="eta" id="eta">ETA —</div>
+            <div id="status-badge" class="status-badge status-on_course">ON COURSE</div>
+            <div class="advice" id="advisory">Bereit zum Start</div>
+          </div>
+          
+          <!-- Telemetrie -->
+          <div class="telemetry-box">
+            <small>📡 Telemetrie:</small>
+            <div id="telemetry" style="font-size:11px; margin-top:4px;">
+              <div>Gyro: <span id="gyro-status">⏳ Warte...</span></div>
+              <div>Heading: <span id="device-heading">—</span>°</div>
+              <div>Auto-Advance: <span id="auto-advance-status">✅ Aktiv</span></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Koordinaten Panel -->
+        <div id="pane-coords" style="display:none;">
+          <div class="muted">Wegpunkte (JSON Array)</div>
+          <textarea id="wps" rows="8" style="font-family:monospace; font-size:11px;">[
+  {"label":"Amsterdam","lat":52.377,"lon":4.900},
+  {"label":"Dresden","lat":51.050,"lon":13.737},
+  {"label":"München","lat":48.137,"lon":11.575}
+]</textarea>
+          <div class="row" style="margin-top:8px;">
+            <div>
+              <label>Aktueller Index</label>
+              <input id="curIdx" type="number" value="0" min="0" />
+            </div>
+            <div>
+              <label>Signalqualität (0..1)</label>
+              <input id="sig" type="number" step="0.01" value="0.9" min="0" max="1" />
+            </div>
+          </div>
+          <button id="send" style="margin-top:8px;">📡 Update senden</button>
+          
+          <div style="margin-top:12px; padding:8px; background:#0b1020; border-radius:4px; font-size:11px;">
+            <div>Aktuelle Position: <strong id="current-wp">—</strong></div>
+            <div>Nächstes Ziel: <strong id="next-wp">—</strong></div>
+            <div>Entfernung: <strong id="distance">—</strong></div>
+          </div>
+        </div>
+        
+        <!-- Trail Panel -->
+        <div id="pane-trail" style="display:none;">
+          <div class="muted">Letzte Audit-Events</div>
+          <div style="max-height:300px; overflow-y:auto;">
+            <pre id="last" style="white-space:pre-wrap; margin:8px 0;">Warte auf Events...</pre>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <a href="/api/audit/export?format=pdf&type=DIRECTION_CHANGE&limit=200&title=NEMO%20Trail" target="_blank" style="flex:1; text-align:center; padding:8px; background:#1f2a52; border-radius:8px; display:block;">📄 PDF Export</a>
+            <a href="/api/audit/export?format=json&type=NEMO_PATHFINDER&limit=200" target="_blank" style="flex:1; text-align:center; padding:8px; background:#1f2a52; border-radius:8px; display:block;">📦 JSON Export</a>
+          </div>
+        </div>
+        
+        <!-- Recovery Panel -->
+        <div id="pane-recovery" style="display:none;">
+          <h4 style="margin-bottom:8px; color:#f59e0b;">🩹 Recovery Optionen</h4>
+          <p class="muted" style="line-height:1.5;">
+            Bei Drift: Wegpunktindex reduzieren oder Zielzeit neu setzen. 
+            Offline-Modus erlaubt virtuellen Kurs (Winkelzuordnung ohne GPS).
+          </p>
+          
+          <button id="reset-course" style="margin-top:12px; background:#f59e0b;">🔄 Kurs zurücksetzen</button>
+          <button id="force-advance" style="margin-top:8px; background:#10b981;">⏭️ Nächster Wegpunkt</button>
+          
+          <div style="margin-top:16px; padding:8px; background:#0b1020; border-radius:4px;">
+            <small class="muted">Lizenz-QR für Audit:</small>
+            <a href="/api/license/qr.png?module=NEMO_PATHFINDER&license=DD5BE-QR-AUDIT-2025" target="_blank" style="display:block; margin-top:4px;">
+              📱 QR-Code generieren ↗
+            </a>
+          </div>
+          
+          <div style="margin-top:12px; padding:8px; background:#0b1020; border-radius:4px;">
+            <small class="muted">mainzero Manifest:</small>
+            <p style="font-size:11px; margin-top:4px; font-style:italic; color:#6b7280;">
+              "mainzero ist nicht nur ein Branch – es ist der Ursprung auditierter Wahrheit. 
+              Der Nomade kennt keinen Ort – aber er kennt den Weg. 
+              NEMO zeigt nicht nach Norden, sondern in Richtung Wahrheit in der Zeit."
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+    
+    <!-- Info Cards -->
+    <div class="grid" style="margin-top:12px;">
+      <div class="card">
+        <h4 style="margin-bottom:8px;">📊 Live-Statistik</h4>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px;">
+          <div>
+            <div class="muted">Events Total:</div>
+            <strong id="events-total">0</strong>
+          </div>
+          <div>
+            <div class="muted">Kurswechsel:</div>
+            <strong id="direction-changes">0</strong>
+          </div>
+          <div>
+            <div class="muted">Drift Warnings:</div>
+            <strong id="drift-warnings">0</strong>
+          </div>
+          <div>
+            <div class="muted">Uptime:</div>
+            <strong id="uptime">0s</strong>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h4 style="margin-bottom:8px;">🎯 Swipe Navigation</h4>
+        <div style="font-size:12px; line-height:1.8;">
+          <div>← Swipe Left: Vorheriges Tab</div>
+          <div>→ Swipe Right: Nächstes Tab</div>
+          <div>↑ Swipe Up: Zurück zu Hauptseite</div>
+          <div>⌨️ Tastatur: Pfeiltasten</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // === STATE ===
+    let state = { 
+      heading_deg: 0, 
+      eta_iso: null, 
+      status: 'on_course', 
+      advisory: 'Bereit zum Start',
+      deviceHeading: null,
+      waypoints: [],
+      currentIdx: 0
+    };
+    let lastAudit = [];
+    let stats = { total: 0, directionChanges: 0, driftWarnings: 0, startTime: Date.now() };
+    let autoAdvanceTimer = null;
+
+    // === CANVAS ===
+    const canvas = document.getElementById('compass');
+    const ctx = canvas.getContext('2d');
+
+    function drawCompass() {
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+      
+      // Background
+      ctx.fillStyle = '#0b1020'; 
+      ctx.fillRect(0,0,w,h);
+      
+      // Center
+      const cx = w/2, cy = h/2, r = Math.min(w,h)/2 - 40;
+      
+      // Outer Circle
+      ctx.strokeStyle = '#1f2a52'; 
+      ctx.lineWidth = 2; 
+      ctx.beginPath(); 
+      ctx.arc(cx, cy, r, 0, Math.PI*2); 
+      ctx.stroke();
+      
+      // Time Circle (ETA Progress)
+      if (state.eta_iso) {
+        const now = Date.now(), eta = new Date(state.eta_iso).getTime();
+        const totalMs = Math.max(1, eta - now);
+        const windowMs = 60 * 60 * 1000; // 1 hour window
+        const frac = Math.max(0, Math.min(1, totalMs / windowMs));
+        
+        ctx.strokeStyle = '#93c5fd'; 
+        ctx.lineWidth = 8; 
+        ctx.beginPath();
+        ctx.arc(cx, cy, r - 12, -Math.PI/2, -Math.PI/2 + (2*Math.PI*(1-frac)), false); 
+        ctx.stroke();
+        
+        // Time markers
+        ctx.fillStyle = '#93c5fd';
+        ctx.font = '12px system-ui';
+        ctx.fillText(`${Math.ceil(totalMs/60000)} min`, cx + r - 50, cy - r + 20);
+      }
+      
+      // Heading Arrow (Computed)
+      const headingAng = (state.heading_deg - 90) * Math.PI/180;
+      ctx.strokeStyle = state.status === 'on_course' ? '#10b981' : 
+                        state.status === 'drift' ? '#f59e0b' : '#3b82f6';
+      ctx.lineWidth = 6; 
+      ctx.beginPath(); 
+      ctx.moveTo(cx, cy);
+      const endX = cx + Math.cos(headingAng) * (r - 20);
+      const endY = cy + Math.sin(headingAng) * (r - 20);
+      ctx.lineTo(endX, endY); 
+      ctx.stroke();
+      
+      // Arrow head
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.beginPath();
+      ctx.moveTo(endX, endY);
+      ctx.lineTo(
+        endX - 10 * Math.cos(headingAng - Math.PI/6),
+        endY - 10 * Math.sin(headingAng - Math.PI/6)
+      );
+      ctx.lineTo(
+        endX - 10 * Math.cos(headingAng + Math.PI/6),
+        endY - 10 * Math.sin(headingAng + Math.PI/6)
+      );
+      ctx.closePath();
+      ctx.fill();
+      
+      // Device Heading (if available from Gyro)
+      if (state.deviceHeading !== null) {
+        const deviceAng = (state.deviceHeading - 90) * Math.PI/180;
+        ctx.strokeStyle = '#6b7280';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + Math.cos(deviceAng) * (r - 30), cy + Math.sin(deviceAng) * (r - 30));
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      
+      // Compass Ticks (every 30°)
+      ctx.strokeStyle = '#1f2a52'; 
+      ctx.lineWidth = 1;
+      for (let a = 0; a < 360; a += 30) {
+        const rad = (a - 90) * Math.PI/180;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(rad) * (r - 8), cy + Math.sin(rad) * (r - 8));
+        ctx.lineTo(cx + Math.cos(rad) * r, cy + Math.sin(rad) * r);
+        ctx.stroke();
+      }
+      
+      // Cardinal Directions
+      ctx.fillStyle = '#e5e7eb'; 
+      ctx.font = 'bold 14px system-ui';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const dirs = ['N', 'E', 'S', 'W'];
+      [0, 90, 180, 270].forEach((a, i) => {
+        const rad = (a - 90) * Math.PI/180;
+        ctx.fillText(dirs[i], cx + Math.cos(rad) * (r + 20), cy + Math.sin(rad) * (r + 20));
+      });
+      
+      // Status Text
+      ctx.fillStyle = '#e5e7eb'; 
+      ctx.font = '16px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText(`Heading ${Math.round(state.heading_deg)}°`, 20, 30);
+      ctx.fillText(`Status: ${state.status.toUpperCase()}`, 20, 55);
+      
+      if (state.deviceHeading !== null) {
+        ctx.fillStyle = '#6b7280';
+        ctx.font = '12px system-ui';
+        ctx.fillText(`Device: ${Math.round(state.deviceHeading)}°`, 20, 75);
+      }
+    }
+
+    function tick() {
+      drawCompass();
+      updateStats();
+      requestAnimationFrame(tick);
+    }
+    tick();
+
+    // === DEVICE ORIENTATION (Telemetry) ===
+    let gyroActive = false;
+    
+    if (window.DeviceOrientationEvent) {
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // iOS requires permission
+        document.getElementById('apply').addEventListener('click', () => {
+          DeviceOrientationEvent.requestPermission()
+            .then(permissionState => {
+              if (permissionState === 'granted') {
+                initGyro();
+              }
+            })
+            .catch(console.error);
+        });
+      } else {
+        // Auto-init for Android/Desktop
+        initGyro();
+      }
+    }
+    
+    function initGyro() {
+      window.addEventListener('deviceorientation', (e) => {
+        if (e.alpha !== null) {
+          gyroActive = true;
+          state.deviceHeading = e.alpha; // Compass heading (0-360)
+          document.getElementById('gyro-status').textContent = '✅ Aktiv';
+          document.getElementById('device-heading').textContent = Math.round(e.alpha);
+        }
+      });
+    }
+
+    // === INPUTS ===
+    const $ = id => document.getElementById(id);
+    
+    // Set default target time (15 minutes from now)
+    const defaultTime = new Date(Date.now() + 15 * 60 * 1000);
+    $('target').value = defaultTime.toISOString().slice(0, 16);
+    
+    $('apply').onclick = () => {
+      const targetTime = new Date($('target').value).toISOString();
+      sendUpdate({
+        waypoints: [],
+        current: { idx: 0 },
+        target_time: targetTime
+      });
+      startAutoAdvance();
+    };
+    
+    $('send').onclick = () => {
+      let wps = [];
+      try { 
+        wps = JSON.parse($('wps').value); 
+        state.waypoints = wps;
+      } catch(e) {
+        alert('Invalid JSON: ' + e.message);
+        return;
+      }
+      const idx = parseInt($('curIdx').value || '0', 10);
+      state.currentIdx = idx;
+      
+      sendUpdate({
+        waypoints: wps,
+        current: { idx },
+        target_time: new Date($('target').value).toISOString()
+      });
+      startAutoAdvance();
+    };
+    
+    $('reset-course').onclick = () => {
+      $('curIdx').value = '0';
+      state.currentIdx = 0;
+      $('send').click();
+    };
+    
+    $('force-advance').onclick = () => {
+      const newIdx = state.currentIdx + 1;
+      if (newIdx < state.waypoints.length) {
+        $('curIdx').value = newIdx;
+        $('send').click();
+      }
+    };
+    
+    function sendUpdate(data) {
+      const room = $('room').value.trim() || null;
+      const payload = {
+        room_id: room,
+        ...data,
+        license: $('license').value || 'DD5BE-VALID',
+        comm_status: $('comm').value,
+        signal_quality: parseFloat($('sig').value || '0.9')
+      };
+      
+      // Simulate socket.io (for now - will be real when server is added)
+      console.log('NEMO Update:', payload);
+      simulateResponse(payload);
+    }
+    
+    // === SIMULATE SOCKET (until server is deployed) ===
+    function simulateResponse(payload) {
+      const now = Date.now();
+      const targetMs = new Date(payload.target_time).getTime();
+      const timeLeftMs = Math.max(0, targetMs - now);
+      
+      // Calculate heading
+      let heading = 0;
+      if (payload.waypoints && payload.waypoints.length > 1) {
+        const fromIdx = payload.current.idx || 0;
+        const toIdx = Math.min(fromIdx + 1, payload.waypoints.length - 1);
+        heading = (toIdx - fromIdx) * (360 / payload.waypoints.length);
+      }
+      
+      const status = timeLeftMs === 0 ? 'arrived' : 
+                     payload.comm_status !== 'online' ? 'drift' : 'on_course';
+      
+      const advisory = status === 'arrived' ? 'Ziel erreicht!' :
+                       status === 'drift' ? 'Du driftest von der Spur – Recovery empfohlen' :
+                       `Bleibe auf Kurs; noch ${Math.ceil(timeLeftMs / 60000)} Minuten`;
+      
+      state = {
+        ...state,
+        heading_deg: heading,
+        eta_iso: payload.target_time,
+        status,
+        advisory
+      };
+      
+      updateUI();
+      
+      // Add audit event
+      addAuditEvent({
+        type: 'SIGNAL_TX',
+        module: 'NEMO_PATHFINDER',
+        timestamp: new Date().toISOString(),
+        heading: Math.round(heading),
+        status,
+        license: payload.license
+      });
+    }
+    
+    function updateUI() {
+      $('eta').textContent = state.eta_iso ? new Date(state.eta_iso).toLocaleString('de-DE') : 'ETA —';
+      $('advisory').textContent = state.advisory || '–';
+      $('advisory').className = 'advice ' + (state.status === 'on_course' ? 'good' : state.status === 'drift' ? 'warn' : '');
+      
+      const badge = $('status-badge');
+      badge.textContent = state.status.replace('_', ' ').toUpperCase();
+      badge.className = `status-badge status-${state.status}`;
+      
+      // Update waypoint info
+      if (state.waypoints.length > 0) {
+        const curr = state.waypoints[state.currentIdx];
+        const next = state.waypoints[Math.min(state.currentIdx + 1, state.waypoints.length - 1)];
+        $('current-wp').textContent = curr?.label || `WP${state.currentIdx}`;
+        $('next-wp').textContent = next?.label || `WP${state.currentIdx + 1}`;
+        
+        if (curr && next && curr.lat && next.lat) {
+          const dist = calculateDistance(curr.lat, curr.lon, next.lat, next.lon);
+          $('distance').textContent = `${dist.toFixed(1)} km`;
+        }
+      }
+    }
+    
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Earth radius in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
+    }
+    
+    // === AUTO-ADVANCE ===
+    function startAutoAdvance() {
+      if (autoAdvanceTimer) clearInterval(autoAdvanceTimer);
+      
+      autoAdvanceTimer = setInterval(() => {
+        if (!state.eta_iso || state.waypoints.length === 0) return;
+        
+        const now = Date.now();
+        const targetMs = new Date(state.eta_iso).getTime();
+        const timePerWaypoint = (targetMs - now) / Math.max(1, state.waypoints.length - state.currentIdx);
+        
+        // Auto-advance when time window passed
+        if (timePerWaypoint < 1000 && state.currentIdx < state.waypoints.length - 1) {
+          state.currentIdx++;
+          $('curIdx').value = state.currentIdx;
+          $('send').click();
+          
+          addAuditEvent({
+            type: 'DIRECTION_CHANGE',
+            module: 'NEMO_PATHFINDER',
+            timestamp: new Date().toISOString(),
+            from: state.currentIdx - 1,
+            to: state.currentIdx,
+            auto: true
+          });
+          
+          stats.directionChanges++;
+        }
+      }, 1000);
+      
+      $('auto-advance-status').textContent = '✅ Aktiv';
+    }
+    
+    // === AUDIT ===
+    function addAuditEvent(event) {
+      lastAudit.unshift(event);
+      if (lastAudit.length > 50) lastAudit.pop();
+      
+      stats.total++;
+      if (event.type === 'DRIFT_WARN') stats.driftWarnings++;
+      if (event.type === 'DIRECTION_CHANGE') stats.directionChanges++;
+      
+      $('last').textContent = lastAudit.slice(0, 5).map(e => JSON.stringify(e, null, 2)).join('\n\n---\n\n');
+    }
+    
+    function updateStats() {
+      $('events-total').textContent = stats.total;
+      $('direction-changes').textContent = stats.directionChanges;
+      $('drift-warnings').textContent = stats.driftWarnings;
+      $('uptime').textContent = Math.floor((Date.now() - stats.startTime) / 1000) + 's';
+    }
+
+    // === TABS ===
+    document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      ['time', 'coords', 'trail', 'recovery'].forEach(k => {
+        document.getElementById('pane-' + k).style.display = (t.dataset.tab === k) ? 'block' : 'none';
+      });
+    });
+
+    // === SWIPE NAVIGATION ===
+    let sx = 0, sy = 0;
+    document.body.addEventListener('touchstart', e => { 
+      sx = e.touches[0].clientX; 
+      sy = e.touches[0].clientY; 
+    }, {passive: true});
+    
+    document.body.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - sx;
+      const dy = e.changedTouches[0].clientY - sy;
+      
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+        const tabs = [...document.querySelectorAll('.tab')];
+        const idx = tabs.findIndex(t => t.classList.contains('active'));
+        const next = Math.max(0, Math.min(tabs.length - 1, idx + (dx < 0 ? 1 : -1)));
+        tabs[next].click();
+      }
+      
+      if (Math.abs(dy) > 60 && Math.abs(dy) > Math.abs(dx) && dy < 0) {
+        // Swipe up - go to home
+        window.location.href = '/';
+      }
+    }, {passive: true});
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
+      const tabs = [...document.querySelectorAll('.tab')];
+      const idx = tabs.findIndex(t => t.classList.contains('active'));
+      
+      switch(e.key) {
+        case 'ArrowLeft':
+          if (idx > 0) tabs[idx - 1].click();
+          break;
+        case 'ArrowRight':
+          if (idx < tabs.length - 1) tabs[idx + 1].click();
+          break;
+        case 'ArrowUp':
+          window.location.href = '/';
+          break;
+      }
+    });
+    
+    console.log('🧭 NEMO Pathfinder initialized');
+    console.log('📡 Telemetry:', gyroActive ? 'Active' : 'Waiting for permission');
+  </script>
+</body>
+</html>
+

@@ -32,7 +32,8 @@ Professional Software-Defined Radio stack with:
 | Page | Description |
 |------|-------------|
 | [🏠 Home](https://viewunitysystem.github.io/OnAirMulTiMedia/) | Main portal with Aurora video background |
-| [🧪 Test Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/test-dashboard.html) | **NEW** Swipe Navigation • Live Monitoring • Self-Healing |
+| [🧭 NEMO Pathfinder](https://viewunitysystem.github.io/OnAirMulTiMedia/nomadic_swipe_nemo.html) | **NEW** Zeit-Kompass • Telemetry • Auto-Advance • Audit Trail |
+| [🧪 Test Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/test-dashboard.html) | Swipe Navigation • Live Monitoring • Self-Healing |
 | [📊 Info Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/info.html) | Live metrics and community |
 | [🧪 Test Client](https://viewunitysystem.github.io/OnAirMulTiMedia/client.html) | WebRTC testing interface |
 | [📋 Audit Overlay](https://viewunitysystem.github.io/OnAirMulTiMedia/overlay.html) | System audit interface |
