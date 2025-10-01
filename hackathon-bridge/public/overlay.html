@@ -33,6 +33,8 @@
       <div class="stat">events: <span id="cnt">0</span></div>
       <div class="stat">rooms: <span id="rooms">0</span></div>
       <div class="stat">sessions: <span id="sessions">0</span></div>
+      <div class="stat">stars: <span id="stars">–</span></div>
+      <div class="stat">downloads: <span id="dl">–</span></div>
     </div>
   </header>
   <main>
@@ -49,6 +51,7 @@
       <div style="display:grid; gap:8px;">
         <a href="/client.html" target="_blank">Open Test Client</a>
         <a href="/api/health" target="_blank">API Health</a>
+        <a href="/info.html" target="_blank">Info Dashboard</a>
       </div>
     </aside>
     <section>
@@ -67,6 +70,8 @@
     const cntEl = document.getElementById('cnt');
     const roomsEl = document.getElementById('rooms');
     const sessionsEl = document.getElementById('sessions');
+    const starsEl = document.getElementById('stars');
+    const dlEl = document.getElementById('dl');
 
     let count = 0; let rooms = new Set(); let sessions = new Set();
 
@@ -74,6 +79,10 @@
       count++; cntEl.textContent = count;
       if (ev.room_id) rooms.add(ev.room_id); roomsEl.textContent = rooms.size;
       if (ev.session_id) sessions.add(ev.session_id); sessionsEl.textContent = sessions.size;
+      if (ev.type === 'github_update' && ev.payload){
+        starsEl.textContent = ev.payload.stars;
+        dlEl.textContent = ev.payload.release_downloads;
+      }
       const row = document.createElement('div'); row.className = 'row';
       const lvl = ev.level || 'info';
       row.innerHTML = `
@@ -105,6 +114,11 @@
       eventsDiv.innerHTML = '';
       rows.forEach(pushRow);
     });
+
+    // initial fetch for stats
+    fetch('/api/github/stats').then(r=>r.ok?r.json():null).then(s=>{
+      if (s){ starsEl.textContent = s.stars; dlEl.textContent = s.release_downloads; }
+    }).catch(()=>{});
   </script>
 </body>
 </html>

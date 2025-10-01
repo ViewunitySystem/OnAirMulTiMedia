@@ -84,6 +84,26 @@ CREATE TABLE IF NOT EXISTS files (
   room_id TEXT,
   created_at INTEGER
 );
+
+CREATE TABLE IF NOT EXISTS github_stats (
+  ts INTEGER PRIMARY KEY,
+  repo TEXT NOT NULL,
+  stars INTEGER,
+  forks INTEGER,
+  watchers INTEGER,
+  open_issues INTEGER,
+  release_count INTEGER,
+  release_downloads INTEGER,
+  latest_release_tag TEXT
+);
+
+CREATE TABLE IF NOT EXISTS user_contribs (
+  id TEXT PRIMARY KEY,
+  user_id TEXT,
+  content TEXT NOT NULL,
+  created_at INTEGER,
+  approved INTEGER DEFAULT 0
+);
 `);
 
 // --- Express app ---
@@ -96,6 +116,13 @@ app.use(morgan('dev'));
 // Static public (overlay + test client)
 app.use(express.static(PUBLIC_DIR));
 app.use('/uploads', express.static(UPLOAD_DIR));
+
+// Basic security headers for iframes from known hosts
+app.use((req,res,next)=>{
+  res.setHeader('Cross-Origin-Opener-Policy','same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy','require-corp');
+  next();
+});
 
 // Multer for file uploads
 const storage = multer.diskStorage({
@@ -189,6 +216,92 @@ app.get('/api/files', (req, res) => {
     ? db.prepare('SELECT * FROM files WHERE room_id = ? ORDER BY created_at DESC;').all(room_id)
     : db.prepare('SELECT * FROM files ORDER BY created_at DESC;').all();
   res.json(rows.map(r => ({ id: r.id, name: r.filename, url: `/uploads/${r.path}`, size: r.size, room_id: r.room_id, created_at: r.created_at })));
+});
+
+// ---------------- GitHub Monitoring ----------------
+const GITHUB_REPO = process.env.GITHUB_REPO || 'ViewunitySystem/OnAirMulTiMedia';
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || null;
+
+async function fetchGitHubJSON(endpoint){
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (GITHUB_TOKEN) headers['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
+  const url = `https://api.github.com${endpoint}`;
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`GitHub ${res.status} ${endpoint}`);
+  return res.json();
+}
+
+const insertGH = db.prepare(`INSERT OR REPLACE INTO github_stats (ts, repo, stars, forks, watchers, open_issues, release_count, release_downloads, latest_release_tag) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`);
+
+async function refreshGitHubStats(){
+  const ts = Date.now();
+  try {
+    const repo = await fetchGitHubJSON(`/repos/${GITHUB_REPO}`);
+    const releases = await fetchGitHubJSON(`/repos/${GITHUB_REPO}/releases?per_page=100`);
+    let downloads = 0; let latestTag = null;
+    for (const r of releases){
+      latestTag = latestTag || r.tag_name;
+      for (const a of (r.assets || [])) downloads += a.download_count || 0;
+    }
+    insertGH.run(ts, GITHUB_REPO, repo.stargazers_count||0, repo.forks_count||0, repo.subscribers_count||0, repo.open_issues_count||0, releases.length||0, downloads, latestTag||null);
+    const payload = { ts, repo: GITHUB_REPO, stars: repo.stargazers_count, forks: repo.forks_count, watchers: repo.subscribers_count, open_issues: repo.open_issues_count, release_count: releases.length, release_downloads: downloads, latest_release_tag: latestTag };
+    audit({ type: 'github_update', level: 'info', payload });
+    return payload;
+  } catch (e){
+    audit({ type: 'github_error', level: 'error', payload: { message: e.message } });
+    throw e;
+  }
+}
+
+app.get('/api/github/stats', (req,res)=>{
+  const row = db.prepare('SELECT * FROM github_stats ORDER BY ts DESC LIMIT 1;').get();
+  if (!row) return res.status(404).json({ error: 'no stats yet' });
+  res.json(row);
+});
+
+app.get('/api/github/history', (req,res)=>{
+  const limit = Number(req.query.limit || 200);
+  const rows = db.prepare('SELECT * FROM github_stats ORDER BY ts DESC LIMIT ?;').all(limit);
+  res.json(rows);
+});
+
+app.post('/api/github/refresh', async (req,res)=>{
+  const key = req.headers['x-admin-key'] || '';
+  if (process.env.ADMIN_KEY && key !== process.env.ADMIN_KEY) return res.status(403).json({ error: 'forbidden' });
+  try { const payload = await refreshGitHubStats(); res.json(payload); } catch (e){ res.status(500).json({ error: e.message }); }
+});
+
+// Schedule refresh every 10 minutes
+setInterval(()=>{ refreshGitHubStats().catch(()=>{}); }, 10 * 60 * 1000);
+refreshGitHubStats().catch(()=>{});
+
+// ---------------- User-Contributed Info ----------------
+const insertContrib = db.prepare('INSERT INTO user_contribs (id, user_id, content, created_at, approved) VALUES (?, ?, ?, ?, 0);');
+const listContribs = db.prepare('SELECT * FROM user_contribs WHERE approved = 1 ORDER BY created_at DESC LIMIT ?;');
+const approveContrib = db.prepare('UPDATE user_contribs SET approved = 1 WHERE id = ?;');
+
+app.get('/api/contribs', (req,res)=>{
+  const limit = Number(req.query.limit || 100);
+  const rows = listContribs.all(limit);
+  res.json(rows);
+});
+
+app.post('/api/contribs', (req,res)=>{
+  const { user_id = 'anon', content } = req.body || {};
+  if (!content || typeof content !== 'string' || content.length < 5) return res.status(400).json({ error:'content too short' });
+  if (content.length > 2000) return res.status(400).json({ error:'content too long' });
+  const id = nanoid();
+  insertContrib.run(id, String(user_id).slice(0,64), content, Date.now());
+  audit({ type:'contrib_submit', payload:{ id, user_id } });
+  res.json({ id, queued: true });
+});
+
+app.post('/api/contribs/:id/approve', (req,res)=>{
+  const key = req.headers['x-admin-key'] || '';
+  if (process.env.ADMIN_KEY && key !== process.env.ADMIN_KEY) return res.status(403).json({ error: 'forbidden' });
+  approveContrib.run(req.params.id);
+  audit({ type:'contrib_approve', payload:{ id: req.params.id } });
+  res.json({ ok: true });
 });
 
 // --- HTTP + Socket.IO ---
@@ -318,4 +431,5 @@ server.listen(PORT, () => {
   console.log(`OAMTM Hackathon Bridge listening on http://localhost:${PORT}`);
   console.log(`Overlay UI: http://localhost:${PORT}/overlay.html`);
   console.log(`Test Client: http://localhost:${PORT}/client.html`);
+  console.log(`Info Dashboard: http://localhost:${PORT}/info.html`);
 });

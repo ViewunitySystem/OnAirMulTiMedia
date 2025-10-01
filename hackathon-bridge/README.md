@@ -6,10 +6,13 @@
 
 - **Socket.IO Bridge** (`/bridge`) für Chat, Rooms, Presence, WebRTC-Signaling, File-Announcements
 - **Audit-Overlay** (`/audit` + `/overlay.html`) mit Live-Events und Query-Funktion
-- **REST-API**: Health, Rooms, Logs, Messages, Uploads, Files
+- **GitHub-Monitoring**: Sterne, Forks, Watcher, offene Issues, Releases, **Release-Download-Zähler**, Verlauf
+- **Community-Info-Board**: Nutzer:innen können Beiträge einreichen (Moderation via `X-ADMIN-KEY`)
+- **REST-API**: Health, Rooms, Logs, Messages, Uploads, Files, GitHub-Stats, Contribs
 - **SQLite (WAL)** für robuste, auditierbare Persistenz
 - **Öffentlicher Test-Client** (`/client.html`) mit schwebendem Inlay-Player
 - **Privacy-freundliches YouTube-Embed** (nocookie) und Sofort-Button für "Aurora – Diluculum"
+- **Info-Dashboard** (`/info.html`) mit GitHub-Statistiken und Community-Beiträgen
 
 ## 🎯 Schwebender Inlay-Player
 
@@ -31,6 +34,13 @@
 # Abhängigkeiten installieren
 npm install
 
+# Optional: Umgebungsvariablen setzen
+export GITHUB_REPO=ViewunitySystem/OnAirMulTiMedia
+# Optional: für höhere Rate Limits
+# export GITHUB_TOKEN=ghp_xxx
+# Optional: Admin-Key für Refresh/Approve
+# export ADMIN_KEY=change-me
+
 # Server starten
 npm start
 
@@ -42,6 +52,7 @@ npm run dev
 - **Bridge**: http://localhost:8080
 - **Overlay**: http://localhost:8080/overlay.html
 - **Test-Client**: http://localhost:8080/client.html
+- **Info Dashboard**: http://localhost:8080/info.html
 - **Aurora Auto-Open**: http://localhost:8080/client.html?aurora=1
 
 ## 📋 Beispielablauf
@@ -80,6 +91,18 @@ curl -X POST http://localhost:8080/api/rooms \
 ### File Upload
 - `POST /api/upload` - Datei hochladen
 - `GET /uploads/:filename` - Datei abrufen
+
+### GitHub Monitoring
+- `GET /api/github/stats` - Letzter Snapshot
+- `GET /api/github/history?limit=200` - Historie
+- `POST /api/github/refresh` - Manuelles Update (Header `X-ADMIN-KEY`)
+
+### Community-Beiträge
+- `GET /api/contribs` - Freigegebene Beiträge
+- `POST /api/contribs` - Beitrag einreichen `{ user_id?, content }`
+- `POST /api/contribs/:id/approve` - Beitrag freigeben (Header `X-ADMIN-KEY`)
+
+> **Hinweis Downloads**: GitHub stellt Repo-Downloadzahlen nicht global bereit. Gezählt werden **Release-Asset-Downloads** (Summe über alle Releases/Assets).
 
 ## 🌐 Socket.IO Events
 
@@ -184,6 +207,8 @@ services:
 - **WebRTC-Signaling**
 - **File-Uploads/Downloads**
 - **Inlay-Öffnungen/Schließungen**
+- **GitHub-Updates** (automatisch alle 10 Minuten)
+- **Community-Beiträge** (Submit/Approve)
 
 ### Metriken sammeln:
 - **Aktive Sessions**
@@ -191,6 +216,8 @@ services:
 - **Event-Rate**
 - **File-Upload-Volumen**
 - **Inlay-Nutzung**
+- **GitHub-Statistiken** (Stars, Forks, Downloads, Issues)
+- **Community-Engagement**
 
 ## 🌍 Integration mit OnAirMulTiMedia
 
@@ -230,13 +257,23 @@ OnAirMulTiMedia/
 - Interactive Sessions
 - Aurora – Diluculum für entspannte Atmosphäre
 
+## 💝 Unterstützen
+
+Diese Software ist frei nutzbar. Freiwillige Zuwendungen sind willkommen (kein Anspruch auf Gegenleistung; **kein Rechts-/Steuerhinweis** – lokale Regeln prüfen):
+
+**Donare, Tributum dare, Largiri, Conferre, Munus offerre, Pro bono publico, Gratia voluntaria, Ex animo, Spontanea voluntate, Munus tuum confer pro bono publico. Spontanea voluntate, ex animo, largire auxilium.**
+
+**Donare hic.**: [GoFundMe – magnitudo](https://www.gofundme.com/f/magnitudo?utm_campaign=unknown&utm_medium=referral&utm_source=widget)
+
+*Freiwillige Zuwendung als Dankeschön – keine Gegenleistung geschuldet. Dies ist **keine Rechts- oder Steuerberatung**. Prüfe lokale Vorgaben (z. B. Spendenrecht/Steuer). Mindestbetragempfehlung: 5 €.*
+
 ## 📞 Support & Kontakt
 
 ### 🌐 Links:
 - **Website**: [tel1.nl](https://tel1.jouwweb.nl/servicesoftware)
 - **Email**: [gentlyoverdone@outlook.com](mailto:gentlyoverdone@outlook.com)
 - **GitHub**: [@ViewunitySystem](https://github.com/ViewunitySystem)
-- **Spendenaktion**: [GoFundMe - Magnitudo](https://www.gofundme.com/f/magnitudo?utm_campaign=unknown&utm_medium=referral&utm_source=widget)
+- **GitHub Repo**: [OnAirMulTiMedia](https://github.com/ViewunitySystem/OnAirMulTiMedia)
 
 ### 🎵 Playlists:
 - **Spotify**: [Magnitudo Playlist](https://open.spotify.com/playlist/7BXr0cyoKuJSH6NUdPkrQ4)
