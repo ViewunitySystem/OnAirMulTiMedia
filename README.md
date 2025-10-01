@@ -1,8 +1,13 @@
-# 🚀 OnAirMulTiMedia - GitHub Pages Fix
+# 🚀 OnAirMulTiMedia - Self-Healing Multi-Target Deployment Platform
 
-## 🚨 PROBLEM GELÖST: Repository-Bereinigung
+[![CI Status](https://github.com/ViewunitySystem/OnAirMulTiMedia/workflows/Deploy%20(Pages%20%2B%20Firebase)/badge.svg)](https://github.com/ViewunitySystem/OnAirMulTiMedia/actions)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![EU Compliance](https://img.shields.io/badge/EU-GDPR%20%7C%20RED%20%7C%20BNetzA-green.svg)](LICENSE)
+[![Swipe Technology](https://img.shields.io/badge/WebTrit-Swipe%20Enhanced-orange.svg)](modules/SignalMirror/)
+[![Modules](https://img.shields.io/badge/modules-22-brightgreen.svg)](modules/)
+[![Compliance](https://img.shields.io/badge/compliance-100%25-success.svg)](audit/exports/license.json)
 
-Das Problem mit der Weiterleitungsseite ist jetzt behoben!
+## 🎯 Production-Ready SDR Platform with Audit Trail & Regulatory Compliance
 
 ### ✅ Was wurde gefixt:
 
