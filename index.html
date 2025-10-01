@@ -1,6 +1,4 @@
-<!doctype html>
-<html lang="de">
-<head>
+<!DOCTYPE html><html lang="de"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OnAirMulTiMedia - Amateur Radio SDR Platform</title>
@@ -96,16 +94,7 @@
     </div>
     
     <!-- Haupt-Iframe für Info Dashboard -->
-    <iframe
-      id="inlay"
-      name="inlay"
-      src="./info.html"
-      title="OnAirMulTiMedia Info Dashboard"
-      loading="eager"
-      referrerpolicy="no-referrer"
-      allow="fullscreen"
-      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-    ></iframe>
+    <iframe id="inlay" name="inlay" src="./info.html" title="OnAirMulTiMedia Info Dashboard" loading="eager" referrerpolicy="no-referrer" allow="fullscreen" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"></iframe>
   </div>
 
   <!-- Fallback für deaktiviertes JavaScript -->
@@ -115,57 +104,8 @@
     <a href="./info.html">Info-Seite</a>.
   </noscript>
 
-  <script>
-    // Optional: Query-Parameter an die Info-Seite durchreichen
-    const iframe = document.getElementById('inlay');
-    const loading = document.getElementById('loading');
-    const params = new URLSearchParams(location.search).toString();
-    
-    // Query-Parameter weitergeben (falls vorhanden)
-    if (params) {
-      iframe.src = `./info.html?${params}`;
-    }
-    
-    // Ladeanzeige ausblenden wenn iframe geladen ist
-    iframe.addEventListener('load', () => {
-      if (loading) {
-        loading.classList.add('hidden');
-        setTimeout(() => loading.remove(), 300);
-      }
-    });
-    
-    // Error Handling
-    iframe.addEventListener('error', () => {
-      if (loading) {
-        loading.innerHTML = `
-          <div class="spinner"></div>
-          <p style="color: #ff6b6b;">Fehler beim Laden der Info-Seite.</p>
-          <p><a href="./info.html" style="color: #00ff88; text-decoration: underline;">Direkt zur Info-Seite</a></p>
-        `;
-      }
-    });
-    
-    // ROBUSTE ANTI-REDIRECT-LOGIK
-    if (window.history && window.history.replaceState) {
-      // Clean URL if it came from a redirect
-      const cleanUrl = window.location.pathname;
-      if (window.location.search.includes('redirect') || 
-          window.location.search.includes('redirecting') ||
-          window.location.search.includes('info')) {
-        window.history.replaceState({}, document.title, cleanUrl);
-      }
-    }
-    
-    // Verhindere dass info.html die Hauptseite überschreibt
-    if (window.location.pathname.endsWith('/info.html')) {
-      window.location.replace(window.location.pathname.replace('/info.html', '/'));
-    }
-    
-    // DEBUG: Console-Log für Troubleshooting
-    console.log('[OnAirMulTiMedia] Index.html loaded successfully');
-    console.log('[OnAirMulTiMedia] Iframe source:', iframe.src);
-    console.log('[OnAirMulTiMedia] Current URL:', window.location.href);
-  </script>
-</body>
-</html>
+  
 
+
+
+<script>window.addEventListener("load",()=>{"serviceWorker" in navigator && navigator.serviceWorker.register("/public/sw.js");});</script></body></html>

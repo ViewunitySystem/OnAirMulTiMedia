@@ -1,0 +1,61 @@
+# Page snapshot
+
+```yaml
+- iframe [ref=e3]:
+  - generic [active] [ref=f1e1]:
+    - banner [ref=f1e2]:
+      - generic [ref=f1e3]:
+        - generic [ref=f1e4]: OnAirMulTiMedia – Info & Monitoring
+        - link "GitHub Repo ↗" [ref=f1e5] [cursor=pointer]:
+          - /url: https://github.com/ViewunitySystem/OnAirMulTiMedia
+        - link "Blueprints ↗" [ref=f1e6] [cursor=pointer]:
+          - /url: /blueprints.html
+        - link "Manifest ↗" [ref=f1e7] [cursor=pointer]:
+          - /url: /manifest.html
+        - link "Regulatory ↗" [ref=f1e8] [cursor=pointer]:
+          - /url: /regulatory.html
+      - generic [ref=f1e9]: Live-Metriken werden regelmäßig synchronisiert (alle ~10 Minuten). Release-Downloads = Summe aller Release-Assets.
+    - main [ref=f1e10]:
+      - generic [ref=f1e11]:
+        - generic [ref=f1e12]:
+          - generic [ref=f1e13]: Stars
+          - generic [ref=f1e14]: –
+        - generic [ref=f1e15]:
+          - generic [ref=f1e16]: Forks
+          - generic [ref=f1e17]: –
+        - generic [ref=f1e18]:
+          - generic [ref=f1e19]: Watcher
+          - generic [ref=f1e20]: –
+        - generic [ref=f1e21]:
+          - generic [ref=f1e22]: Offene Issues
+          - generic [ref=f1e23]: –
+        - generic [ref=f1e24]:
+          - generic [ref=f1e25]: Releases
+          - generic [ref=f1e26]: –
+        - generic [ref=f1e27]:
+          - generic [ref=f1e28]: Release-Downloads
+          - generic [ref=f1e29]: –
+        - generic [ref=f1e30]:
+          - generic [ref=f1e31]: Letztes Release
+          - generic [ref=f1e32]: –
+        - generic [ref=f1e33]:
+          - generic [ref=f1e34]: Stand
+          - generic [ref=f1e35]: –
+      - generic [ref=f1e36]:
+        - heading "Community-Beiträge" [level=3] [ref=f1e37]
+        - generic [ref=f1e38]: Reiche ergänzende Infos ein. Beiträge werden moderiert, bevor sie erscheinen.
+        - generic [ref=f1e39]:
+          - textbox "Dein Name oder @handle (optional)" [ref=f1e40]
+          - textbox "Dein Beitrag (min. 5 Zeichen, max. 2000)" [ref=f1e41]
+          - button "Beitrag einreichen" [ref=f1e42] [cursor=pointer]
+        - separator [ref=f1e43]
+      - generic [ref=f1e44]:
+        - heading "Unterstützen" [level=3] [ref=f1e45]
+        - generic [ref=f1e46]:
+          - text: Donare, Tributum dare, Largiri, Conferre, Munus offerre, Pro bono publico, Gratia voluntaria, Ex animo, Spontanea voluntate, Munus tuum confer pro bono publico.
+          - text: Spontanea voluntate, ex animo, largire auxilium.
+          - text: "Donare hic.:"
+          - link "GoFundMe – magnitudo ↗" [ref=f1e47] [cursor=pointer]:
+            - /url: https://www.gofundme.com/f/magnitudo?utm_campaign=unknown&utm_medium=referral&utm_source=widget
+        - paragraph [ref=f1e48]: "Freiwillige Zuwendung als Dankeschön – keine Gegenleistung geschuldet. Dies ist **keine Rechts- oder Steuerberatung**. Prüfe lokale Vorgaben (z. B. Spendenrecht/Steuer). Mindestbetragempfehlung: 5 €."
+```
