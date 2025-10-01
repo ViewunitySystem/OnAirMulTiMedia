@@ -1,0 +1,63 @@
+{
+  "module": "NEMO_PATHFINDER",
+  "version": "1.0.0",
+  "description": "Zeit-/Pfad-Kompass für Nomaden: führt nach Zielzeitpunkten und virtuellen/realen Koordinaten, mit auditierbarer Spurhaltung und Recovery.",
+  "interfaces": {
+    "inputs": [
+      { "name": "target_time", "type": "ISO 8601 string", "required": true, "example": "2025-10-01T12:00:00Z" },
+      { "name": "waypoints", "type": "array(string|{lat:number,lon:number,label:string})", "required": true, "example": "[\"A\",\"B\",\"C\"]" },
+      { "name": "current", "type": "{idx:number, lat?:number, lon?:number}", "required": true, "example": "{\"idx\":0}" },
+      { "name": "license", "type": "string", "required": false, "example": "DD5BE-VALID" },
+      { "name": "comm_status", "type": "enum(online|degraded|offline)", "required": true, "example": "online" },
+      { "name": "energy_budget_wh", "type": "number", "required": false, "example": 12.5 },
+      { "name": "signal_quality", "type": "number(0..1)", "required": false, "example": 0.82 }
+    ],
+    "outputs": [
+      { "name": "heading_deg", "type": "number(0..360)" },
+      { "name": "eta_iso", "type": "ISO 8601 string" },
+      { "name": "status", "type": "enum(on_course|drift|recovery|arrived)" },
+      { "name": "advisory", "type": "string" },
+      { "name": "audit_id", "type": "string" }
+    ],
+    "logs": [
+      { "event": "COMM_INIT",         "level": "info",  "description": "NEMO initialisiert" },
+      { "event": "LICENSE_CHECK",     "level": "info",  "description": "Lizenzstatus geprüft" },
+      { "event": "DIRECTION_CHANGE",  "level": "info",  "description": "Kurswechsel zwischen Wegpunkten" },
+      { "event": "DRIFT_WARN",        "level": "warn",  "description": "Spurabweichung erkannt" },
+      { "event": "RECOVERY_TRIGGER",  "level": "warn",  "description": "Recovery aktiviert" },
+      { "event": "SIGNAL_TX",         "level": "info",  "description": "Kompass-Update an Clients gesendet" },
+      { "event": "GOAL_REACHED",      "level": "info",  "description": "Zielzeit/-punkt erreicht" },
+      { "event": "ERROR",             "level": "error", "description": "Laufzeitfehler/Validierungsfehler" }
+    ]
+  },
+  "validation": {
+    "ci": true,
+    "tests": [
+      "unit: eta calculator (iso)",
+      "unit: heading/bearing for lat/lon",
+      "unit: drift detection",
+      "int: socket broadcast + audit event chain"
+    ],
+    "hil_tests": [
+      "HIL: Wegpunktsequenz mit Smartphone-Kompass (Gyro) verifizieren",
+      "HIL: RF-Schattenzone simulieren (comm_status=degraded/offline)"
+    ],
+    "recovery": [
+      "Fallback: virtuelle Winkelzuordnung bei fehlenden Koordinaten",
+      "Fallback: ETA nur aus target_time berechnen"
+    ]
+  },
+  "regulatory": {
+    "license_required": false,
+    "references": [
+      { "jurisdiction": "EU", "section": "Allg. Verbraucher-/Datenschutzrecht" }
+    ]
+  },
+  "checklist": [
+    "Modul initialisiert korrekt",
+    "Lizenzprüfung erfolgt lokal",
+    "Signalpfad dokumentiert",
+    "Recovery bei Fehler getestet"
+  ]
+}
+

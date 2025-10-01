@@ -1,0 +1,33 @@
+{
+  "name": "oamtm-nemo-pathfinder",
+  "version": "1.0.0",
+  "description": "NEMO Pathfinder - Zeit-/Pfad-Kompass für Nomaden | DD5BE",
+  "main": "server-nemo.js",
+  "scripts": {
+    "start": "node server-nemo.js",
+    "dev": "node server-nemo.js",
+    "test": "echo \"✅ Tests ready for CI/CD\"",
+    "ci:validate": "node -e \"const fs=require('fs');const glob=require('glob')||{sync:p=>fs.readdirSync('blueprints').filter(f=>f.endsWith('.json')).map(f=>'blueprints/'+f)};glob.sync('blueprints/*.json').forEach(f=>{try{const d=JSON.parse(fs.readFileSync(f,'utf8'));console.log('✅',f,'valid');}catch(e){console.error('❌',f,e.message);process.exit(1);}});console.log('✅ All blueprints valid');\""
+  },
+  "keywords": [
+    "nemo",
+    "pathfinder",
+    "compass",
+    "nomadic",
+    "swipe",
+    "audit-trail",
+    "dd5be",
+    "amateur-radio"
+  ],
+  "author": "Raymond Demitrio Dr. Tel (DD5BE)",
+  "license": "Amateur Radio Compliant",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM Manifest – Open-Core | DD5BE</title>
+    <style>
+        :root { color-scheme: dark; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0b1020 0%, #1a1f3a 100%);
+            color: #e5e7eb;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #1f2a52;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #3b82f6;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            color: #9ca3af;
+            font-size: 1.2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid #1f2a52;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .tab.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .panel {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .panel.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: rgba(17, 24, 39, 0.8);
+            border: 1px solid #1f2a52;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #3b82f6;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .card h3 {
+            color: #93c5fd;
+            margin: 15px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        pre {
+            background: #0b1020;
+            border: 1px solid #1f2a52;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        code {
+            background: #0b1020;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge-purple { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #1f2a52;
+        }
+        
+        ul li:last-child {
+            border-bottom: none;
+        }
+        
+        a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .qr-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .qr-card {
+            background: #0b1020;
+            border: 1px solid #1f2a52;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .qr-card img {
+            width: 150px;
+            height: 150px;
+            margin: 10px 0;
+        }
+        
+        .philosophy {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #93c5fd;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+            border-top: 1px solid #1f2a52;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🌍 OAMTM Open-Core Manifest</h1>
+            <p class="tagline">Auditierbare Kommunikation in Raum & Zeit • mainzero</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="manifest">📜 Manifest</div>
+            <div class="tab" data-tab="json">📦 JSON</div>
+            <div class="tab" data-tab="modules">🧩 Module</div>
+            <div class="tab" data-tab="audit">📊 Audit Trail</div>
+            <div class="tab" data-tab="qr">🔐 QR & Lizenz</div>
+        </div>
+        
+        <!-- Manifest Panel -->
+        <div class="panel active" id="panel-manifest">
+            <div class="card">
+                <span class="badge badge-blue">v1.0.0-audit</span>
+                <span class="badge badge-green">mainzero</span>
+                <span class="badge badge-purple">DD5BE</span>
+                
+                <h2>§0 Ethos</h2>
+                <div class="philosophy">
+                    <strong>Communication is Peace.</strong><br>
+                    Wir bauen Kommunikationsräume, die prüfbar, heilbar und langfristig erinnerbar sind. Keine Blackbox, kein Lock‑in.
+                </div>
+                
+                <h2>§1 Architekturblöcke</h2>
+                <ul>
+                    <li><strong>Bridge Node:</strong> REST + WebSocket, Audit‑Events, Exporte (JSON/MD/PDF+QR), Ed25519‑Signatur</li>
+                    <li><strong>Overlay:</strong> Live‑Audit‑Stream (Events: COMM_INIT, LICENSE_CHECK, SIGNAL_TX, DRIFT_WARN …)</li>
+                    <li><strong>Info‑Board:</strong> GitHub‑Metriken, Community‑Beiträge, Moderation mit X-ADMIN-KEY</li>
+                    <li><strong>Blueprints:</strong> JSON‑Schema‑validierte Modulbeschreibungen + Checklisten</li>
+                </ul>
+                
+                <h2>§2 Event‑Taxonomie</h2>
+                <ul>
+                    <li><code>COMM_INIT</code> – Kommunikation initialisiert</li>
+                    <li><code>LICENSE_CHECK</code> – Lizenzstatus geparst/geprüft</li>
+                    <li><code>DIRECTION_CHANGE</code> – Kurswechsel zw. Wegpunkten</li>
+                    <li><code>DRIFT_WARN</code> – Spurabweichung</li>
+                    <li><code>RECOVERY_TRIGGER</code> – Recovery aktiv</li>
+                    <li><code>GOAL_REACHED</code> – Zielpunkt/Zeit erreicht</li>
+                    <li><code>GITHUB_UPDATE</code> – Repo‑Zähler aktualisiert</li>
+                </ul>
+                <p style="color: #9ca3af; margin-top: 10px;">Alle Events: <strong>UTC‑Zeitstempel</strong> (ISO 8601), idempotent persistiert</p>
+                
+                <h2>§6 mainzero & Aether</h2>
+                <div class="philosophy">
+                    <strong>mainzero</strong> ist nicht nur ein Branch – es ist der Ursprung auditierter Wahrheit.<br><br>
+                    Der <strong>Aether</strong> vergisst nicht: OAMTM archiviert Stimmen – auditierbar, wiederherstellbar, unvergessen.
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🔗 Verwandte Dokumente</h2>
+                <ul>
+                    <li><a href="../MANIFEST.md" target="_blank">📄 MANIFEST.md (vollständig)</a></li>
+                    <li><a href="../audit_checklist.md" target="_blank">✅ Audit Checklist</a></li>
+                    <li><a href="../README.md" target="_blank">📚 README</a></li>
+                    <li><a href="../TESTING.md" target="_blank">🧪 Testing Guide</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- JSON Panel -->
+        <div class="panel" id="panel-json">
+            <div class="card">
+                <h2>📦 manifest.json</h2>
+                <p>Maschinenlesbare Version des Manifests für CI/CD und Automation</p>
+                <pre id="json-content">Loading...</pre>
+            </div>
+            
+            <div class="card">
+                <h2>🔌 API Endpoints</h2>
+                <ul>
+                    <li><code>/api/keys/public</code> – Ed25519 Public Key (Key‑ID: oamtm-2025)</li>
+                    <li><code>/api/audit/export?format=json|md|pdf</code> – Audit Trail Export</li>
+                    <li><code>/api/license/qr.png?module=&lt;MODULE&gt;&amp;license=&lt;ID&gt;</code> – Lizenz QR-Code</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Modules Panel -->
+        <div class="panel" id="panel-modules">
+            <div class="card">
+                <h2>🧩 Blueprint-Kanon v1</h2>
+                <div class="qr-section">
+                    <div class="qr-card">
+                        <h3>GlobalMeetingClock</h3>
+                        <p style="color: #9ca3af;">Globale, auditierbare Meeting‑Codes (QR/Link)</p>
+                        <a href="../blueprints/global_meeting_clock.json" target="_blank">📐 Blueprint ansehen</a>
+                    </div>
+                    
+                    <div class="qr-card">
+                        <h3>CanvasSwipe</h3>
+                        <p style="color: #9ca3af;">Swipe‑Gesten → UI‑State + Audit</p>
+                        <a href="../blueprints/canvas_swipe.json" target="_blank">📐 Blueprint ansehen</a>
+                    </div>
+                    
+                    <div class="qr-card">
+                        <h3>RFValidationEngine</h3>
+                        <p style="color: #9ca3af;">RF‑Regeln pro Land, HIL‑Trigger</p>
+                        <a href="../blueprints/rf_validation_engine.json" target="_blank">📐 Blueprint ansehen</a>
+                    </div>
+                    
+                    <div class="qr-card">
+                        <h3>NEMO_PATHFINDER</h3>
+                        <p style="color: #9ca3af;">Zeit‑/Pfad‑Kompass für Nomaden</p>
+                        <a href="../blueprints/nemo_pathfinder.json" target="_blank">📐 Blueprint ansehen</a>
+                        <a href="../modules/NEMO_PATHFINDER/README.md" target="_blank" style="display: block; margin-top: 5px;">📖 Dokumentation</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📋 Blueprint Requirements</h2>
+                <p>Jedes Modul bringt:</p>
+                <ul>
+                    <li><strong>interfaces</strong> – Inputs, Outputs, Logs</li>
+                    <li><strong>validation</strong> – CI Tests, HIL Tests, Recovery</li>
+                    <li><strong>regulatory</strong> – License Requirements, References</li>
+                    <li><strong>checklist</strong> – Pre-Deployment Checks</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Audit Trail Panel -->
+        <div class="panel" id="panel-audit">
+            <div class="card">
+                <h2>📊 Beispiel Audit Trail (NEMO)</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #0b1020;">
+                                <th style="padding: 10px; border: 1px solid #1f2a52;">Time (UTC)</th>
+                                <th style="padding: 10px; border: 1px solid #1f2a52;">Level</th>
+                                <th style="padding: 10px; border: 1px solid #1f2a52;">Type</th>
+                                <th style="padding: 10px; border: 1px solid #1f2a52;">Payload</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">2025-10-01T08:42:00Z</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><span class="badge badge-blue">info</span></td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">COMM_INIT</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><code>{"session":"alpha"}</code></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">2025-10-01T08:42:05Z</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><span class="badge badge-blue">info</span></td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">LICENSE_CHECK</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><code>{"license":"DD5BE-VALID"}</code></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">2025-10-01T08:43:10Z</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><span class="badge badge-blue">info</span></td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">DIRECTION_CHANGE</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><code>{"from":"A","to":"B","heading":106}</code></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">2025-10-01T08:47:22Z</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><span class="badge badge-green">warn</span></td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">DRIFT_WARN</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><code>{"comm_status":"degraded"}</code></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">2025-10-01T09:00:00Z</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><span class="badge badge-green">info</span></td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;">GOAL_REACHED</td>
+                                <td style="padding: 8px; border: 1px solid #1f2a52;"><code>{"wp":"C"}</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📤 Export Optionen</h2>
+                <ul>
+                    <li><strong>JSON:</strong> <code>/api/audit/export?format=json&type=DIRECTION_CHANGE&limit=200&signed=1</code></li>
+                    <li><strong>Markdown:</strong> <code>/api/audit/export?format=md&type=NEMO_PATHFINDER</code></li>
+                    <li><strong>PDF:</strong> <code>/api/audit/export?format=pdf&title=NEMO%20Trail&signed=1</code></li>
+                </ul>
+                
+                <h3>Verifikation</h3>
+                <ul>
+                    <li>Public Key: <code>/api/keys/public</code> (Ed25519, Key‑ID: oamtm-2025)</li>
+                    <li>Prüfsumme: SHA‑256 über Rohdaten</li>
+                    <li>Signatur: Base64 (siehe JSON‑Feld <code>signature</code>)</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>📖 Vollständige Audit-Dokumentation</h2>
+                <a href="../audit_log.md" target="_blank">📄 audit_log.md ansehen</a>
+            </div>
+        </div>
+        
+        <!-- QR & License Panel -->
+        <div class="panel" id="panel-qr">
+            <div class="card">
+                <h2>🔐 Lizenz QR-Codes</h2>
+                <p>Generiere QR-Codes für Module mit Lizenznachweis:</p>
+                
+                <div class="qr-section">
+                    <div class="qr-card">
+                        <h3>NEMO_PATHFINDER</h3>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://viewunitysystem.github.io/OnAirMulTiMedia/docs/?module=NEMO_PATHFINDER%26license=DD5BE-VALID" alt="NEMO QR">
+                        <p style="color: #9ca3af; font-size: 12px;">DD5BE-VALID</p>
+                    </div>
+                    
+                    <div class="qr-card">
+                        <h3>RFValidationEngine</h3>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://viewunitysystem.github.io/OnAirMulTiMedia/docs/?module=RFValidationEngine%26license=DD5BE-VALID" alt="RF QR">
+                        <p style="color: #9ca3af; font-size: 12px;">DD5BE-VALID</p>
+                    </div>
+                    
+                    <div class="qr-card">
+                        <h3>GlobalMeetingClock</h3>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://viewunitysystem.github.io/OnAirMulTiMedia/docs/?module=GlobalMeetingClock%26license=DD5BE-VALID" alt="Meeting QR">
+                        <p style="color: #9ca3af; font-size: 12px;">DD5BE-VALID</p>
+                    </div>
+                    
+                    <div class="qr-card">
+                        <h3>CanvasSwipe</h3>
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://viewunitysystem.github.io/OnAirMulTiMedia/docs/?module=CanvasSwipe%26license=DD5BE-VALID" alt="Canvas QR">
+                        <p style="color: #9ca3af; font-size: 12px;">DD5BE-VALID</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🔑 API Endpunkt</h2>
+                <pre>/api/license/qr.png?module=&lt;MODULE&gt;&license=&lt;ID&gt;</pre>
+                <p style="margin-top: 10px; color: #9ca3af;">
+                    Generiert einen QR-Code der das Modul und die Lizenz-ID enthält.
+                    Für Audit-Trail-Verifizierung und Compliance-Nachweise.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p><strong>© DD5BE – OnAirMulTiMedia</strong></p>
+            <p style="margin-top: 10px;">
+                <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/">🏠 Hauptseite</a> • 
+                <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/nomadic_swipe_nemo.html">🧭 NEMO</a> • 
+                <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/test-dashboard.html">🧪 Dashboard</a> • 
+                <a href="https://github.com/ViewUnitySystem/OnAirMulTiMedia">💻 GitHub</a>
+            </p>
+            <p style="margin-top: 20px; color: #6b7280; font-style: italic;">
+                "mainzero ist nicht nur ein Branch – es ist der Ursprung auditierter Wahrheit."
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and panels
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding panel
+                tab.classList.add('active');
+                document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // Load manifest.json
+        fetch('../manifest.json')
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('json-content').textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(e => {
+                document.getElementById('json-content').textContent = 'Error loading manifest.json: ' + e.message;
+            });
+        
+        console.log('🌍 OAMTM Manifest Viewer loaded');
+        console.log('mainzero - Ursprung auditierter Wahrheit');
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audit Overlay – OAMTM Bridge</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #0b1020; color: #e6e6ea; }
+    header { padding: 12px 16px; background: #121a34; position: sticky; top: 0; z-index: 10; display: flex; gap: 12px; align-items: center; }
+    .badge { padding: 2px 8px; border-radius: 999px; background:#1f2a52; font-size: 12px; }
+    main { display: grid; grid-template-columns: 320px 1fr; gap: 16px; padding: 16px; }
+    aside { background: #121a34; border-radius: 12px; padding: 12px; }
+    section { background: #121a34; border-radius: 12px; padding: 12px; }
+    .events { height: 70vh; overflow: auto; }
+    .row { display: grid; grid-template-columns: 160px 100px 1fr; gap: 8px; padding: 8px; border-bottom: 1px solid #1f2a52; }
+    .row:hover { background:#0e1630; }
+    .pill { padding: 2px 6px; border-radius: 8px; font-size: 12px; }
+    .pill.info { background:#1a3b5c; }
+    .pill.warn { background:#5c4b1a; }
+    .pill.error { background:#5c1a1a; }
+    code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+    input, select, button { background:#0b1020; color:#e6e6ea; border:1px solid #1f2a52; border-radius:8px; padding:8px; }
+    button { cursor:pointer; }
+    .stats { display:flex; gap:8px; }
+    .stat { background:#0b1020; padding:8px 12px; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>Audit Overlay</strong>
+    <span class="badge" id="conn">connecting…</span>
+    <div class="stats">
+      <div class="stat">events: <span id="cnt">0</span></div>
+      <div class="stat">rooms: <span id="rooms">0</span></div>
+      <div class="stat">sessions: <span id="sessions">0</span></div>
+      <div class="stat">stars: <span id="stars">–</span></div>
+      <div class="stat">downloads: <span id="dl">–</span></div>
+    </div>
+  </header>
+  <main>
+    <aside>
+      <h3>Filter</h3>
+      <div style="display:grid; gap:8px;">
+        <label>Type <input id="fType" placeholder="e.g. message, offer" /></label>
+        <label>Room <input id="fRoom" placeholder="room id" /></label>
+        <button id="btnQuery">Query</button>
+        <button id="btnLive">Live</button>
+      </div>
+      <hr />
+      <h3>Quick actions</h3>
+      <div style="display:grid; gap:8px;">
+        <a href="/client.html" target="_blank">Open Test Client</a>
+        <a href="/api/health" target="_blank">API Health</a>
+        <a href="/info.html" target="_blank">Info Dashboard</a>
+      </div>
+    </aside>
+    <section>
+      <div class="row" style="font-weight:600; border-bottom:2px solid #1f2a52;">
+        <div>time</div>
+        <div>type</div>
+        <div>payload</div>
+      </div>
+      <div class="events" id="events"></div>
+    </section>
+  </main>
+  <script src="/webtrit-swipe.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const fmt = (ts)=> new Date(ts).toLocaleString();
+    const eventsDiv = document.getElementById('events');
+    const cntEl = document.getElementById('cnt');
+    const roomsEl = document.getElementById('rooms');
+    const sessionsEl = document.getElementById('sessions');
+    const starsEl = document.getElementById('stars');
+    const dlEl = document.getElementById('dl');
+
+    let count = 0; let rooms = new Set(); let sessions = new Set();
+
+    function pushRow(ev){
+      count++; cntEl.textContent = count;
+      if (ev.room_id) rooms.add(ev.room_id); roomsEl.textContent = rooms.size;
+      if (ev.session_id) sessions.add(ev.session_id); sessionsEl.textContent = sessions.size;
+      if (ev.type === 'github_update' && ev.payload){
+        starsEl.textContent = ev.payload.stars;
+        dlEl.textContent = ev.payload.release_downloads;
+      }
+      const row = document.createElement('div'); row.className = 'row';
+      const lvl = ev.level || 'info';
+      row.innerHTML = `
+        <div><span class="pill ${lvl}">${lvl}</span> ${fmt(ev.ts)}</div>
+        <div><code>${ev.type}</code></div>
+        <div><code>${JSON.stringify(ev.payload)}</code></div>
+      `;
+      eventsDiv.prepend(row);
+    }
+
+    const connEl = document.getElementById('conn');
+    const socket = io('/audit');
+    socket.on('connect', ()=>{ connEl.textContent = 'connected'; connEl.style.background = '#134e4a'; });
+    socket.on('disconnect', ()=>{ connEl.textContent = 'disconnected'; connEl.style.background = '#5c1a1a'; });
+
+    socket.on('audit:event', pushRow);
+
+    document.getElementById('btnQuery').onclick = ()=>{
+      const type = document.getElementById('fType').value || null;
+      const room_id = document.getElementById('fRoom').value || null;
+      socket.emit('audit:query', { type, room_id, limit: 500 });
+    };
+    document.getElementById('btnLive').onclick = ()=>{
+      eventsDiv.innerHTML = ''; count=0; rooms.clear(); sessions.clear();
+      cntEl.textContent = '0'; roomsEl.textContent='0'; sessionsEl.textContent='0';
+    };
+
+    socket.on('audit:results', (rows) => {
+      eventsDiv.innerHTML = '';
+      rows.forEach(pushRow);
+    });
+
+    // initial fetch for stats
+    fetch('/api/github/stats').then(r=>r.ok?r.json():null).then(s=>{
+      if (s){ starsEl.textContent = s.stars; dlEl.textContent = s.release_downloads; }
+    }).catch(()=>{});
+  </script>
+</body>
+</html>
