@@ -43,9 +43,9 @@ example.com {
         header_up Upgrade {>Upgrade}
     }
 
-    # File upload size limit
+    # File upload size limit - NO LIMITS
     request_body {
-        max_size 50MB
+        max_size 0
     }
 
     # Logging

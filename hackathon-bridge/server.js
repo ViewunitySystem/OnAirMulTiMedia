@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS files (
 const app = express();
 app.use(helmet());
 app.use(cors({ origin: '*' }));
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '1gb' }));
 app.use(morgan('dev'));
 
 // Static public (overlay + test client)

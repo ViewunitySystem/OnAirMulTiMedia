@@ -145,6 +145,7 @@ hackathon-bridge.yourdomain.com {
 - **TLS-Terminierung** am Reverse Proxy
 - **Database-Backups** für SQLite implementieren
 - **Log-Rotation** für Audit-Events
+- **UNLIMITED File Uploads** - Alle Dateitypen ohne Größen-Limits
 
 ## 🏗️ Docker Deployment
 
