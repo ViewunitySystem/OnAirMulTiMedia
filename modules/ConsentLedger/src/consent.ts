@@ -6,3 +6,4 @@ export function consent(user: string, scope: string){
     ts: new Date().toISOString() 
   }; 
 }
+

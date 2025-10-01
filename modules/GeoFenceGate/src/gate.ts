@@ -5,3 +5,4 @@ export function authorize(lat: number, lon: number){
     ts: new Date().toISOString() 
   }; 
 }
+

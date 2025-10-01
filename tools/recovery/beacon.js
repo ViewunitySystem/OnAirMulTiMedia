@@ -10,3 +10,4 @@ const ev = {
 
 fs.appendFileSync('audit/events/recovery.jsonl', JSON.stringify(ev) + '\n');
 console.log('Beacon emitted');
+

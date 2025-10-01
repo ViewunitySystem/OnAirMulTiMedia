@@ -281,3 +281,4 @@ export function emitCSPAudit(violation, metadata) {
 export function emitFeatureFlagAudit(flagName, enabled, reason, metadata) {
   return webTritAudit.emitFeatureFlagEvent(flagName, enabled, reason, metadata);
 }
+

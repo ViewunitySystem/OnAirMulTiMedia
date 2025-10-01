@@ -177,3 +177,4 @@ app.post('/api/csp-report', (req, res) => {
 3. **CSP-Reports** für Monitoring von Verletzungen
 4. **Feature-Flags** über URL-Parameter und Environment-Variablen
 5. **Audit-Trail** für alle CSP-Änderungen und Verletzungen
+

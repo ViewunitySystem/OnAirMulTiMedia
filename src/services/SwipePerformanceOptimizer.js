@@ -467,3 +467,4 @@ class SwipePerformanceOptimizer {
 // Singleton Instance
 export const swipePerformanceOptimizer = new SwipePerformanceOptimizer();
 export default SwipePerformanceOptimizer;
+

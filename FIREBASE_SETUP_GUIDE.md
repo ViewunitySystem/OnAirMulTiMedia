@@ -58,3 +58,4 @@ git push origin gh-pages
 **Status**: ✅ Token generiert und getestet  
 **Nächster Schritt**: Token in GitHub Secrets setzen  
 **Gültig bis**: 2025-04-18
+

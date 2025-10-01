@@ -251,7 +251,133 @@
     @media (prefers-reduced-motion: reduce){
       .bg video, .bg iframe{display:none}
     }
-  </style>
+      /* Matrix.org Server Discovery UI */
+      .matrix-server {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        backdrop-filter: blur(10px);
+      }
+      
+      .matrix-server.online {
+        border-color: #4ade80;
+        background: rgba(74, 222, 128, 0.1);
+      }
+      
+      .matrix-server.offline {
+        border-color: #f87171;
+        background: rgba(248, 113, 113, 0.1);
+      }
+      
+      .server-name {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 4px;
+      }
+      
+      .server-status {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 4px;
+      }
+      
+      .server-capabilities {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      /* PeerLink Tools UI */
+      .peerlink-tool {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 12px;
+        margin: 8px 0;
+        backdrop-filter: blur(10px);
+      }
+      
+      .peerlink-tool.available {
+        border-color: #3b82f6;
+        background: rgba(59, 130, 246, 0.1);
+      }
+      
+      .tool-name {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 4px;
+      }
+      
+      .tool-type {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 4px;
+      }
+      
+      .tool-capabilities {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+      }
+      
+      .upgrade-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .upgrade-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      /* Upgrade Notifications */
+      .upgrade-success {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        color: white;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(74, 222, 128, 0.3);
+        z-index: 1000;
+        max-width: 300px;
+        animation: slideInRight 0.3s ease;
+      }
+      
+      .upgrade-error {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        color: white;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(248, 113, 113, 0.3);
+        z-index: 1000;
+        max-width: 300px;
+        animation: slideInRight 0.3s ease;
+      }
+      
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+    </style>
 </head>
 <body data-swipe>
   <!-- Start/Exit Animation -->
@@ -642,6 +768,23 @@
                     <button class="rounded-lg border p-2 text-xs" onclick="window.swipeCommsDock.emitCallAudit('VIDEO', 'video')">Video</button>
                     <button class="rounded-lg border p-2 text-xs" onclick="window.swipeCommsDock.emitCallAudit('MSG', 'im')">Nachricht</button>
                   </div>
+                  
+                  <!-- Matrix.org Server Discovery -->
+                  <div id="matrix-servers" class="mt-4">
+                    <h4 class="text-sm font-semibold text-gray-800 mb-2">🔗 Matrix.org Servers</h4>
+                    <div id="matrix-server-list">
+                      <!-- Matrix servers werden hier dynamisch eingefügt -->
+                    </div>
+                  </div>
+                  
+                  <!-- PeerLink Tools -->
+                  <div id="peerlink-tools" class="mt-4">
+                    <h4 class="text-sm font-semibold text-gray-800 mb-2">🎵 PeerLink Tools</h4>
+                    <div id="peerlink-tool-list">
+                      <!-- PeerLink tools werden hier dynamisch eingefügt -->
+                    </div>
+                  </div>
+                  
                   <div id="comms-expanded" class="mt-3 text-[11px] text-gray-500" style="display: none;">
                     <p>Audit aktiv · Lizenz wird vor dem Medienaufbau geprüft · Keine Änderung am bestehenden Navigations‑Flow.</p>
                   </div>
@@ -1003,13 +1146,17 @@
       }
     }
 
-    // SwipeCommsDock erweitern für Collaborative System
+    // SwipeCommsDock erweitern für Collaborative System + Matrix.org + PeerLink
     class EnhancedSwipeCommsDock extends SwipeCommsDock {
       constructor() {
         super();
         this.collaborativeComm = new CollaborativeCommSystem();
         this.performanceOptimizer = new SwipePerformanceOptimizer();
+        this.matrixServers = new Map();
+        this.peerLinkTools = new Map();
         this.initializeCollaborativeSystem();
+        this.initializeMatrixDiscovery();
+        this.initializePeerLinkTools();
       }
 
       async initializeCollaborativeSystem() {
@@ -1019,6 +1166,102 @@
         } catch (error) {
           console.error('Failed to initialize collaborative system:', error);
         }
+      }
+
+      async initializeMatrixDiscovery() {
+        try {
+          const results = await this.collaborativeComm.discoverMatrixServers();
+          this.matrixServers = this.collaborativeComm.matrixServers;
+          console.log('Matrix Servers discovered:', results);
+          this.updateMatrixUI();
+        } catch (error) {
+          console.error('Matrix discovery failed:', error);
+        }
+      }
+
+      async initializePeerLinkTools() {
+        try {
+          const tools = await this.collaborativeComm.initializePeerLinkTools();
+          this.peerLinkTools = tools;
+          console.log('PeerLink Tools initialized:', Array.from(tools.keys()));
+          this.updatePeerLinkUI();
+        } catch (error) {
+          console.error('PeerLink initialization failed:', error);
+        }
+      }
+
+      updateMatrixUI() {
+        const matrixSection = document.getElementById('matrix-server-list');
+        if (matrixSection) {
+          matrixSection.innerHTML = '';
+          for (const [server, info] of this.matrixServers) {
+            const serverDiv = document.createElement('div');
+            serverDiv.className = `matrix-server ${info.status} p-2 mb-2 rounded border`;
+            serverDiv.innerHTML = `
+              <div class="server-name text-sm font-semibold">${info.name}</div>
+              <div class="server-status text-xs text-gray-600">${info.status}</div>
+              <div class="server-capabilities text-xs text-gray-500">${info.capabilities?.join(', ') || 'Standard'}</div>
+            `;
+            matrixSection.appendChild(serverDiv);
+          }
+        }
+      }
+
+      updatePeerLinkUI() {
+        const peerLinkSection = document.getElementById('peerlink-tool-list');
+        if (peerLinkSection) {
+          peerLinkSection.innerHTML = '';
+          for (const [toolId, tool] of this.peerLinkTools) {
+            const toolDiv = document.createElement('div');
+            toolDiv.className = `peerlink-tool ${tool.status} p-2 mb-2 rounded border`;
+            toolDiv.innerHTML = `
+              <div class="tool-name text-sm font-semibold">${tool.name}</div>
+              <div class="tool-type text-xs text-gray-600">${tool.type}</div>
+              <div class="tool-capabilities text-xs text-gray-500 mb-2">${tool.capabilities.join(', ')}</div>
+              <button class="upgrade-btn text-xs px-2 py-1 rounded bg-blue-500 text-white" onclick="window.swipeCommsDock.upgradeTool('${toolId}')">Upgrade</button>
+            `;
+            peerLinkSection.appendChild(toolDiv);
+          }
+        }
+      }
+
+      async upgradeTool(toolId) {
+        try {
+          if (toolId === 'jamsession') {
+            const result = await this.collaborativeComm.upgradeJamsession();
+            console.log('Tool upgraded:', result);
+            this.showUpgradeSuccess(toolId, result);
+          } else {
+            console.log(`Upgrade for ${toolId} not implemented yet`);
+          }
+        } catch (error) {
+          console.error(`Upgrade failed for ${toolId}:`, error);
+          this.showUpgradeError(toolId, error);
+        }
+      }
+
+      showUpgradeSuccess(toolId, result) {
+        const notification = document.createElement('div');
+        notification.className = 'upgrade-success';
+        notification.innerHTML = `
+          <h3>✅ ${toolId} erfolgreich upgraded!</h3>
+          <p>Status: ${result.status}</p>
+          <p>Tests: ${result.testResults.overallStatus}</p>
+          <p>Swipe-Integration: ${result.swipeIntegration.integrationStatus}</p>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 5000);
+      }
+
+      showUpgradeError(toolId, error) {
+        const notification = document.createElement('div');
+        notification.className = 'upgrade-error';
+        notification.innerHTML = `
+          <h3>❌ Upgrade fehlgeschlagen für ${toolId}</h3>
+          <p>Fehler: ${error.message}</p>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 5000);
       }
 
       async makeCollaborativeCall(phoneNumber, callType, swipeData) {

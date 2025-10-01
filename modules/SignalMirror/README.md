@@ -17,3 +17,4 @@ const result = await mirror({
   payload: { frequency: 433.92, data: '...' }
 });
 ```
+

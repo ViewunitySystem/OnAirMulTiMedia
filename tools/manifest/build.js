@@ -9,3 +9,4 @@ const manifest = {
 };
 
 console.log(JSON.stringify(manifest, null, 2));
+

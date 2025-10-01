@@ -6,3 +6,4 @@ export function logSwipe(from: string, to: string){
     ts: new Date().toISOString() 
   };
 }
+

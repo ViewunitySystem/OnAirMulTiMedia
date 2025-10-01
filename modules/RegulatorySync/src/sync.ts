@@ -8,3 +8,4 @@ export async function diff(prev: number, curr: number){
     ts: new Date().toISOString() 
   };
 }
+

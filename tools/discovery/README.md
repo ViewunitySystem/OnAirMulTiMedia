@@ -12,3 +12,4 @@
 ```bash
 node scan.js --root modules --out audit/events/discovery.jsonl
 ```
+

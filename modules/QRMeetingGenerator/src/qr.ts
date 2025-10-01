@@ -5,3 +5,4 @@ export function buildPayload(id: string, license = 'EU-VALID'){
     sig: 'ed25519:PLACEHOLDER' 
   };
 }
+

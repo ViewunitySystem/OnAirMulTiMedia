@@ -5,3 +5,4 @@ export async function get(key: string){
     ts: new Date().toISOString() 
   }; 
 }
+

@@ -157,3 +157,4 @@ export function createTokenEndpoint(app) {
 
 // Standalone Service (für Tests)
 export { WebTritTokenService };
+

@@ -10,3 +10,4 @@ export type NomadicPath = {
 export const empty: NomadicPath = { 
   path: [] 
 };
+

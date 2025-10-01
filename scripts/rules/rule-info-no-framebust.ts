@@ -14,3 +14,4 @@ export default {
     return { changed: txt !== before };
   }
 }
+

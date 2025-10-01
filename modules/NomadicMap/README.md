@@ -19,3 +19,4 @@ const path: NomadicPath = {
   ]
 };
 ```
+

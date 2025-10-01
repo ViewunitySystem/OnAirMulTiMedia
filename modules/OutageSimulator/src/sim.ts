@@ -5,3 +5,4 @@ export async function simulate(kind: 'net'|'cpu'|'io'){
     ts: new Date().toISOString() 
   }; 
 }
+
