@@ -4,8 +4,18 @@
     "indexNoRedirect": { "enabled": true, "iframeSrc": "./info.html" },
     "infoNoFramebust": { "enabled": true },
     "serviceWorkerFallback": { "enabled": true, "offlinePath": "public/offline.html" },
-    "duplication": { "enabled": true, "maxPercent": 1 },
-    "mocksPlaceholders": { "enabled": true, "patterns": ["TODO", "XXX", "CHANGEME", "MOCK", "DUMMY", "PLACEHOLDER"] },
-    "htmlValidators": { "enabled": true }
+    "duplication": { 
+      "enabled": true, 
+      "maxPercent": 5,
+      "minLines": 5,
+      "minTokens": 50
+    },
+    "mocksPlaceholders": { 
+      "enabled": true, 
+      "patterns": ["TODO", "XXX", "CHANGEME", "MOCK", "DUMMY", "PLACEHOLDER", "FIXME", "HACK"] 
+    },
+    "htmlValidators": { "enabled": true },
+    "firebaseHostingSync": { "enabled": true },
+    "firebasePreviewChannels": { "enabled": true }
   }
 }

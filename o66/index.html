@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OnAirMulTiMedia - Advanced Control (o66)</title>
+  <style>
+    body { font-family: system-ui; margin: 0; background: #0a0e27; color: #fff; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+    .header { background: #1a1e37; padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center; }
+    .status { padding: 1rem; background: #00ff88; color: #000; border-radius: 10px; margin: 1rem 0; }
+    .warning { padding: 1rem; background: #ff6b6b; color: #fff; border-radius: 10px; margin: 1rem 0; }
+    .control-panel { background: #1a1e37; padding: 2rem; border-radius: 15px; margin: 2rem 0; }
+    .form-group { margin: 1rem 0; }
+    label { display: block; margin-bottom: 0.5rem; color: #00ff88; }
+    input, select, textarea { width: 100%; padding: 0.75rem; background: #0a0e27; color: #fff; border: 1px solid #333; border-radius: 5px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #00ff88; }
+    button { padding: 0.75rem 1.5rem; background: #00ff88; color: #000; border: none; border-radius: 5px; cursor: pointer; margin: 0.5rem 0.5rem 0.5rem 0; }
+    button:hover { background: #00d4aa; }
+    button.danger { background: #ff6b6b; color: #fff; }
+    button.danger:hover { background: #ff5252; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .card { background: #1a1e37; padding: 1.5rem; border-radius: 10px; }
+    .card h3 { color: #00ff88; margin-bottom: 1rem; }
+    .log { background: #000; padding: 1rem; border-radius: 5px; height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; }
+    .metric { text-align: center; padding: 1rem; }
+    .metric-value { font-size: 2rem; color: #00ff88; font-weight: bold; }
+    .metric-label { color: #a0a0a0; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎛️ OnAirMulTiMedia Advanced Control</h1>
+      <p>Erweiterte Steuerung und Monitoring</p>
+      <div class="status">
+        ✅ System aktiv - Alle Services online
+      </div>
+    </div>
+
+    <div class="warning">
+      ⚠️ <strong>Erweiterte Kontrolle:</strong> Dieser Bereich bietet erweiterte Systemsteuerung. 
+      Alle Änderungen werden protokolliert und können Systeme beeinflussen.
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3>📊 System-Metriken</h3>
+        <div class="metric">
+          <div class="metric-value" id="uptime">99.9%</div>
+          <div class="metric-label">Uptime</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value" id="users">1,247</div>
+          <div class="metric-label">Aktive Benutzer</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value" id="requests">15.2K</div>
+          <div class="metric-label">Requests/min</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔧 Service-Kontrolle</h3>
+        <button onclick="restartService('web')">🔄 Web Service</button>
+        <button onclick="restartService('api')">🔄 API Service</button>
+        <button onclick="restartService('db')">🔄 Database</button>
+        <button onclick="restartService('cache')">🔄 Cache</button>
+        <br>
+        <button onclick="checkHealth()">💚 Health Check</button>
+        <button onclick="clearCache()">🗑️ Cache leeren</button>
+      </div>
+
+      <div class="card">
+        <h3>📡 Communication Control</h3>
+        <div class="form-group">
+          <label for="channel">Channel:</label>
+          <select id="channel">
+            <option value="general">General</option>
+            <option value="admin">Admin</option>
+            <option value="support">Support</option>
+            <option value="emergency">Emergency</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Nachricht:</label>
+          <textarea id="message" rows="3" placeholder="Nachricht eingeben..."></textarea>
+        </div>
+        <button onclick="broadcastMessage()">📢 Broadcast</button>
+        <button onclick="sendAlert()">🚨 Alert</button>
+      </div>
+
+      <div class="card">
+        <h3>🔐 Zugriffskontrolle</h3>
+        <div class="form-group">
+          <label for="user-email">Benutzer E-Mail:</label>
+          <input type="email" id="user-email" placeholder="user@example.com" />
+        </div>
+        <div class="form-group">
+          <label for="access-level">Zugriffsebene:</label>
+          <select id="access-level">
+            <option value="read">Read Only</option>
+            <option value="write">Read/Write</option>
+            <option value="admin">Admin</option>
+            <option value="super">Super Admin</option>
+          </select>
+        </div>
+        <button onclick="grantAccess()">✅ Zugriff gewähren</button>
+        <button onclick="revokeAccess()" class="danger">❌ Zugriff entziehen</button>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <h2>📋 System-Logs</h2>
+      <div class="log" id="system-logs">
+        [2025-01-18 15:30:45] System started successfully
+        [2025-01-18 15:30:46] All services online
+        [2025-01-18 15:30:47] Health check passed
+        [2025-01-18 15:30:48] Ready for operations
+      </div>
+      <button onclick="clearLogs()">🗑️ Logs leeren</button>
+      <button onclick="exportLogs()">📤 Logs exportieren</button>
+    </div>
+
+    <div class="control-panel">
+      <h2>🌐 Multi-Target Deployment</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>GitHub Pages</h3>
+          <p>Status: <span style="color: #00ff88;">✅ Online</span></p>
+          <p>URL: <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/" target="_blank" style="color: #00ff88;">viewunitysystem.github.io</a></p>
+          <button onclick="deployToPages()">🚀 Deploy</button>
+        </div>
+        
+        <div class="card">
+          <h3>Firebase Hosting</h3>
+          <p>Status: <span style="color: #00ff88;">✅ Online</span></p>
+          <p>URL: <a href="https://onairmultimedia.web.app/" target="_blank" style="color: #00ff88;">onairmultimedia.web.app</a></p>
+          <button onclick="deployToFirebase()">🔥 Deploy</button>
+        </div>
+        
+        <div class="card">
+          <h3>Preview Channels</h3>
+          <p>Aktive Channels: <span style="color: #00ff88;">3</span></p>
+          <p>Nächste Expiry: <span style="color: #ff6b6b;">2 Tage</span></p>
+          <button onclick="manageChannels()">📋 Verwalten</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // System-Kontrolle
+    function restartService(service) {
+      addLog(`[${new Date().toLocaleTimeString()}] Restarting ${service} service...`);
+      
+      // Simuliere Service-Restart
+      setTimeout(() => {
+        addLog(`[${new Date().toLocaleTimeString()}] ${service} service restarted successfully`);
+      }, 2000);
+    }
+    
+    function checkHealth() {
+      addLog(`[${new Date().toLocaleTimeString()}] Running health check...`);
+      
+      // Simuliere Health Check
+      setTimeout(() => {
+        addLog(`[${new Date().toLocaleTimeString()}] Health check completed - All systems OK`);
+      }, 1500);
+    }
+    
+    function clearCache() {
+      addLog(`[${new Date().toLocaleTimeString()}] Clearing system cache...`);
+      
+      setTimeout(() => {
+        addLog(`[${new Date().toLocaleTimeString()}] Cache cleared successfully`);
+      }, 1000);
+    }
+    
+    function broadcastMessage() {
+      const channel = document.getElementById('channel').value;
+      const message = document.getElementById('message').value;
+      
+      if (!message.trim()) {
+        alert('Bitte geben Sie eine Nachricht ein.');
+        return;
+      }
+      
+      addLog(`[${new Date().toLocaleTimeString()}] Broadcasting to ${channel}: ${message}`);
+      document.getElementById('message').value = '';
+    }
+    
+    function sendAlert() {
+      addLog(`[${new Date().toLocaleTimeString()}] 🚨 EMERGENCY ALERT SENT`);
+      alert('Notfall-Alert wurde gesendet!');
+    }
+    
+    function grantAccess() {
+      const email = document.getElementById('user-email').value;
+      const level = document.getElementById('access-level').value;
+      
+      if (!email) {
+        alert('Bitte geben Sie eine E-Mail-Adresse ein.');
+        return;
+      }
+      
+      addLog(`[${new Date().toLocaleTimeString()}] Access granted to ${email} (${level})`);
+      document.getElementById('user-email').value = '';
+    }
+    
+    function revokeAccess() {
+      const email = document.getElementById('user-email').value;
+      
+      if (!email) {
+        alert('Bitte geben Sie eine E-Mail-Adresse ein.');
+        return;
+      }
+      
+      if (confirm(`Zugriff für ${email} wirklich entziehen?`)) {
+        addLog(`[${new Date().toLocaleTimeString()}] Access revoked for ${email}`);
+        document.getElementById('user-email').value = '';
+      }
+    }
+    
+    function clearLogs() {
+      document.getElementById('system-logs').innerHTML = '';
+      addLog(`[${new Date().toLocaleTimeString()}] Logs cleared`);
+    }
+    
+    function exportLogs() {
+      const logs = document.getElementById('system-logs').textContent;
+      const blob = new Blob([logs], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `system-logs-${new Date().toISOString().split('T')[0]}.txt`;
+      a.click();
+      
+      URL.revokeObjectURL(url);
+      addLog(`[${new Date().toLocaleTimeString()}] Logs exported`);
+    }
+    
+    function deployToPages() {
+      addLog(`[${new Date().toLocaleTimeString()}] Deploying to GitHub Pages...`);
+      setTimeout(() => {
+        addLog(`[${new Date().toLocaleTimeString()}] GitHub Pages deployment completed`);
+      }, 3000);
+    }
+    
+    function deployToFirebase() {
+      addLog(`[${new Date().toLocaleTimeString()}] Deploying to Firebase Hosting...`);
+      setTimeout(() => {
+        addLog(`[${new Date().toLocaleTimeString()}] Firebase deployment completed`);
+      }, 3000);
+    }
+    
+    function manageChannels() {
+      addLog(`[${new Date().toLocaleTimeString()}] Managing preview channels...`);
+      alert('Preview Channel Management öffnet sich in neuem Fenster...');
+    }
+    
+    function addLog(message) {
+      const logs = document.getElementById('system-logs');
+      logs.innerHTML += message + '\n';
+      logs.scrollTop = logs.scrollHeight;
+    }
+    
+    // Automatische Updates
+    setInterval(() => {
+      // Simuliere Metriken-Updates
+      const users = Math.floor(Math.random() * 100) + 1200;
+      const requests = (Math.random() * 5 + 15).toFixed(1);
+      
+      document.getElementById('users').textContent = users.toLocaleString();
+      document.getElementById('requests').textContent = requests + 'K';
+    }, 5000);
+    
+    // Initialisierung
+    window.addEventListener('load', () => {
+      addLog(`[${new Date().toLocaleTimeString()}] Advanced Control Panel loaded`);
+      addLog(`[${new Date().toLocaleTimeString()}] All systems operational`);
+      
+      console.log('[o66] Advanced Control Panel loaded');
+      console.log('[o66] Multi-target deployment ready');
+    });
+  </script>
+</body>
+</html>

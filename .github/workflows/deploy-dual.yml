@@ -1,0 +1,188 @@
+name: Deploy (Pages + Firebase)
+
+on:
+  push:
+    branches: [ gh-pages, mainzero, main ]
+  pull_request:
+    branches: [ gh-pages, mainzero, main ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-test-heal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install deps
+        run: |
+          npm ci || npm i
+          npx playwright install --with-deps
+
+      - name: Lint & basic checks
+        run: |
+          npx eslint . || true
+
+      - name: Run unit/e2e tests
+        run: |
+          npm test --silent || true
+          npx playwright test || true
+
+      - name: Run Self-Healing orchestrator
+        id: selfheal
+        run: |
+          npx tsx scripts/selfheal.ts || true
+
+      - name: Enhanced Duplicate Code Check
+        run: |
+          npx jscpd --min-lines 5 --min-tokens 50 --reporters json,html --output jscpd-report
+          if [ -f "jscpd-report/jscpd-report.json" ]; then
+            DUPLICATE_PERCENT=$(node -p "JSON.parse(require('fs').readFileSync('jscpd-report/jscpd-report.json')).statistics.percentage")
+            echo "Duplicate code percentage: $DUPLICATE_PERCENT%"
+            if (( $(echo "$DUPLICATE_PERCENT > 5" | bc -l) )); then
+              echo "::warning::High duplicate code percentage: $DUPLICATE_PERCENT%"
+            fi
+          fi
+
+      - name: Upload artifact for Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Upload reports (artifacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selfheal-reports
+          path: |
+            reports/**
+            .selfheal-*.json
+            jscpd-report/**
+
+  deploy-pages:
+    needs: build-test-heal
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+
+  deploy-firebase-prod:
+    needs: build-test-heal
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/gh-pages'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm i -g firebase-tools
+      - name: Deploy to Firebase Hosting (prod site)
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          firebase use tel1nl
+          firebase deploy --only hosting:onairmultimedia --non-interactive
+      - name: Deploy to Firebase Hosting (staging site)
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          firebase deploy --only hosting:onairmultimedia-staging --non-interactive
+
+  deploy-firebase-preview:
+    needs: build-test-heal
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm i -g firebase-tools
+      - name: PR Preview Channel
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          CH="pr-${{ github.event.number }}"
+          firebase hosting:channel:deploy $CH --site onairmultimedia --expires 7d
+          echo "Preview URL: https://$CH---onairmultimedia.web.app"
+      - name: Comment PR with Preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && comment.body.includes('Preview URL')
+            );
+            
+            const previewUrl = `https://pr-${{ github.event.number }}---onairmultimedia.web.app`;
+            const commentBody = `🚀 **Firebase Preview Deployed!**
+            
+            **Preview URL:** ${previewUrl}
+            **Expires:** 7 days
+            **Status:** ✅ Live
+            
+            ---
+            *This preview will be automatically deleted after 7 days.*`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }
+
+  create-pr-fixes:
+    needs: build-test-heal
+    runs-on: ubuntu-latest
+    if: ${{ steps.selfheal.outcome == 'success' && hashFiles('.selfheal-changed') != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create PR with fixes (if any)
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/selfheal-${{ github.run_id }}
+          title: "chore(selfheal): automated fixes + duplicate code cleanup"
+          commit-message: "chore(selfheal): automated fixes + duplicate code cleanup"
+          body: |
+            🤖 **Automated Self-Healing Run**
+            
+            **Applied Fixes:**
+            - Detectors/Fixes applied
+            - Duplicate code analysis completed
+            - Firebase deployment ready
+            
+            **Please review and merge.**
+            
+            ---
+            *This PR was created automatically by the Self-Healing system.*

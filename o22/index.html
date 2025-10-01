@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OnAirMulTiMedia - Protected Space (o22)</title>
+  <style>
+    body { font-family: system-ui; margin: 0; background: #0a0e27; color: #fff; }
+    .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+    .header { background: #1a1e37; padding: 2rem; border-radius: 15px; margin-bottom: 2rem; text-align: center; }
+    .status { padding: 1rem; background: #00ff88; color: #000; border-radius: 10px; margin: 1rem 0; }
+    .warning { padding: 1rem; background: #ff6b6b; color: #fff; border-radius: 10px; margin: 1rem 0; }
+    .access-panel { background: #1a1e37; padding: 2rem; border-radius: 15px; margin: 2rem 0; }
+    .form-group { margin: 1rem 0; }
+    label { display: block; margin-bottom: 0.5rem; color: #00ff88; }
+    input { width: 100%; padding: 0.75rem; background: #0a0e27; color: #fff; border: 1px solid #333; border-radius: 5px; }
+    input:focus { outline: none; border-color: #00ff88; }
+    button { padding: 0.75rem 1.5rem; background: #00ff88; color: #000; border: none; border-radius: 5px; cursor: pointer; margin: 0.5rem 0.5rem 0.5rem 0; }
+    button:hover { background: #00d4aa; }
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 2rem 0; }
+    .feature-card { background: #1a1e37; padding: 1.5rem; border-radius: 10px; }
+    .feature-card h3 { color: #00ff88; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔒 OnAirMulTiMedia Protected Space</h1>
+      <p>Geschützter Bereich für autorisierte Benutzer</p>
+      <div class="status">
+        ✅ Zugriff gewährt - Authentifiziert
+      </div>
+    </div>
+
+    <div class="warning">
+      ⚠️ <strong>Wichtiger Hinweis:</strong> Dieser Bereich ist nur für autorisierte Benutzer zugänglich. 
+      Alle Aktivitäten werden protokolliert und überwacht.
+    </div>
+
+    <div class="access-panel">
+      <h2>🎛️ Zugriffskontrolle</h2>
+      
+      <div class="form-group">
+        <label for="email">E-Mail-Adresse:</label>
+        <input type="email" id="email" placeholder="ihre@email.com" />
+      </div>
+      
+      <div class="form-group">
+        <label for="space-host">Space Host:</label>
+        <input type="text" id="space-host" placeholder="Space Host Identifier" />
+      </div>
+      
+      <div class="form-group">
+        <label for="app-application">App Application:</label>
+        <input type="text" id="app-application" placeholder="Application Name" />
+      </div>
+      
+      <button onclick="requestAccess()">🔑 Zugriff anfordern</button>
+      <button onclick="checkStatus()">📊 Status prüfen</button>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <h3>🌐 Nomaden-Hilfe</h3>
+        <p>Zentraler Anlaufpunkt für Benutzer, die den Weg nicht kennen. 
+        Bietet Navigation und Ziel-Hilfe für alle Communication-Themen.</p>
+      </div>
+      
+      <div class="feature-card">
+        <h3>📡 Server-Zugang</h3>
+        <p>Vollständiger Zugang zu den Servern als zentraler Punkt für 
+        alle Anwendungen und Services.</p>
+      </div>
+      
+      <div class="feature-card">
+        <h3>🔐 Authentifizierung</h3>
+        <p>Sichere E-Mail-basierte Authentifizierung mit Space Host 
+        und App Application Validierung.</p>
+      </div>
+      
+      <div class="feature-card">
+        <h3>📊 Monitoring</h3>
+        <p>Kontinuierliche Überwachung aller Aktivitäten mit 
+        automatischem Logging und Reporting.</p>
+      </div>
+    </div>
+
+    <div class="access-panel">
+      <h2>📋 Verfügbare Services</h2>
+      <ul>
+        <li>✅ Communication Portal</li>
+        <li>✅ Server Management</li>
+        <li>✅ Application Access</li>
+        <li>✅ Space Host Integration</li>
+        <li>✅ Nomaden Navigation</li>
+        <li>✅ Real-time Monitoring</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Zugriffskontrolle
+    function requestAccess() {
+      const email = document.getElementById('email').value;
+      const spaceHost = document.getElementById('space-host').value;
+      const appApplication = document.getElementById('app-application').value;
+      
+      if (!email || !spaceHost || !appApplication) {
+        alert('Bitte füllen Sie alle Felder aus.');
+        return;
+      }
+      
+      // Simuliere Zugriffsanfrage
+      console.log('[o22] Access request:', { email, spaceHost, appApplication });
+      
+      // Zeige Erfolgsmeldung
+      alert('Zugriffsanfrage wurde gesendet. Sie erhalten eine Bestätigung per E-Mail.');
+      
+      // Speichere in localStorage für Demo
+      localStorage.setItem('o22-access', JSON.stringify({
+        email,
+        spaceHost,
+        appApplication,
+        timestamp: new Date().toISOString(),
+        status: 'pending'
+      }));
+    }
+    
+    function checkStatus() {
+      const access = localStorage.getItem('o22-access');
+      if (access) {
+        const data = JSON.parse(access);
+        alert(`Status: ${data.status}\nE-Mail: ${data.email}\nZeitstempel: ${new Date(data.timestamp).toLocaleString()}`);
+      } else {
+        alert('Keine Zugriffsanfrage gefunden.');
+      }
+    }
+    
+    // Automatische Authentifizierung prüfen
+    window.addEventListener('load', () => {
+      const access = localStorage.getItem('o22-access');
+      if (access) {
+        const data = JSON.parse(access);
+        if (data.status === 'granted') {
+          document.querySelector('.status').innerHTML = '✅ Zugriff gewährt - Authentifiziert';
+          document.querySelector('.status').className = 'status';
+        }
+      }
+      
+      console.log('[o22] Protected space loaded');
+      console.log('[o22] Access control active');
+    });
+  </script>
+</body>
+</html>

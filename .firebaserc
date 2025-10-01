@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "default": "tel1nl"
+  },
+  "targets": {
+    "tel1nl": {
+      "hosting": {
+        "sites": {
+          "prod": ["onairmultimedia"],
+          "staging": ["onairmultimedia-staging"],
+          "dev": ["onairmultimedia-dev"]
+        }
+      }
+    }
+  }
+}
