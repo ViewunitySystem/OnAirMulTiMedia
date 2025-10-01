@@ -37,6 +37,7 @@ Professional Software-Defined Radio stack with:
 | [📊 Info Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/info.html) | Live metrics and community |
 | [🧪 Test Client](https://viewunitysystem.github.io/OnAirMulTiMedia/client.html) | WebRTC testing interface |
 | [📋 Audit Overlay](https://viewunitysystem.github.io/OnAirMulTiMedia/overlay.html) | System audit interface |
+| [📊 Audit Export](https://viewunitysystem.github.io/OnAirMulTiMedia/audit-export.html) | Audit Trail Export & Visualization |
 | [🎨 Blueprints](https://viewunitysystem.github.io/OnAirMulTiMedia/blueprints.html) | Module blueprints |
 | [📜 Manifest](https://viewunitysystem.github.io/OnAirMulTiMedia/manifest.html) | PWA manifest |
 | [⚖️ Regulatory](https://viewunitysystem.github.io/OnAirMulTiMedia/regulatory.html) | RF compliance documentation |
