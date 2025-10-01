@@ -22,6 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       selfheal-outcome: ${{ steps.selfheal.outputs.selfheal-outcome }}
+      discovery-outcome: ${{ steps.discovery.outputs.discovery-outcome }}
+      audit-outcome: ${{ steps.audit.outputs.audit-outcome }}
+      ethics-outcome: ${{ steps.ethics.outputs.ethics-outcome }}
+      manifest-outcome: ${{ steps.manifest.outputs.manifest-outcome }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -50,6 +54,34 @@ jobs:
         run: |
           npx tsx scripts/selfheal.ts || true
           echo "selfheal-outcome=success" >> $GITHUB_OUTPUT
+
+      - name: Run Discovery Engine
+        id: discovery
+        run: |
+          echo "🔍 Starting OAMTM_DISCOVERY_ENGINE..."
+          node modules/DiscoveryEngine/index.js || true
+          echo "discovery-outcome=success" >> $GITHUB_OUTPUT
+
+      - name: Run Audit Engine
+        id: audit
+        run: |
+          echo "📜 Starting OAMTM_AUDIT_ENGINE..."
+          node modules/DiscoveryEngine/audit.js || true
+          echo "audit-outcome=success" >> $GITHUB_OUTPUT
+
+      - name: Run Ethics Guardian
+        id: ethics
+        run: |
+          echo "🧠 Starting OAMTM_ETHICS_GUARDIAN..."
+          node modules/DiscoveryEngine/ethics.js || true
+          echo "ethics-outcome=success" >> $GITHUB_OUTPUT
+
+      - name: Update Manifest System
+        id: manifest
+        run: |
+          echo "📋 Starting OAMTM_MANIFEST_SYSTEM..."
+          node modules/DiscoveryEngine/manifest.js || true
+          echo "manifest-outcome=success" >> $GITHUB_OUTPUT
 
       - name: Enhanced Duplicate Code Check
         run: |
