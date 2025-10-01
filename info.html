@@ -3,7 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="refresh" content="0; url=/index.html" />
   <title>OnAirMulTiMedia – Info & GitHub Monitoring</title>
+  <script>
+    // Redirect to main page with Aurora video
+    window.location.replace('/index.html');
+  </script>
   <style>
     :root { color-scheme: dark; }
     body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
@@ -23,6 +28,23 @@
   </style>
 </head>
 <body>
+  <div style="text-align: center; padding: 50px; background: #0b1020; color: #e5e7eb; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <h1>🌍 OnAirMulTiMedia</h1>
+    <p>Weiterleitung zur Hauptseite mit Aurora Video...</p>
+    <p>Falls die Weiterleitung nicht funktioniert, klicken Sie <a href="/index.html" style="color: #93c5fd;">hier</a></p>
+    <div style="margin-top: 20px;">
+      <div style="width: 40px; height: 40px; border: 4px solid #374151; border-top: 4px solid #93c5fd; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    </div>
+  </div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  
+  <!-- Original content hidden -->
+  <div style="display: none;">
   <header>
     <div class="hero">
       <div style="font-weight:800; font-size:20px;">OnAirMulTiMedia – Info & Monitoring</div>
@@ -186,6 +208,7 @@
     loadStats(); loadContribs();
     setInterval(loadStats, 60_000);
   </script>
+  </div> <!-- End of hidden original content -->
 </body>
 </html>
 
