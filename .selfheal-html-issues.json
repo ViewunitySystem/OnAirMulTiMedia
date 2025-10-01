@@ -1,0 +1,10 @@
+[
+  {
+    "file": "public/offline.html",
+    "issue": "Missing viewport meta"
+  },
+  {
+    "file": "jscpd-report/html/index.html",
+    "issue": "Links without href"
+  }
+]
