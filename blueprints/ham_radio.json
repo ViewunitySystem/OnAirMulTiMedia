@@ -1,0 +1,54 @@
+{
+  "module": "HamRadioModule",
+  "version": "1.0.0",
+  "description": "Amateurfunk (Ham Radio) Modul für HF/VHF/UHF-Kommunikation mit Callsign DD5BE.",
+  "interfaces": {
+    "inputs": [
+      { "name": "frequency_mhz", "type": "number", "required": true },
+      { "name": "mode", "type": "enum(CW|SSB|FM|AM|RTTY|PSK31|FT8|FT4|JS8|APRS|SSTV|ATV)", "required": true },
+      { "name": "power_w", "type": "number", "required": true, "max": 1500 },
+      { "name": "country", "type": "ISO-3166-1 alpha-2", "required": true },
+      { "name": "callsign", "type": "string", "required": true },
+      { "name": "message", "type": "string", "required": false }
+    ],
+    "outputs": [
+      { "name": "verdict", "type": "enum(allow|warn|deny)" },
+      { "name": "band", "type": "string" },
+      { "name": "power_valid", "type": "boolean" },
+      { "name": "range_km", "type": "number" },
+      { "name": "modes_allowed", "type": "array" }
+    ],
+    "logs": [
+      { "event": "HAM_COMM_INIT", "level": "info", "description": "Amateurfunk-Kommunikation initialisiert" },
+      { "event": "HAM_COMM_SUCCESS", "level": "info", "description": "Amateurfunk-Kommunikation erfolgreich" },
+      { "event": "HAM_POWER_CHECK", "level": "info", "description": "Power-Limit geprüft" },
+      { "event": "HAM_MODE_CHECK", "level": "info", "description": "Modus-Validierung" },
+      { "event": "HAM_CALLSIGN_CHECK", "level": "info", "description": "Callsign-Validierung" }
+    ]
+  },
+  "validation": {
+    "ci": true,
+    "tests": ["unit: frequency validation", "unit: power limits", "unit: mode validation", "int: api contract"],
+    "hil_tests": ["Spektrumanalysator-Messung @freq/power", "Modulation-Analyse (CW/SSB/FM/AM)", "Bandwidth measurement"],
+    "recovery": ["fallback rules bei DC-Ausfall"]
+  },
+  "regulatory": {
+    "license_required": true,
+    "references": [
+      { "jurisdiction": "DE", "section": "BNetzA §226.4.5" },
+      { "jurisdiction": "NL", "section": "RDI §3.2.1" },
+      { "jurisdiction": "US", "section": "FCC Part 97" },
+      { "jurisdiction": "EU", "section": "CEPT T/R 61-01" }
+    ]
+  },
+  "checklist": [
+    "Amateurfunk-Bänder korrekt implementiert",
+    "Power-Limits für alle Bänder",
+    "Modi-Validierung funktional",
+    "Emergency-Frequenzen verfügbar",
+    "Callsign-Validierung (DD5BE)",
+    "DX-Frequenzen integriert",
+    "Repeater-Frequenzen verfügbar",
+    "Audit-Trail vollständig"
+  ]
+}

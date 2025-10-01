@@ -75,6 +75,176 @@ class CollaborativeCommSystem {
         priority: 10,
         capabilities: ['voice', 'video', 'im', 'file_transfer', 'p2p'],
         redundancy: true
+      },
+      cb_radio: { 
+        name: 'CB-Funk (Citizens Band)', 
+        enabled: true, 
+        priority: 11,
+        capabilities: ['voice', 'emergency', 'local_communication', 'trucker_network'],
+        redundancy: true,
+        frequencies: {
+          'DE': ['26.965-27.405 MHz', '40 Kanäle'],
+          'NL': ['26.965-27.405 MHz', '40 Kanäle'],
+          'US': ['26.965-27.405 MHz', '40 Kanäle'],
+          'EU': ['26.965-27.405 MHz', '40 Kanäle']
+        },
+        power_limits: {
+          'DE': '4W AM/FM, 12W SSB',
+          'NL': '4W AM/FM, 12W SSB',
+          'US': '4W AM/FM, 12W SSB',
+          'EU': '4W AM/FM, 12W SSB'
+        },
+        channels: {
+          'emergency': 9,
+          'trucker': 19,
+          'weather': 16,
+          'general': [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40]
+        }
+      },
+      ham_radio: { 
+        name: 'Amateurfunk (Ham Radio)', 
+        enabled: true, 
+        priority: 12,
+        capabilities: ['voice', 'data', 'emergency', 'dx_communication', 'contest', 'satellite'],
+        redundancy: true,
+        callsign: 'DD5BE',
+        operator: 'Raymond Demitrio Dr. Tel',
+        frequencies: {
+          'HF': {
+            '160m': '1.8-2.0 MHz',
+            '80m': '3.5-4.0 MHz',
+            '40m': '7.0-7.3 MHz',
+            '30m': '10.1-10.15 MHz',
+            '20m': '14.0-14.35 MHz',
+            '17m': '18.068-18.168 MHz',
+            '15m': '21.0-21.45 MHz',
+            '12m': '24.89-24.99 MHz',
+            '10m': '28.0-29.7 MHz'
+          },
+          'VHF': {
+            '6m': '50.0-54.0 MHz',
+            '2m': '144.0-148.0 MHz'
+          },
+          'UHF': {
+            '70cm': '420.0-450.0 MHz',
+            '33cm': '902.0-928.0 MHz',
+            '23cm': '1240.0-1300.0 MHz'
+          }
+        },
+        power_limits: {
+          'DE': '750W PEP (Class A)',
+          'NL': '400W PEP (Class A)',
+          'US': '1500W PEP (Extra Class)',
+          'EU': '750W PEP (Class A)'
+        },
+        modes: ['CW', 'SSB', 'FM', 'AM', 'RTTY', 'PSK31', 'FT8', 'FT4', 'JS8', 'APRS', 'SSTV', 'ATV']
+      },
+      pmr446: { 
+        name: 'PMR446 (Personal Mobile Radio)', 
+        enabled: true, 
+        priority: 13,
+        capabilities: ['voice', 'local_communication', 'family_radio'],
+        redundancy: true,
+        frequencies: ['446.00625-446.09375 MHz', '16 Kanäle'],
+        power_limits: '500mW ERP',
+        channels: {
+          'emergency': 1,
+          'general': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+        }
+      },
+      marine_radio: { 
+        name: 'Marinefunk (Marine Radio)', 
+        enabled: true, 
+        priority: 14,
+        capabilities: ['voice', 'emergency', 'distress', 'weather', 'navigation'],
+        redundancy: true,
+        frequencies: {
+          'VHF': '156.0-162.0 MHz',
+          'MF': '2.0-3.0 MHz',
+          'HF': '4.0-27.5 MHz'
+        },
+        channels: {
+          'distress': 16,
+          'weather': 1,
+          'bridge': 13,
+          'harbor': 12,
+          'general': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88]
+        }
+      },
+      aviation_radio: { 
+        name: 'Luftfahrtfunk (Aviation Radio)', 
+        enabled: true, 
+        priority: 15,
+        capabilities: ['voice', 'emergency', 'atc', 'weather', 'navigation'],
+        redundancy: true,
+        frequencies: {
+          'VHF': '118.0-137.0 MHz',
+          'UHF': '225.0-400.0 MHz'
+        },
+        channels: {
+          'emergency': '121.5 MHz',
+          'atc': '118.0-137.0 MHz',
+          'weather': '122.0-123.0 MHz'
+        }
+      },
+      gmrs: { 
+        name: 'GMRS (General Mobile Radio Service)', 
+        enabled: true, 
+        priority: 16,
+        capabilities: ['voice', 'data', 'family_communication', 'repeater'],
+        redundancy: true,
+        frequencies: '462.0-467.0 MHz',
+        power_limits: '50W (Base), 5W (Portable)',
+        channels: {
+          'emergency': 1,
+          'general': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+        }
+      },
+      frs: { 
+        name: 'FRS (Family Radio Service)', 
+        enabled: true, 
+        priority: 17,
+        capabilities: ['voice', 'family_communication', 'local_communication'],
+        redundancy: true,
+        frequencies: '462.0-467.0 MHz',
+        power_limits: '2W ERP',
+        channels: {
+          'emergency': 1,
+          'general': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+        }
+      },
+      murs: { 
+        name: 'MURS (Multi-Use Radio Service)', 
+        enabled: true, 
+        priority: 18,
+        capabilities: ['voice', 'data', 'business_communication'],
+        redundancy: true,
+        frequencies: '151.820, 151.880, 151.940, 154.570, 154.600 MHz',
+        power_limits: '2W ERP'
+      },
+      lora: { 
+        name: 'LoRa (Long Range)', 
+        enabled: true, 
+        priority: 19,
+        capabilities: ['data', 'iot', 'long_range', 'low_power'],
+        redundancy: true,
+        frequencies: {
+          'EU': '868.0-868.6 MHz',
+          'US': '902.0-928.0 MHz',
+          'AS': '433.0-434.0 MHz'
+        },
+        power_limits: '14dBm ERP',
+        ranges: '2-15 km (urban), 15-40 km (rural)'
+      },
+      wifi_direct: { 
+        name: 'WiFi Direct', 
+        enabled: true, 
+        priority: 20,
+        capabilities: ['data', 'file_transfer', 'screen_sharing', 'p2p'],
+        redundancy: true,
+        frequencies: '2.4 GHz, 5 GHz',
+        power_limits: '100mW ERP',
+        ranges: '100-200m'
       }
     };
     

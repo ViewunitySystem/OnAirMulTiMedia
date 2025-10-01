@@ -1,0 +1,51 @@
+{
+  "module": "CBRadioModule",
+  "version": "1.0.0",
+  "description": "CB-Funk (Citizens Band) Modul für lokale Kommunikation, Emergency und Trucker-Netzwerk.",
+  "interfaces": {
+    "inputs": [
+      { "name": "channel", "type": "number", "required": true, "min": 1, "max": 40 },
+      { "name": "mode", "type": "enum(AM|FM|SSB)", "required": true },
+      { "name": "power_w", "type": "number", "required": true, "max": 12 },
+      { "name": "country", "type": "ISO-3166-1 alpha-2", "required": true },
+      { "name": "message", "type": "string", "required": false }
+    ],
+    "outputs": [
+      { "name": "verdict", "type": "enum(allow|warn|deny)" },
+      { "name": "frequency_mhz", "type": "number" },
+      { "name": "power_valid", "type": "boolean" },
+      { "name": "range_km", "type": "number" },
+      { "name": "interference", "type": "enum(none|low|medium|high)" }
+    ],
+    "logs": [
+      { "event": "CB_COMM_INIT", "level": "info", "description": "CB-Kommunikation initialisiert" },
+      { "event": "CB_COMM_SUCCESS", "level": "info", "description": "CB-Kommunikation erfolgreich" },
+      { "event": "CB_POWER_CHECK", "level": "info", "description": "Power-Limit geprüft" },
+      { "event": "CB_INTERFERENCE", "level": "warn", "description": "Interferenz erkannt" }
+    ]
+  },
+  "validation": {
+    "ci": true,
+    "tests": ["unit: channel validation", "unit: power limits", "int: api contract"],
+    "hil_tests": ["Spektrumanalysator-Messung @freq/power", "Modulation-Analyse (AM/FM/SSB)"],
+    "recovery": ["fallback rules bei DC-Ausfall"]
+  },
+  "regulatory": {
+    "license_required": false,
+    "references": [
+      { "jurisdiction": "DE", "section": "BNetzA §226.4.5" },
+      { "jurisdiction": "NL", "section": "RDI §3.2.1" },
+      { "jurisdiction": "US", "section": "FCC Part 95" },
+      { "jurisdiction": "EU", "section": "CEPT T/R 61-01" }
+    ]
+  },
+  "checklist": [
+    "CB-Kanäle korrekt implementiert",
+    "Power-Limits für alle Modi",
+    "Emergency-Kanal funktional",
+    "Trucker-Netzwerk verfügbar",
+    "Wetter-Info integriert",
+    "Interferenz-Erkennung aktiv",
+    "Audit-Trail vollständig"
+  ]
+}
