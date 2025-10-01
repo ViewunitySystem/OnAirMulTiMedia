@@ -32,6 +32,7 @@ Professional Software-Defined Radio stack with:
 | Page | Description |
 |------|-------------|
 | [🏠 Home](https://viewunitysystem.github.io/OnAirMulTiMedia/) | Main portal with Aurora video background |
+| [🧪 Test Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/test-dashboard.html) | **NEW** Swipe Navigation • Live Monitoring • Self-Healing |
 | [📊 Info Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/info.html) | Live metrics and community |
 | [🧪 Test Client](https://viewunitysystem.github.io/OnAirMulTiMedia/client.html) | WebRTC testing interface |
 | [📋 Audit Overlay](https://viewunitysystem.github.io/OnAirMulTiMedia/overlay.html) | System audit interface |
