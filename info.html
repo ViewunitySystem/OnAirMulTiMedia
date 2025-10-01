@@ -1,222 +1,98 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="refresh" content="0; url=./" />
-  <title>OnAirMulTiMedia – Info & GitHub Monitoring</title>
-  <script>
-    // Redirect to main page with Aurora video
-    window.location.replace('./');
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="0; url=./" />
+    <title>OnAirMulTiMedia - Weiterleitung zur Aurora Hauptseite</title>
   <style>
-    :root { color-scheme: dark; }
-    body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
-    header { background:#121a34; padding:16px; position:sticky; top:0; z-index:10; }
-    main { padding:16px; display:grid; gap:16px; max-width:1100px; margin:0 auto; }
-    .grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
-    .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:12px; }
-    .big { font-size:28px; font-weight:700; }
-    .muted { opacity:.8; font-size:12px; }
-    .hero { display:flex; align-items:center; gap:12px; }
-    a { color:#93c5fd; }
-    textarea, input, button { width:100%; padding:8px; border-radius:8px; border:1px solid #374151; background:#0b1020; color:#e5e7eb; }
-    button { cursor:pointer; }
-    .list { display:grid; gap:8px; }
-    .item { background:#0b1020; padding:8px; border-radius:8px; border:1px solid #1f2a52; }
-    .latin { font-style: italic; line-height:1.4; }
-  </style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .redirect-container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+            margin: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ff88, #00aaff, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #00ff88;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .link {
+            color: #00ff88;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #00ff88;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        .link:hover {
+            background: #00ff88;
+            color: #000;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
-  <div style="text-align: center; padding: 50px; background: #0b1020; color: #e5e7eb; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-    <h1>🌍 OnAirMulTiMedia</h1>
-    <p>Weiterleitung zur Hauptseite mit Aurora Video...</p>
-    <p>Falls die Weiterleitung nicht funktioniert, klicken Sie <a href="./" style="color: #93c5fd;">hier</a></p>
-    <div style="margin-top: 20px;">
-      <div style="width: 40px; height: 40px; border: 4px solid #374151; border-top: 4px solid #93c5fd; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <div class="redirect-container">
+        <h1>🌍 OnAirMulTiMedia</h1>
+        <p>Weiterleitung zur Aurora Video-Hauptseite...</p>
+        <div class="spinner"></div>
+        <p>Das globale Tor zur Welt mit Aurora Musik wird geladen</p>
+        <a href="./" class="link">Zur Aurora Hauptseite</a>
     </div>
-  </div>
-  <style>
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-  
-  <!-- Original content hidden -->
-  <div style="display: none;">
-  <header>
-    <div class="hero">
-      <div style="font-weight:800; font-size:20px;">OnAirMulTiMedia – Info & Monitoring</div>
-      <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia" target="_blank">GitHub Repo ↗</a>
-      <a href="/blueprints.html" style="margin-left:12px;">Blueprints ↗</a>
-      <a href="/manifest.html" style="margin-left:12px;">Manifest ↗</a>
-      <a href="/regulatory.html" style="margin-left:12px;">Regulatory ↗</a>
-    </div>
-    <div class="muted">Live-Metriken werden regelmäßig synchronisiert (alle ~10 Minuten). Release-Downloads = Summe aller Release-Assets.</div>
-  </header>
-
-  <main>
-    <section class="grid">
-      <div class="card">
-        <div class="muted">Stars</div>
-        <div id="stars" class="big">–</div>
-        <!-- Sparkline removed - GitHub API doesn't provide historical data without auth -->
-      </div>
-      <div class="card"><div class="muted">Forks</div><div id="forks" class="big">–</div></div>
-      <div class="card"><div class="muted">Watcher</div><div id="watchers" class="big">–</div></div>
-      <div class="card"><div class="muted">Offene Issues</div><div id="issues" class="big">–</div></div>
-      <div class="card"><div class="muted">Releases</div><div id="releases" class="big">–</div></div>
-      <div class="card">
-        <div class="muted">Release-Downloads</div>
-        <div id="downloads" class="big">–</div>
-        <!-- Downloads trend removed - GitHub API doesn't provide historical data without auth -->
-      </div>
-      <div class="card"><div class="muted">Letztes Release</div><div id="latest" class="big" style="font-size:20px;">–</div></div>
-      <div class="card">
-        <div class="muted">Stand</div>
-        <div id="ts" class="big" style="font-size:20px;">–</div>
-        <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia" target="_blank" style="font-size:12px;margin-top:8px;display:block;">📊 GitHub Repository</a>
-      </div>
-    </section>
-
-    <section class="card">
-      <h3>Community-Beiträge</h3>
-      <div class="muted">Reiche ergänzende Infos ein. Beiträge werden moderiert, bevor sie erscheinen.</div>
-      <div style="display:grid; gap:8px; margin-top:8px;">
-        <input id="user" placeholder="Dein Name oder @handle (optional)" />
-        <textarea id="text" rows="4" placeholder="Dein Beitrag (min. 5 Zeichen, max. 2000)"></textarea>
-        <button id="send">Beitrag einreichen</button>
-      </div>
-      <div id="msg" class="muted" style="margin-top:8px;"></div>
-      <hr/>
-      <div class="list" id="contribs"></div>
-    </section>
-
-    <section class="card" id="modSection" style="display:none;">
-      <h3>🔒 Moderation (Admin)</h3>
-      <div class="muted">Pending Beiträge:</div>
-      <div class="list" id="pending"></div>
-    </section>
-
-    <section class="card" style="border: 2px solid #3b82f6; background: linear-gradient(135deg, #111827 0%, #1e293b 100%);">
-      <h3>💬 Nachricht vom Producer</h3>
-      <div style="background:#0b1020; padding:16px; border-radius:8px; border-left:4px solid #3b82f6; margin-bottom:16px;">
-        <p style="font-size:14px; line-height:1.6; margin:0;">
-          <strong>Raymond Demitrio Dr. Tel (DD5BE)</strong> fragt:<br/><br/>
-          Liebe Community, ich habe dieses System mit viel Herzblut entwickelt. 
-          <strong>Tut die App wirklich das, was die Beschreibung verspricht?</strong> 
-          Funktionieren alle Features wie dokumentiert? Ist die Audit-Trail-Integration hilfreich?
-          Entspricht das Regulatory Framework Ihren Erwartungen?<br/><br/>
-          <strong>Bitte hinterlassen Sie Ihr ehrliches Feedback!</strong> 
-          Ihre Meinung ist mir sehr wichtig für die Weiterentwicklung. 
-          Was funktioniert gut? Was fehlt noch? Welche Features wünschen Sie sich?<br/><br/>
-          Nutzen Sie das Formular unten oder schreiben Sie direkt an: 
-          <a href="mailto:gentlyoverdone@outlook.com" style="color:#93c5fd;">gentlyoverdone@outlook.com</a><br/><br/>
-          <em style="opacity:0.8;">Dankeschön für Ihre Zeit und Ihr Feedback! 🙏</em>
-        </p>
-      </div>
-    </section>
-
-    <section class="card">
-      <h3>Unterstützen</h3>
-      <div class="latin">
-        Donare, Tributum dare, Largiri, Conferre, Munus offerre, Pro bono publico, Gratia voluntaria, Ex animo, Spontanea voluntate, Munus tuum confer pro bono publico.<br/>
-        Spontanea voluntate, ex animo, largire auxilium.<br/>
-        Donare hic.: <a href="https://www.gofundme.com/f/magnitudo?utm_campaign=unknown&utm_medium=referral&utm_source=widget" target="_blank">GoFundMe – magnitudo ↗</a>
-      </div>
-      <p class="muted" style="margin-top:8px;">Freiwillige Zuwendung als Dankeschön – keine Gegenleistung geschuldet. Dies ist **keine Rechts- oder Steuerberatung**. Prüfe lokale Vorgaben (z. B. Spendenrecht/Steuer). Mindestbetragempfehlung: 5 €.</p>
-    </section>
-  </main>
-
-  <!-- Service Worker temporarily disabled for cache clearing -->
-  <script>
-    function fmt(ts){ try { return new Date(ts).toLocaleString(); } catch { return '–'; } }
-    function esc(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.textContent; }
-
-    async function loadStats(){
-      try {
-        // Use GitHub REST API directly (no backend needed)
-        const [repoResponse, releasesResponse] = await Promise.all([
-          fetch('https://api.github.com/repos/ViewunitySystem/OnAirMulTiMedia'),
-          fetch('https://api.github.com/repos/ViewunitySystem/OnAirMulTiMedia/releases')
-        ]);
-        
-        if (!repoResponse.ok || !releasesResponse.ok) return;
-        
-        const repo = await repoResponse.json();
-        const releases = await releasesResponse.json();
-        
-        // Calculate downloads from release assets
-        const totalDownloads = releases.reduce((sum, release) => {
-          return sum + release.assets.reduce((assetSum, asset) => assetSum + asset.download_count, 0);
-        }, 0);
-        
-        document.getElementById('stars').textContent = repo.stargazers_count || 0;
-        document.getElementById('forks').textContent = repo.forks_count || 0;
-        document.getElementById('watchers').textContent = repo.watchers_count || 0;
-        document.getElementById('issues').textContent = repo.open_issues_count || 0;
-        document.getElementById('releases').textContent = releases.length || 0;
-        document.getElementById('downloads').textContent = totalDownloads;
-        document.getElementById('latest').textContent = releases[0]?.tag_name || '–';
-        document.getElementById('ts').textContent = fmt(new Date().toISOString());
-      } catch (error) {
-        console.error('Error loading GitHub stats:', error);
-      }
-    }
-
-    async function loadContribs(){
-      // Community contributions temporarily disabled - no backend available on GitHub Pages
-      const root = document.getElementById('contribs'); 
-      root.innerHTML = '<div class="item"><em>Community-Beiträge sind temporär deaktiviert. Verwenden Sie GitHub Issues für Feedback.</em></div>';
-    }
-
-    document.getElementById('send').onclick = async ()=>{
-      const msg = document.getElementById('msg');
-      msg.textContent = 'Community-Beiträge sind temporär deaktiviert. Verwenden Sie GitHub Issues für Feedback.';
-    };
-
-    // Moderation UI
-    const adminKey = sessionStorage.getItem('ADMIN_KEY');
-    if (adminKey) {
-      document.getElementById('modSection').style.display = 'block';
-      loadPending();
-    }
     
-    async function loadPending(){
-      const key = sessionStorage.getItem('ADMIN_KEY');
-      const r = await fetch('/api/contribs?state=pending'); if (!r.ok) return;
-      const list = await r.json();
-      const root = document.getElementById('pending'); root.innerHTML = '';
-      list.forEach(c => {
-        const el = document.createElement('div'); el.className='item';
-        const u = c.user_id ? `<strong>${esc(c.user_id)}</strong>` : '<strong>anon</strong>';
-        el.innerHTML = `${u} <span class="muted">• ${fmt(c.created_at)}</span><br/>${esc(c.content)}<br/>`;
-        const approve = document.createElement('button'); approve.textContent='✅ Approve'; approve.style.cssText='margin-right:8px;padding:4px 8px;background:#10b981;color:white;border:none;border-radius:4px;cursor:pointer;';
-        const reject = document.createElement('button'); reject.textContent='❌ Reject'; reject.style.cssText='padding:4px 8px;background:#ef4444;color:white;border:none;border-radius:4px;cursor:pointer;';
-        approve.onclick = async ()=>{ await fetch(`/api/contribs/${c.id}/approve`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); loadContribs(); };
-        reject.onclick = async ()=>{ await fetch(`/api/contribs/${c.id}/reject`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); };
-        el.appendChild(approve); el.appendChild(reject);
-        root.appendChild(el);
-      });
-    }
-    
-    // Prompt for admin key (Ctrl+Shift+M)
-    document.addEventListener('keydown', (e)=>{
-      if (e.ctrlKey && e.shiftKey && e.key === 'M') {
-        const key = prompt('Admin Key:');
-        if (key) {
-          sessionStorage.setItem('ADMIN_KEY', key);
-          document.getElementById('modSection').style.display = 'block';
-          loadPending();
-        }
-      }
-    });
-
-    loadStats(); loadContribs();
-    setInterval(loadStats, 60_000);
+    <script>
+        // Immediate redirect to main page
+        setTimeout(() => {
+            window.location.replace('./');
+        }, 100);
   </script>
-  </div> <!-- End of hidden original content -->
 </body>
 </html>
-
