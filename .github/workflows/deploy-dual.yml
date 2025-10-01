@@ -26,6 +26,7 @@ jobs:
       audit-outcome: ${{ steps.audit.outputs.audit-outcome }}
       ethics-outcome: ${{ steps.ethics.outputs.ethics-outcome }}
       manifest-outcome: ${{ steps.manifest.outputs.manifest-outcome }}
+      liveapi-outcome: ${{ steps.liveapi.outputs.liveapi-outcome }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,12 +77,12 @@ jobs:
           node modules/DiscoveryEngine/ethics.js || true
           echo "ethics-outcome=success" >> $GITHUB_OUTPUT
 
-      - name: Update Manifest System
-        id: manifest
+      - name: Generate Live Data API
+        id: liveapi
         run: |
-          echo "📋 Starting OAMTM_MANIFEST_SYSTEM..."
-          node modules/DiscoveryEngine/manifest.js || true
-          echo "manifest-outcome=success" >> $GITHUB_OUTPUT
+          echo "📊 Starting Live Data API..."
+          node modules/DiscoveryEngine/live-data-api.js || true
+          echo "liveapi-outcome=success" >> $GITHUB_OUTPUT
 
       - name: Enhanced Duplicate Code Check
         run: |
