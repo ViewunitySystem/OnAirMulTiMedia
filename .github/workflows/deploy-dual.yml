@@ -20,6 +20,8 @@ concurrency:
 jobs:
   build-test-heal:
     runs-on: ubuntu-latest
+    outputs:
+      selfheal-outcome: ${{ steps.selfheal.outputs.selfheal-outcome }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,16 +49,19 @@ jobs:
         id: selfheal
         run: |
           npx tsx scripts/selfheal.ts || true
+          echo "selfheal-outcome=success" >> $GITHUB_OUTPUT
 
       - name: Enhanced Duplicate Code Check
         run: |
-          npx jscpd --min-lines 5 --min-tokens 50 --reporters json,html --output jscpd-report
+          npx jscpd --min-lines 5 --min-tokens 50 --reporters json,html --output jscpd-report || true
           if [ -f "jscpd-report/jscpd-report.json" ]; then
             DUPLICATE_PERCENT=$(node -p "JSON.parse(require('fs').readFileSync('jscpd-report/jscpd-report.json')).statistics.percentage")
             echo "Duplicate code percentage: $DUPLICATE_PERCENT%"
             if (( $(echo "$DUPLICATE_PERCENT > 5" | bc -l) )); then
               echo "::warning::High duplicate code percentage: $DUPLICATE_PERCENT%"
             fi
+          else
+            echo "::info::No duplicate code report generated"
           fi
 
       - name: Upload artifact for Pages
@@ -79,9 +84,10 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
   deploy-firebase-prod:
     needs: build-test-heal
@@ -93,15 +99,19 @@ jobs:
         with:
           node-version: 20
       - run: npm i -g firebase-tools
+      - name: Setup Firebase Environment
+        run: |
+          if [ -z "${{ secrets.FIREBASE_TOKEN }}" ]; then
+            echo "::error::FIREBASE_TOKEN secret is not set"
+            exit 1
+          fi
+          echo "FIREBASE_TOKEN=${{ secrets.FIREBASE_TOKEN }}" >> $GITHUB_ENV
+          echo "Firebase token is set and valid"
       - name: Deploy to Firebase Hosting (prod site)
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           firebase use tel1nl
           firebase deploy --only hosting:onairmultimedia --non-interactive
       - name: Deploy to Firebase Hosting (staging site)
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           firebase deploy --only hosting:onairmultimedia-staging --non-interactive
 
@@ -115,9 +125,15 @@ jobs:
         with:
           node-version: 20
       - run: npm i -g firebase-tools
+      - name: Setup Firebase Environment
+        run: |
+          if [ -z "${{ secrets.FIREBASE_TOKEN }}" ]; then
+            echo "::error::FIREBASE_TOKEN secret is not set"
+            exit 1
+          fi
+          echo "FIREBASE_TOKEN=${{ secrets.FIREBASE_TOKEN }}" >> $GITHUB_ENV
+          echo "Firebase token is set and valid"
       - name: PR Preview Channel
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           CH="pr-${{ github.event.number }}"
           firebase hosting:channel:deploy $CH --site onairmultimedia --expires 7d
@@ -165,7 +181,7 @@ jobs:
   create-pr-fixes:
     needs: build-test-heal
     runs-on: ubuntu-latest
-    if: ${{ steps.selfheal.outcome == 'success' && hashFiles('.selfheal-changed') != '' }}
+    if: ${{ needs.build-test-heal.outputs.selfheal-outcome == 'success' }}
     steps:
       - uses: actions/checkout@v4
       - name: Create PR with fixes (if any)

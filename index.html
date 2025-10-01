@@ -1,171 +1,505 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OnAirMulTiMedia - Amateur Radio SDR Platform</title>
-  
-  <!-- WICHTIG: KEINE Meta-Refresh oder JS-Redirects mehr! -->
-  
-  <meta name="description" content="Open-source Software-Defined Radio platform with regulatory compliance, audit trails, and modular architecture">
-  <meta name="author" content="Raymond Demitrio Dr. Tel">
-  <meta name="keywords" content="SDR, Amateur Radio, HackRF, RTL-SDR, WebRTC, APRS">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OnAirMulTiMedia – Start & Verteiler</title>
+  <meta name="description" content="OnAirMulTiMedia – Zentrale Landingpage mit App‑Verteiler und eingebettetem Info‑Dashboard." />
+  <!-- Keine Redirects! Diese Seite ist der Hub und hostet info.html im Inlay. -->
+
+  <!-- Basistypo: Systemschriften für Geschwindigkeit -->
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root{
+      --bg-dark:#0b0f17; --glass:rgba(8,12,20,.4); --glass-strong:rgba(8,12,20,.7);
+      --fg:#eaf0ff; --muted:#a6b0c9; --accent:#7dd3fc; --accent-2:#f472b6;
+      --card:#0f172a; --ok:#22c55e; --warn:#f59e0b; --err:#ef4444;
     }
     
-    html, body {
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #0a0e27;
-      color: #fff;
-    }
-    
-    #app {
-      width: 100%;
-      height: 100%;
+    /* Start/Exit Animation */
+    .app-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
       display: flex;
-      flex-direction: column;
-    }
-    
-    /* Optional: Ladeanzeige während iframe lädt */
-    #loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 1;
-      transition: opacity 0.3s ease;
-    }
-    
-    #loading.hidden {
-      opacity: 0;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-dark);
       pointer-events: none;
     }
     
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.1);
-      border-left-color: #00ff88;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
+    .app-animation.hidden {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
     }
     
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    .icon-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
-    #inlay {
-      border: 0;
+    .main-icon {
+      width: clamp(48px, 8vw, 128px);
+      height: clamp(48px, 8vw, 128px);
+      background-image: url('./icon.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 0 20px var(--accent));
+      animation: iconGrow 2s ease-out forwards;
+    }
+    
+    .stars {
+      position: absolute;
       width: 100%;
       height: 100%;
-      flex: 1;
-      background: #0a0e27;
+      pointer-events: none;
     }
     
-    /* Noscript Fallback */
-    noscript {
-      display: block;
-      padding: 2rem;
-      text-align: center;
-      background: #1a1e37;
-      color: #00ff88;
+    .star {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: starExplode 1.5s ease-out forwards;
     }
     
-    noscript a {
-      color: #00ff88;
-      text-decoration: underline;
+    .star:nth-child(odd) {
+      background: var(--accent-2);
+    }
+    
+    .bigbang {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(125, 211, 252, 0.8) 0%, rgba(244, 114, 182, 0.6) 50%, transparent 100%);
+      opacity: 0;
+      animation: bigbangExplode 1s ease-out 2s forwards;
+    }
+    
+    @keyframes iconGrow {
+      0% {
+        transform: scale(0.1);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes starExplode {
+      0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes bigbangExplode {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(3);
+        opacity: 0;
+      }
+    }
+    
+    /* Exit Animation (umgekehrt) */
+    .app-animation.exit .main-icon {
+      animation: iconShrink 1.5s ease-in forwards;
+    }
+    
+    .app-animation.exit .star {
+      animation: starImplode 1s ease-in forwards;
+    }
+    
+    .app-animation.exit .bigbang {
+      animation: bigbangImplode 1s ease-in 0.5s forwards;
+    }
+    
+    @keyframes iconShrink {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.1);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes starImplode {
+      0% {
+        transform: scale(1) rotate(360deg);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes bigbangImplode {
+      0% {
+        transform: scale(3);
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg-dark);color:var(--fg);font:400 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    a{color:inherit;text-decoration:none}
+    a.btn{display:inline-block;padding:.8rem 1.1rem;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#001020;font-weight:700}
+    a.btn.secondary{background:transparent;border:1px solid #5b6b87;color:var(--fg)}
+
+    /* Background video */
+    .bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
+    .bg video{position:absolute;min-width:100%;min-height:100%;top:50%;left:50%;transform:translate(-50%,-50%);filter:brightness(.4) saturate(1.1)}
+    .bg .fallback{position:absolute;inset:0;background:radial-gradient(1000px 600px at 10% 10%, #1f3a8a, transparent 60%),radial-gradient(1000px 600px at 90% 90%, #831843, transparent 60%),linear-gradient(#0b0f17,#0b0f17)}
+
+    header{position:sticky;top:0;backdrop-filter:saturate(180%) blur(8px);background:linear-gradient(to bottom, var(--glass-strong), transparent);z-index:10}
+    .nav{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;padding:1rem}
+    .brand{display:flex;align-items:center;gap:.6rem;font-weight:800;letter-spacing:.3px}
+    .badge{font-size:.75rem;opacity:.7;border:1px solid #5b6b87;border-radius:999px;padding:.15rem .5rem}
+    .spacer{flex:1}
+
+    main{max-width:1200px;margin:0 auto;padding:clamp(16px,2.5vw,32px)}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:2rem;align-items:center;padding:2rem 0}
+    .hero h1{font-size:clamp(28px,4.2vw,52px);line-height:1.05;margin:.2rem 0 .6rem}
+    .hero p{color:var(--muted);max-width:60ch;margin:0 0 1rem}
+    .cta{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.5rem}
+
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:1rem;min-height:120px;display:flex;flex-direction:column;justify-content:space-between;transition:.2s box-shadow,.2s transform}
+    .card:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+    .card h3{margin:.2rem 0 .2rem;font-size:1.05rem}
+    .card p{margin:0;color:var(--muted);font-size:.92rem}
+    .tag{display:inline-block;margin-top:.6rem;font-size:.72rem;color:#0b0f17;background:#a5f3fc;border-radius:999px;padding:.15rem .5rem;font-weight:700}
+    .tag.warn{background:#fed7aa}
+    .tag.ok{background:#bbf7d0}
+
+    /* Info-Embed Panel */
+    .panel{margin-top:3rem;background:rgba(3,6,15,.55);border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden}
+    .panel header{position:relative;background:transparent}
+    .panel .bar{display:flex;align-items:center;gap:.8rem;padding:1rem}
+    .panel .bar h2{font-size:1.1rem;margin:0}
+    .panel .bar .actions{margin-left:auto;display:flex;gap:.6rem}
+    .panel iframe{display:block;width:100%;height:min(80vh,900px);border:0;background:#0a0f1a}
+
+    footer{opacity:.9;color:var(--muted);text-align:center;padding:3rem 1rem}
+
+    @media (max-width:980px){
+      .hero{grid-template-columns:1fr}
+      .cards{grid-template-columns:repeat(2,1fr)}
+    }
+    @media (max-width:580px){
+      .cards{grid-template-columns:1fr}
+    }
+    @media (prefers-reduced-motion: reduce){
+      .bg video{display:none}
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <!-- Ladeanzeige (optional) -->
-    <div id="loading">
-      <div class="spinner"></div>
-      <p>Loading Info Dashboard...</p>
+  <!-- Start/Exit Animation -->
+  <div id="appAnimation" class="app-animation">
+    <div class="icon-container">
+      <div class="main-icon"></div>
+      <div class="stars" id="starsContainer"></div>
+      <div class="bigbang"></div>
     </div>
-    
-    <!-- Haupt-Iframe für Info Dashboard -->
-    <iframe
-      id="inlay"
-      name="inlay"
-      src="./info.html"
-      title="OnAirMulTiMedia Info Dashboard"
-      loading="eager"
-      referrerpolicy="no-referrer"
-      allow="fullscreen"
-      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-    ></iframe>
   </div>
 
-  <!-- Fallback für deaktiviertes JavaScript -->
-  <noscript>
-    <strong>JavaScript ist deaktiviert.</strong><br>
-    Bitte aktiviere JavaScript oder gehe direkt zur 
-    <a href="./info.html">Info-Seite</a>.
-  </noscript>
+  <a href="#apps" style="position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden">Zum Inhalt springen</a>
+
+  <!-- Background layer -->
+  <div class="bg" aria-hidden="true">
+    <div class="fallback"></div>
+    <!-- Autoplay-freundlich: muted + playsinline + loop; poste r für erste Paints -->
+    <video id="bgVideo" autoplay muted playsinline loop poster="assets/cover.jpg">
+      <source src="assets/hero.mp4" type="video/mp4" />
+      <!-- Fallback Text -->
+      Ihr Browser unterstützt das Hintergrundvideo nicht.
+    </video>
+  </div>
+
+  <header>
+    <nav class="nav">
+      <div class="brand" aria-label="OnAirMulTiMedia">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="#7dd3fc" stroke-width="2"/><path d="M6 12h12M12 6v12" stroke="#f472b6" stroke-width="2"/></svg>
+        <span>OnAirMulTiMedia</span>
+        <span class="badge">24/7 · Live · On‑Demand</span>
+      </div>
+      <div class="spacer"></div>
+      <a class="btn secondary" href="#info">Info‑Dashboard</a>
+      <a class="btn" href="#apps">Apps öffnen</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero / USP -->
+    <section class="hero" id="top">
+      <div>
+        <h1>Alle Apps. Ein Hub. <br/>Live, On‑Air & On‑Demand.</h1>
+        <p>
+          Diese Startseite ist der zentrale Verteiler für die Hauptanwendung, Module und Tools.
+          Das <strong>Info‑Dashboard</strong> ist direkt eingebettet – ohne Weiterleitungen.
+          Video‑Hintergrund für maximale Bühne, barrierearm und performant umgesetzt.
+        </p>
+        <div class="cta">
+          <a class="btn" href="#apps">Zum App‑Verteiler</a>
+          <a class="btn secondary" href="#info">Info‑Dashboard anzeigen</a>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="min-height:220px">
+          <h3>Status</h3>
+          <p>Dieser Hub ersetzt Weiterleitungen. <br/>`info.html` wird im Inlay geladen.</p>
+          <span class="tag ok">Start‑Routine aktiv</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- App‑Verteiler -->
+    <section id="apps" aria-label="App‑Verteiler">
+      <h2 style="margin:.5rem 0 1rem">Apps & Bereiche</h2>
+      <div class="cards">
+        <a class="card" href="#info">
+          <div>
+            <h3>Info‑Dashboard</h3>
+            <p>Monitoring, Metriken, Links – eingebettet ohne Redirect.</p>
+          </div>
+          <span class="tag">embedded</span>
+        </a>
+        <a class="card" href="./test.html">
+          <div>
+            <h3>Test‑Client</h3>
+            <p>Interaktive Demos & Prüfwerkzeuge.</p>
+          </div>
+          <span class="tag">tool</span>
+        </a>
+        <a class="card" href="https://github.com/ViewunitySystem/OnAirMulTiMedia" target="_blank" rel="noopener">
+          <div>
+            <h3>Repository</h3>
+            <p>Quellcode, Issues, Releases, Docs.</p>
+          </div>
+          <span class="tag">extern</span>
+        </a>
+        <a class="card" href="./docs/index.html">
+          <div>
+            <h3>Dokumentation</h3>
+            <p>Blueprints, Regulatory, Audit‑Trail.</p>
+          </div>
+          <span class="tag warn">optional</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Info‑Dashboard Inlay (iframe) -->
+    <section id="info" class="panel" aria-label="Info‑Dashboard eingebettet">
+      <header class="bar">
+        <h2>Info‑Dashboard</h2>
+        <div class="actions">
+          <a class="btn secondary" href="./info.html" target="_blank" rel="noopener">In neuem Tab</a>
+          <button id="reload" class="btn secondary" type="button" aria-label="Info neu laden">Neu laden</button>
+        </div>
+      </header>
+      <iframe id="inlay" name="inlay" src="./info.html" loading="lazy" referrerpolicy="no-referrer" allow="fullscreen"></iframe>
+      <noscript>
+        JavaScript ist deaktiviert – <a href="./info.html">hier Info‑Dashboard öffnen</a>.
+      </noscript>
+    </section>
+  </main>
+
+  <footer>
+    © <span id="y"></span> OnAirMulTiMedia • Ohne Tracking‑Cookies • Barrierearm • Performance‑optimiert
+  </footer>
 
   <script>
-    // Optional: Query-Parameter an die Info-Seite durchreichen
-    const iframe = document.getElementById('inlay');
-    const loading = document.getElementById('loading');
-    const params = new URLSearchParams(location.search).toString();
-    
-    // Query-Parameter weitergeben (falls vorhanden)
-    if (params) {
-      iframe.src = `./info.html?${params}`;
-    }
-    
-    // Ladeanzeige ausblenden wenn iframe geladen ist
-    iframe.addEventListener('load', () => {
-      if (loading) {
-        loading.classList.add('hidden');
-        setTimeout(() => loading.remove(), 300);
-      }
+    // Jahr im Footer
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Query-Param Router: ?view=info oder Hash #info
+    (function(){
+      const params = new URLSearchParams(location.search);
+      if(params.get('view') === 'info') location.hash = '#info';
+    })();
+
+    // Neu laden Button für das Inlay
+    document.getElementById('reload')?.addEventListener('click', ()=>{
+      const f = document.getElementById('inlay');
+      if (f && f.tagName === 'IFRAME') { f.src = f.src.split('#')[0].split('?')[0] + '?t=' + Date.now(); }
     });
-    
-    // Error Handling
-    iframe.addEventListener('error', () => {
-      if (loading) {
-        loading.innerHTML = `
-          <div class="spinner"></div>
-          <p style="color: #ff6b6b;">Fehler beim Laden der Info-Seite.</p>
-          <p><a href="./info.html" style="color: #00ff88; text-decoration: underline;">Direkt zur Info-Seite</a></p>
-        `;
+
+    // Background-Video Stabilität: falls Autoplay blockiert → pausieren (kein Fehler in Logs)
+    (function(){
+      const v = document.getElementById('bgVideo');
+      if(!v) return;
+      const play = v.play?.();
+      if (play && typeof play.then === 'function'){
+        play.catch(()=>{ v.removeAttribute('autoplay'); v.pause(); });
       }
+    })();
+
+    // Start/Exit Animation System
+    class AppAnimation {
+      constructor() {
+        this.animationElement = document.getElementById('appAnimation');
+        this.starsContainer = document.getElementById('starsContainer');
+        this.isAnimating = false;
+        this.init();
+      }
+
+      init() {
+        // Start-Animation beim Laden der Seite
+        this.startAnimation();
+        
+        // Exit-Animation beim Verlassen der Seite
+        window.addEventListener('beforeunload', () => {
+          this.exitAnimation();
+        });
+
+        // Exit-Animation bei bestimmten Aktionen (optional)
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && !this.isAnimating) {
+            this.exitAnimation();
+          }
+        });
+      }
+
+      createStars() {
+        const starCount = 20;
+        const containerRect = this.starsContainer.getBoundingClientRect();
+        
+        for (let i = 0; i < starCount; i++) {
+          const star = document.createElement('div');
+          star.className = 'star';
+          
+          // Zufällige Position um das Icon
+          const angle = (i / starCount) * Math.PI * 2;
+          const distance = 30 + Math.random() * 40;
+          const x = Math.cos(angle) * distance;
+          const y = Math.sin(angle) * distance;
+          
+          star.style.left = `calc(50% + ${x}px)`;
+          star.style.top = `calc(50% + ${y}px)`;
+          star.style.animationDelay = `${Math.random() * 0.5}s`;
+          
+          this.starsContainer.appendChild(star);
+        }
+      }
+
+      // Öffentliche Methode für manuelle Exit-Animation
+      triggerExit() {
+        this.exitAnimation();
+      }
+
+      startAnimation() {
+        if (this.isAnimating) return;
+        this.isAnimating = true;
+        
+        // Sterne erstellen
+        this.createStars();
+        
+        // Animation nach 3 Sekunden ausblenden
+        setTimeout(() => {
+          this.animationElement.classList.add('hidden');
+          setTimeout(() => {
+            this.animationElement.style.display = 'none';
+            this.isAnimating = false;
+          }, 500);
+        }, 3000);
+      }
+
+      exitAnimation() {
+        if (this.isAnimating) return;
+        this.isAnimating = true;
+        
+        // Animation wieder anzeigen
+        this.animationElement.style.display = 'flex';
+        this.animationElement.classList.remove('hidden');
+        this.animationElement.classList.add('exit');
+        
+        // Sterne neu erstellen für Exit-Animation
+        this.starsContainer.innerHTML = '';
+        this.createStars();
+        
+        // Nach Animation Seite verlassen
+        setTimeout(() => {
+          // Hier könnte die Seite geschlossen oder weitergeleitet werden
+          console.log('Exit-Animation abgeschlossen');
+        }, 2500);
+      }
+    }
+
+    // Animation starten wenn Seite geladen ist
+    let appAnimationInstance;
+    window.addEventListener('load', () => {
+      appAnimationInstance = new AppAnimation();
+      
+      // Globale Funktion für Exit-Animation
+      window.exitApp = () => {
+        if (appAnimationInstance) {
+          appAnimationInstance.triggerExit();
+        }
+      };
     });
-    
-    // ROBUSTE ANTI-REDIRECT-LOGIK
-    if (window.history && window.history.replaceState) {
-      // Clean URL if it came from a redirect
-      const cleanUrl = window.location.pathname;
-      if (window.location.search.includes('redirect') || 
-          window.location.search.includes('redirecting') ||
-          window.location.search.includes('info')) {
-        window.history.replaceState({}, document.title, cleanUrl);
-      }
-    }
-    
-    // Verhindere dass info.html die Hauptseite überschreibt
-    if (window.location.pathname.endsWith('/info.html')) {
-      window.location.replace(window.location.pathname.replace('/info.html', '/'));
-    }
-    
-    // DEBUG: Console-Log für Troubleshooting
-    console.log('[OnAirMulTiMedia] Index.html loaded successfully');
-    console.log('[OnAirMulTiMedia] Iframe source:', iframe.src);
-    console.log('[OnAirMulTiMedia] Current URL:', window.location.href);
   </script>
+
+  <!-- Service Worker für Offline-Funktionalität -->
+  <script>
+    if('serviceWorker' in navigator){
+      window.addEventListener('load',()=>{
+        navigator.serviceWorker.register('./sw.js')
+          .then(registration => {
+            console.log('✅ Service Worker registriert:', registration.scope);
+          })
+          .catch(error => {
+            console.log('❌ Service Worker Registrierung fehlgeschlagen:', error);
+          });
+      });
+    }
+  </script>
+
+  <!-- Security‑Meta als Ergänzung (harte Header besser via Firebase/Proxy)
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'self';"> -->
 </body>
 </html>
-

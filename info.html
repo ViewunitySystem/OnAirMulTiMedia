@@ -4,6 +4,37 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OnAirMulTiMedia – Info & GitHub Monitoring</title>
+  
+  <!-- Frame-Busting Guard: Verhindert Einbettung in fremde Frames -->
+  <script>
+    // Frame-Busting: Nur erlauben wenn es die Hauptseite oder ein erlaubter Parent ist
+    (function() {
+      try {
+        if (window.top !== window.self) {
+          // Prüfe ob der Parent erlaubt ist (z.B. die eigene Domain)
+          const allowedParents = [
+            window.location.origin,
+            'https://viewunitysystem.github.io',
+            'https://onairmultimedia.web.app'
+          ];
+          
+          const parentOrigin = window.top.location.origin;
+          const isAllowed = allowedParents.some(allowed => 
+            parentOrigin === allowed || parentOrigin.startsWith(allowed)
+          );
+          
+          if (!isAllowed) {
+            // Redirect zur Hauptseite wenn in fremdem Frame
+            window.top.location.href = window.location.href;
+            return;
+          }
+        }
+      } catch (e) {
+        // Bei Cross-Origin-Fehlern: Redirect zur Hauptseite
+        window.top.location.href = window.location.href;
+      }
+    })();
+  </script>
   <style>
     :root { color-scheme: dark; }
     body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }

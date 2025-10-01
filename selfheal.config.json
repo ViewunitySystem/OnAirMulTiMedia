@@ -1,21 +1,220 @@
 {
+  "version": "2.0",
+  "description": "OnAirMulTiMedia Self-Healing Configuration",
   "rules": {
-    "pagesSingleSource": { "enabled": true },
-    "indexNoRedirect": { "enabled": true, "iframeSrc": "./info.html" },
-    "infoNoFramebust": { "enabled": true },
-    "serviceWorkerFallback": { "enabled": true, "offlinePath": "public/offline.html" },
-    "duplication": { 
-      "enabled": true, 
+    "pagesSingleSource": {
+      "enabled": true,
+      "description": "Ensure GitHub Pages uses only gh-pages branch as source",
+      "severity": "error",
+      "autoFix": true
+    },
+    "indexNoRedirect": {
+      "enabled": true,
+      "description": "Remove redirects from index.html and ensure iframe embedding",
+      "iframeSrc": "./info.html",
+      "severity": "error",
+      "autoFix": true,
+      "patterns": [
+        "meta.*refresh",
+        "location\\.replace",
+        "location\\.href",
+        "window\\.location"
+      ]
+    },
+    "infoNoFramebust": {
+      "enabled": true,
+      "description": "Remove frame-busting code from info.html",
+      "severity": "error",
+      "autoFix": true,
+      "patterns": [
+        "top\\.location",
+        "window\\.top",
+        "parent\\.location"
+      ]
+    },
+    "serviceWorkerFallback": {
+      "enabled": true,
+      "description": "Implement Service Worker with 404/Offline fallback",
+      "offlinePath": "public/offline.html",
+      "swPath": "public/sw.js",
+      "severity": "warning",
+      "autoFix": true
+    },
+    "duplication": {
+      "enabled": true,
+      "description": "Detect and report code duplication",
       "maxPercent": 5,
       "minLines": 5,
-      "minTokens": 50
+      "minTokens": 50,
+      "severity": "warning",
+      "autoFix": false,
+      "reportPath": "jscpd-report"
     },
-    "mocksPlaceholders": { 
-      "enabled": true, 
-      "patterns": ["TODO", "XXX", "CHANGEME", "MOCK", "DUMMY", "PLACEHOLDER", "FIXME", "HACK"] 
+    "mocksPlaceholders": {
+      "enabled": true,
+      "description": "Detect TODO/MOCK/PLACEHOLDER comments",
+      "patterns": [
+        "TODO",
+        "XXX",
+        "CHANGEME",
+        "MOCK",
+        "DUMMY",
+        "PLACEHOLDER",
+        "FIXME",
+        "HACK",
+        "TEMP",
+        "TEMPORARY"
+      ],
+      "severity": "warning",
+      "autoFix": false,
+      "excludeFiles": [
+        "README.md",
+        "CHANGELOG.md",
+        "docs/**/*"
+      ]
     },
-    "htmlValidators": { "enabled": true },
-    "firebaseHostingSync": { "enabled": true },
-    "firebasePreviewChannels": { "enabled": true }
+    "htmlValidators": {
+      "enabled": true,
+      "description": "Basic HTML validation and security checks",
+      "severity": "error",
+      "autoFix": true,
+      "checks": [
+        "doctype",
+        "charset",
+        "viewport",
+        "csp",
+        "sri",
+        "referrer-policy"
+      ]
+    },
+    "firebaseHostingSync": {
+      "enabled": true,
+      "description": "Validate and correct firebase.json settings",
+      "severity": "warning",
+      "autoFix": true,
+      "requiredSites": [
+        "onairmultimedia",
+        "onairmultimedia-staging",
+        "onairmultimedia-dev"
+      ]
+    },
+    "firebasePreviewChannels": {
+      "enabled": true,
+      "description": "Create Firebase Preview Channel links on PR events",
+      "severity": "info",
+      "autoFix": true,
+      "expires": "7d"
+    },
+    "binaryFiles": {
+      "enabled": true,
+      "description": "Detect and report binary files in repository",
+      "severity": "error",
+      "autoFix": false,
+      "patterns": [
+        "*.exe",
+        "*.msi",
+        "*.dmg",
+        "*.deb",
+        "*.AppImage",
+        "*.pkg",
+        "*.rpm"
+      ],
+      "excludePaths": [
+        "node_modules/**",
+        ".git/**",
+        "dist/**",
+        "build/**"
+      ]
+    },
+    "lockfiles": {
+      "enabled": true,
+      "description": "Ensure lockfiles are present for reproducible builds",
+      "severity": "warning",
+      "autoFix": false,
+      "required": [
+        "package-lock.json",
+        "Cargo.lock"
+      ]
+    },
+    "securityHeaders": {
+      "enabled": true,
+      "description": "Ensure security headers are properly configured",
+      "severity": "error",
+      "autoFix": true,
+      "headers": [
+        "Content-Security-Policy",
+        "X-Frame-Options",
+        "X-Content-Type-Options",
+        "Referrer-Policy",
+        "Strict-Transport-Security"
+      ]
+    },
+    "webtritSwipe": {
+      "enabled": true,
+      "description": "Ensure WebTrit Swipe Technology is properly integrated",
+      "severity": "info",
+      "autoFix": true,
+      "requiredFiles": [
+        "webtrit-swipe.js"
+      ],
+      "integrationPoints": [
+        "info.html",
+        "index.html"
+      ]
+    },
+    "appVisibility": {
+      "enabled": true,
+      "description": "Ensure all 18 apps are visible and accessible",
+      "severity": "warning",
+      "autoFix": false,
+      "expectedApps": 18,
+      "checkFiles": [
+        "info.html",
+        "index.html"
+      ]
+    }
+  },
+  "notifications": {
+    "github": {
+      "enabled": true,
+      "createPR": true,
+      "commentOnPR": true,
+      "commitMessage": "🔧 Self-Healing: Automated fixes"
+    },
+    "slack": {
+      "enabled": false,
+      "webhook": ""
+    },
+    "email": {
+      "enabled": false,
+      "recipients": []
+    }
+  },
+  "schedule": {
+    "enabled": true,
+    "cron": "*/30 * * * *",
+    "timezone": "UTC"
+  },
+  "reports": {
+    "enabled": true,
+    "formats": ["json", "html", "markdown"],
+    "outputPath": "selfheal-reports",
+    "retentionDays": 30
+  },
+  "exclude": {
+    "paths": [
+      "node_modules/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      "target/**",
+      "*.log",
+      "*.tmp"
+    ],
+    "files": [
+      "package-lock.json",
+      "yarn.lock",
+      "pnpm-lock.yaml"
+    ]
   }
 }

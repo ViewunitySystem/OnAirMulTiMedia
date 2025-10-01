@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Offline - OnAirMulTiMedia</title>
+  <style>
+    :root {
+      --bg-dark: #0b0f17;
+      --fg: #eaf0ff;
+      --muted: #a6b0c9;
+      --accent: #7dd3fc;
+      --accent-2: #f472b6;
+    }
+    
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      background: var(--bg-dark);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    
+    .container {
+      max-width: 600px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 1rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 2rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 1.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #001020;
+      text-decoration: none;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: transform 0.2s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .btn.secondary {
+      background: transparent;
+      border: 1px solid #5b6b87;
+      color: var(--fg);
+      margin-left: 1rem;
+    }
+    
+    .status {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 12px;
+      color: #22c55e;
+      font-size: 0.9rem;
+    }
+    
+    .features {
+      margin-top: 2rem;
+      text-align: left;
+    }
+    
+    .features h3 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    
+    .features ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .features li {
+      padding: 0.5rem 0;
+      color: var(--muted);
+    }
+    
+    .features li::before {
+      content: "✓";
+      color: #22c55e;
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    
+    <h1>Offline-Modus</h1>
+    
+    <p>
+      Sie sind derzeit offline. Einige Funktionen von OnAirMulTiMedia sind weiterhin verfügbar, 
+      da wichtige Inhalte lokal zwischengespeichert wurden.
+    </p>
+    
+    <div class="features">
+      <h3>Verfügbare Funktionen:</h3>
+      <ul>
+        <li>Startseite und Navigation</li>
+        <li>Info-Dashboard (gecachte Daten)</li>
+        <li>Statische Dokumentation</li>
+        <li>Offline-Tools und Demos</li>
+      </ul>
+    </div>
+    
+    <div>
+      <a href="/" class="btn">Zur Startseite</a>
+      <button onclick="window.location.reload()" class="btn secondary">Neu laden</button>
+    </div>
+    
+    <div class="status">
+      <strong>Service Worker aktiv</strong><br>
+      Automatische Synchronisation beim nächsten Online-Zugang
+    </div>
+  </div>
+  
+  <script>
+    // Prüfe Verbindungsstatus
+    function updateConnectionStatus() {
+      const status = navigator.onLine ? 'online' : 'offline';
+      console.log('Verbindungsstatus:', status);
+      
+      if (navigator.onLine) {
+        // Wenn wieder online: Seite neu laden
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    }
+    
+    // Event-Listener für Verbindungsstatus
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    // Service Worker Status prüfen
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(registration => {
+        console.log('Service Worker bereit:', registration.scope);
+      });
+    }
+  </script>
+</body>
+</html>
