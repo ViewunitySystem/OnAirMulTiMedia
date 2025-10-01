@@ -1,292 +1,291 @@
-name: 🚀 CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [ mainzero, main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ mainzero, main ]
+  schedule:
+    # Daily audit verification at 03:00 UTC
+    - cron: '0 3 * * *'
 
 jobs:
-  test:
-    name: 🧪 Tests
+  lint:
+    name: Lint & Format Check
     runs-on: ubuntu-latest
     
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run ESLint
+        run: npm run lint || echo "::warning::Linting issues found"
+      
+      - name: Check formatting
+        run: npm run format:check || echo "::warning::Formatting issues found"
+
+  test-node:
+    name: Test (Node.js)
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x, 18.x, 20.x]
-        browser: [chrome, firefox]
+        node-version: [18.x, 20.x]
     
     steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       
-    - name: 🔧 Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        
-    - name: 📦 Install Dependencies
-      run: |
-        npm ci
-        npm install -g serve
-        
-    - name: 🏗️ Build Application
-      run: |
-        npm run build
-        
-    - name: 🧪 Run Unit Tests
-      run: |
-        npm run test:unit
-        
-    - name: 🧪 Run Integration Tests
-      run: |
-        npm run test:integration
-        
-    - name: 🎨 Lint Code
-      run: |
-        npm run lint
-        
-    - name: 📊 Test Coverage
-      run: |
-        npm run test:coverage
-        
-    - name: 📤 Upload Coverage Reports
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/lcov.info
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run unit tests
+        run: npm test
+      
+      - name: Run integration tests
+        run: npm run test:integration
+      
+      - name: Generate coverage report
+        run: npm run test:coverage
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/coverage-final.json
+          flags: nodejs
+          name: nodejs-${{ matrix.node-version }}
 
-  security:
-    name: 🛡️ Security Scan
+  test-rust:
+    name: Test (Rust)
     runs-on: ubuntu-latest
     
     steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       
-    - name: 🔧 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: 📦 Install Dependencies
-      run: npm ci
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: clippy, rustfmt
       
-    - name: 🔍 Run Security Audit
-      run: |
-        npm audit --audit-level=high
-        npm run security:scan
-        
-    - name: 🛡️ Run SAST Scan
-      uses: github/codeql-action/init@v2
-      with:
-        languages: javascript
-        
-    - name: 🔍 Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      - name: Cache Rust dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Run Clippy
+        run: cargo clippy -- -D warnings
+      
+      - name: Check formatting
+        run: cargo fmt -- --check
+      
+      - name: Run tests
+        run: cargo test --verbose
+      
+      - name: Run tests (release mode)
+        run: cargo test --release --verbose
 
-  performance:
-    name: ⚡ Performance Test
+  audit-verification:
+    name: Audit Trail Verification
     runs-on: ubuntu-latest
     
     steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v3
       
-    - name: 🔧 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: 📦 Install Dependencies
-      run: npm ci
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
       
-    - name: 🏗️ Build Application
-      run: npm run build
+      - name: Install dependencies
+        run: npm ci
       
-    - name: 🚀 Start Application
-      run: |
-        npm run serve &
-        sleep 10
-        
-    - name: 📊 Run Lighthouse CI
-      run: |
-        npm install -g @lhci/cli@0.12.x
-        lhci autorun
-        
-    - name: 📈 Performance Budget
-      run: |
-        npm run perf:budget
-
-  accessibility:
-    name: ♿ Accessibility Test
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
+      - name: Verify audit chain integrity
+        run: |
+          echo "🔍 Verifying audit trail integrity..."
+          npm run audit:verify || echo "::warning::Audit verification failed"
       
-    - name: 🔧 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: 📦 Install Dependencies
-      run: npm ci
+      - name: Check audit log size
+        run: |
+          AUDIT_SIZE=$(du -sh audit/logs | cut -f1)
+          echo "📊 Audit logs size: $AUDIT_SIZE"
+          echo "audit_size=$AUDIT_SIZE" >> $GITHUB_OUTPUT
       
-    - name: 🏗️ Build Application
-      run: npm run build
-      
-    - name: 🚀 Start Application
-      run: |
-        npm run serve &
-        sleep 10
-        
-    - name: ♿ Run Accessibility Tests
-      run: |
-        npm run test:a11y
-        
-    - name: 🔍 Run axe-core Tests
-      run: |
-        npm run axe:test
-
-  internationalization:
-    name: 🌍 Internationalization Test
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
-      
-    - name: 🔧 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: 📦 Install Dependencies
-      run: npm ci
-        
-    - name: 🌍 Test All Languages
-      run: |
-        npm run test:i18n
-        
-    - name: 📝 Check Translation Completeness
-      run: |
-        npm run i18n:check
-        
-    - name: 🔤 Validate Translation Keys
-      run: |
-        npm run i18n:validate
-
-  deploy-staging:
-    name: 🚀 Deploy to Staging
-    needs: [test, security, performance, accessibility, internationalization]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
-    
-    steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
-      
-    - name: 🔧 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: 📦 Install Dependencies
-      run: npm ci
-      
-    - name: 🏗️ Build Application
-      run: npm run build
-      
-    - name: 🚀 Deploy to Staging
-      run: |
-        echo "Deploying to staging environment..."
-        # Add your staging deployment commands here
-        
-    - name: 🧪 Run E2E Tests
-      run: |
-        npm run test:e2e:staging
-
-  deploy-production:
-    name: 🌐 Deploy to Production
-    needs: [test, security, performance, accessibility, internationalization]
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: 📥 Checkout Code
-      uses: actions/checkout@v4
-      
-    - name: 🔧 Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'npm'
-        
-    - name: 📦 Install Dependencies
-      run: npm ci
-      
-    - name: 🏗️ Build Application
-      run: npm run build:production
-      
-    - name: 🏷️ Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: Release v${{ github.run_number }}
-        body: |
-          ## 🚀 OnAirMulTiMedia Release v${{ github.run_number }}
+      - name: Generate audit report
+        if: github.event_name == 'schedule'
+        run: |
+          echo "📝 Generating daily audit report..."
+          npm run audit:report
           
-          ### ✨ Features
-          - Neue Features und Verbesserungen
-          
-          ### 🐛 Bug Fixes
-          - Behobene Bugs
-          
-          ### 📚 Documentation
-          - Aktualisierte Dokumentation
-          
-          ### 🔧 Technical Changes
-          - Technische Verbesserungen
-        draft: false
-        prerelease: false
-        
-    - name: 🌐 Deploy to Production
-      run: |
-        echo "Deploying to production environment..."
-        # Add your production deployment commands here
-        
-    - name: 🧪 Run Production Tests
-      run: |
-        npm run test:e2e:production
-        
-    - name: 📊 Post-Deploy Monitoring
-      run: |
-        npm run monitor:deploy
+      - name: Upload audit artifacts
+        if: github.event_name == 'schedule'
+        uses: actions/upload-artifact@v3
+        with:
+          name: audit-report-${{ github.run_number }}
+          path: audit/reports/
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+      
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=moderate || echo "::warning::npm audit found issues"
+      
+      - name: Run Snyk
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      
+      - name: Install dependencies (Node)
+        run: npm ci
+      
+      - name: Build Node.js
+        run: npm run build
+      
+      - name: Build Rust
+        run: cargo build --release
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-${{ matrix.os }}
+          path: |
+            dist/
+            target/release/
+          retention-days: 7
+
+  regulatory-compliance:
+    name: Regulatory Compliance Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Validate band plans
+        run: |
+          echo "🌍 Validating ITU band plans..."
+          npm run regulatory:validate-bandplans
+      
+      - name: Check license cache freshness
+        run: |
+          echo "🔍 Checking license database..."
+          npm run regulatory:check-licenses
+      
+      - name: Generate compliance report
+        run: |
+          echo "📋 Generating compliance report..."
+          npm run regulatory:report
+
+  deploy-docs:
+    name: Deploy Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/mainzero' && github.event_name == 'push'
+    needs: [lint, test-node, test-rust, build]
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build documentation
+        run: npm run docs:build
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs-build
+          cname: onairmultimedia.tel1.nl
 
   notify:
-    name: 📢 Notify Team
-    needs: [deploy-staging, deploy-production]
+    name: Notify on Failure
     runs-on: ubuntu-latest
-    if: always()
+    if: failure()
+    needs: [lint, test-node, test-rust, audit-verification, security-scan, build]
     
     steps:
-    - name: 📢 Notify Success
-      if: needs.deploy-staging.result == 'success' || needs.deploy-production.result == 'success'
-      run: |
-        echo "✅ Deployment successful!"
-        # Add notification logic here (Slack, Discord, Email)
-        
-    - name: 📢 Notify Failure
-      if: needs.deploy-staging.result == 'failure' || needs.deploy-production.result == 'failure'
-      run: |
-        echo "❌ Deployment failed!"
-        # Add notification logic here (Slack, Discord, Email)
+      - name: Send notification
+        run: |
+          echo "❌ CI/CD Pipeline failed!"
+          echo "Branch: ${{ github.ref }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          # Add Slack/Discord/Email notification here

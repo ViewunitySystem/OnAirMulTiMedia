@@ -1,0 +1,22 @@
+{
+  "name": "@onairmultimedia/global-meeting-clock",
+  "version": "1.0.0",
+  "description": "Timezone-Synchronized Meeting Scheduler",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": ["meeting", "timezone", "scheduler", "calendar"],
+  "author": "Raymond Demitrio Dr. Tel <gentlyoverdone@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "luxon": "^3.4.4",
+    "nanoid": "^5.0.7"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
+
