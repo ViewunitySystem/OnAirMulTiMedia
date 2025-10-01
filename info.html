@@ -47,6 +47,66 @@
     </section>
 
     <section class="card">
+      <h3>🚀 Alle Apps & Tools (18 Apps)</h3>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:12px; margin-top:12px;">
+        
+        <!-- Haupt-Apps -->
+        <div class="item">
+          <strong>🎯 Haupt-Apps</strong><br/>
+          <a href="/" target="_blank">Main Portal</a> • 
+          <a href="/info.html" target="_blank">Info Dashboard</a><br/>
+          <a href="/nomadic_swipe_nemo.html" target="_blank">NEMO Pathfinder</a> • 
+          <a href="/test-dashboard.html" target="_blank">Test Dashboard</a>
+        </div>
+        
+        <!-- Navigation & Tools -->
+        <div class="item">
+          <strong>🧭 Navigation & Tools</strong><br/>
+          <a href="/client.html" target="_blank">Test Client</a> • 
+          <a href="/overlay.html" target="_blank">Audit Overlay</a><br/>
+          <a href="/blueprints.html" target="_blank">Blueprints</a> • 
+          <a href="/manifest.html" target="_blank">PWA Manifest</a>
+        </div>
+        
+        <!-- Regulatory & Export -->
+        <div class="item">
+          <strong>📋 Regulatory & Export</strong><br/>
+          <a href="/regulatory.html" target="_blank">Regulatory</a> • 
+          <a href="/audit-export.html" target="_blank">Audit Export</a><br/>
+          <a href="/test.html" target="_blank">Test Page</a> • 
+          <a href="/docs/index.html" target="_blank">Docs Index</a>
+        </div>
+        
+        <!-- Settings & Monitoring -->
+        <div class="item">
+          <strong>⚙️ Settings & Monitoring</strong><br/>
+          <a href="/settings/settings-panel.html" target="_blank">Settings Panel</a><br/>
+          <a href="/telemetry/telemetry-dashboard.html" target="_blank">Telemetry Dashboard</a>
+        </div>
+        
+        <!-- WebRTC Remote Control -->
+        <div class="item">
+          <strong>📡 WebRTC Remote Control</strong><br/>
+          <a href="/web-remote/controller.html" target="_blank">Controller</a> • 
+          <a href="/web-remote/display.html" target="_blank">Display</a>
+        </div>
+        
+        <!-- Geschützte Bereiche -->
+        <div class="item">
+          <strong>🔒 Geschützte Bereiche</strong><br/>
+          <a href="/o22/" target="_blank">Protected o22</a> • 
+          <a href="/o66/" target="_blank">Protected o66</a>
+        </div>
+        
+      </div>
+      
+      <div style="margin-top:16px; padding:12px; background:#0b1020; border-radius:8px;">
+        <strong>🔧 WebTrit Swipe Technology:</strong><br/>
+        <span class="muted">← Swipe Left: Vorheriges Tab • → Swipe Right: Nächstes Tab • ↑ Swipe Up: Zurück zur Hauptseite</span>
+      </div>
+    </section>
+
+    <section class="card">
       <h3>Community-Beiträge</h3>
       <div class="muted">Reiche ergänzende Infos ein. Beiträge werden moderiert, bevor sie erscheinen.</div>
       <div style="display:grid; gap:8px; margin-top:8px;">
@@ -74,6 +134,17 @@
   <script>
     function fmt(ts){ try { return new Date(ts).toLocaleString(); } catch { return '–'; } }
     function esc(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.textContent; }
+
+    // WebTrit Swipe Navigation für alle Apps
+    document.addEventListener('DOMContentLoaded', function() {
+      // Swipe-Navigation für App-Links
+      const appLinks = document.querySelectorAll('.item a');
+      appLinks.forEach(link => {
+        link.setAttribute('data-swipe', 'left,right,up');
+      });
+      
+      console.log('✅ WebTrit Swipe Navigation aktiviert für', appLinks.length, 'App-Links');
+    });
 
     async function loadStats(){
       const r = await fetch('/api/github/stats'); if (!r.ok) return;
