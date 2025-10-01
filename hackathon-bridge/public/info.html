@@ -36,14 +36,26 @@
 
   <main>
     <section class="grid">
-      <div class="card"><div class="muted">Stars</div><div id="stars" class="big">–</div></div>
+      <div class="card">
+        <div class="muted">Stars</div>
+        <div id="stars" class="big">–</div>
+        <img src="/api/github/history/sparkline.svg?metric=stars&points=60" style="width:100%;margin-top:8px;" alt="Stars Trend">
+      </div>
       <div class="card"><div class="muted">Forks</div><div id="forks" class="big">–</div></div>
       <div class="card"><div class="muted">Watcher</div><div id="watchers" class="big">–</div></div>
       <div class="card"><div class="muted">Offene Issues</div><div id="issues" class="big">–</div></div>
       <div class="card"><div class="muted">Releases</div><div id="releases" class="big">–</div></div>
-      <div class="card"><div class="muted">Release-Downloads</div><div id="downloads" class="big">–</div></div>
+      <div class="card">
+        <div class="muted">Release-Downloads</div>
+        <div id="downloads" class="big">–</div>
+        <img src="/api/github/history/sparkline.svg?metric=release_downloads&points=60" style="width:100%;margin-top:8px;" alt="Downloads Trend">
+      </div>
       <div class="card"><div class="muted">Letztes Release</div><div id="latest" class="big" style="font-size:20px;">–</div></div>
-      <div class="card"><div class="muted">Stand</div><div id="ts" class="big" style="font-size:20px;">–</div></div>
+      <div class="card">
+        <div class="muted">Stand</div>
+        <div id="ts" class="big" style="font-size:20px;">–</div>
+        <a href="/api/github/history.csv" download style="font-size:12px;margin-top:8px;display:block;">📊 CSV Export</a>
+      </div>
     </section>
 
     <section class="card">
@@ -57,6 +69,12 @@
       <div id="msg" class="muted" style="margin-top:8px;"></div>
       <hr/>
       <div class="list" id="contribs"></div>
+    </section>
+
+    <section class="card" id="modSection" style="display:none;">
+      <h3>🔒 Moderation (Admin)</h3>
+      <div class="muted">Pending Beiträge:</div>
+      <div class="list" id="pending"></div>
     </section>
 
     <section class="card">
@@ -108,6 +126,43 @@
       if (r.ok){ msg.textContent = 'Danke! Dein Beitrag wurde übermittelt und erscheint nach Freigabe.'; document.getElementById('text').value=''; }
       else { const j = await r.json().catch(()=>({error:'Fehler'})); msg.textContent = `Fehler: ${j.error}`; }
     };
+
+    // Moderation UI
+    const adminKey = sessionStorage.getItem('ADMIN_KEY');
+    if (adminKey) {
+      document.getElementById('modSection').style.display = 'block';
+      loadPending();
+    }
+    
+    async function loadPending(){
+      const key = sessionStorage.getItem('ADMIN_KEY');
+      const r = await fetch('/api/contribs?state=pending'); if (!r.ok) return;
+      const list = await r.json();
+      const root = document.getElementById('pending'); root.innerHTML = '';
+      list.forEach(c => {
+        const el = document.createElement('div'); el.className='item';
+        const u = c.user_id ? `<strong>${esc(c.user_id)}</strong>` : '<strong>anon</strong>';
+        el.innerHTML = `${u} <span class="muted">• ${fmt(c.created_at)}</span><br/>${esc(c.content)}<br/>`;
+        const approve = document.createElement('button'); approve.textContent='✅ Approve'; approve.style.cssText='margin-right:8px;padding:4px 8px;background:#10b981;color:white;border:none;border-radius:4px;cursor:pointer;';
+        const reject = document.createElement('button'); reject.textContent='❌ Reject'; reject.style.cssText='padding:4px 8px;background:#ef4444;color:white;border:none;border-radius:4px;cursor:pointer;';
+        approve.onclick = async ()=>{ await fetch(`/api/contribs/${c.id}/approve`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); loadContribs(); };
+        reject.onclick = async ()=>{ await fetch(`/api/contribs/${c.id}/reject`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); };
+        el.appendChild(approve); el.appendChild(reject);
+        root.appendChild(el);
+      });
+    }
+    
+    // Prompt for admin key (Ctrl+Shift+M)
+    document.addEventListener('keydown', (e)=>{
+      if (e.ctrlKey && e.shiftKey && e.key === 'M') {
+        const key = prompt('Admin Key:');
+        if (key) {
+          sessionStorage.setItem('ADMIN_KEY', key);
+          document.getElementById('modSection').style.display = 'block';
+          loadPending();
+        }
+      }
+    });
 
     loadStats(); loadContribs();
     setInterval(loadStats, 60_000);

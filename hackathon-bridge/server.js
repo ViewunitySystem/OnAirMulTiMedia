@@ -13,6 +13,7 @@ import { nanoid } from 'nanoid';
 import Ajv from 'ajv';
 import PDFDocument from 'pdfkit';
 import QRCode from 'qrcode';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,10 +24,22 @@ const DATA_DIR = path.join(__dirname, 'data');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 const DB_FILE = path.join(DATA_DIR, 'audit.db');
+const KEY_DIR = path.join(DATA_DIR, 'keys');
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+fs.mkdirSync(KEY_DIR, { recursive: true });
+
+// --- Ed25519 Key Generation ---
+const PUB_PEM = path.join(KEY_DIR, 'public.pem');
+const PRIV_PEM = path.join(KEY_DIR, 'private.pem');
+if (!fs.existsSync(PRIV_PEM) || !fs.existsSync(PUB_PEM)) {
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
+  fs.writeFileSync(PRIV_PEM, privateKey.export({ type: 'pkcs8', format: 'pem' }));
+  fs.writeFileSync(PUB_PEM, publicKey.export({ type: 'spki', format: 'pem' }));
+  console.log('✅ Ed25519 keys generated:', KEY_DIR);
+}
 
 // --- Database init (synchronous, safe for boot) ---
 const db = new Database(DB_FILE);
@@ -145,6 +158,26 @@ app.use(express.static(PUBLIC_DIR));
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 // COOP/COEP not set to allow 3rd-party embeds like YouTube in inlay
+
+// --- Ed25519 Key Generation ---
+const PUB_PEM = path.join(KEY_DIR, 'public.pem');
+const PRIV_PEM = path.join(KEY_DIR, 'private.pem');
+
+if (!fs.existsSync(PRIV_PEM) || !fs.existsSync(PUB_PEM)) {
+  const { publicKey, privateKey } = crypto.generateKeyPairSync('ed25519');
+  fs.writeFileSync(PRIV_PEM, privateKey.export({ type: 'pkcs8', format: 'pem' }));
+  fs.writeFileSync(PUB_PEM, publicKey.export({ type: 'spki', format: 'pem' }));
+  console.log('✅ Ed25519 keys generated');
+}
+
+function signBuffer(buf) {
+  const priv = fs.readFileSync(PRIV_PEM);
+  const hashHex = crypto.createHash('sha256').update(buf).digest('hex');
+  const sig = crypto.sign(null, Buffer.from(hashHex, 'utf8'), priv).toString('base64');
+  return { alg: 'Ed25519', key_id: 'oamtm-2025', hash: hashHex, sig };
+}
+
+app.get('/api/keys/public', (req, res) => res.type('text/plain').send(fs.readFileSync(PUB_PEM)));
 
 // Multer for file uploads
 const storage = multer.diskStorage({
@@ -293,18 +326,76 @@ app.post('/api/github/refresh', async (req,res)=>{
   try { const payload = await refreshGitHubStats(); res.json(payload); } catch (e){ res.status(500).json({ error: e.message }); }
 });
 
-// Schedule refresh every 10 minutes
-setInterval(()=>{ refreshGitHubStats().catch(()=>{}); }, 10 * 60 * 1000);
-refreshGitHubStats().catch(()=>{});
+// Schedule refresh (only if webhooks not enabled)
+if (!process.env.GITHUB_USE_WEBHOOKS || process.env.GITHUB_USE_WEBHOOKS !== '1') {
+  setInterval(()=>{ refreshGitHubStats().catch(()=>{}); }, 10 * 60 * 1000);
+  refreshGitHubStats().catch(()=>{});
+}
+
+// GitHub Webhook (real-time updates)
+function verifyGitHubSig(req, secret) {
+  const body = JSON.stringify(req.body);
+  const sig = req.headers['x-hub-signature-256'] || '';
+  const mac = 'sha256=' + crypto.createHmac('sha256', secret).update(body).digest('hex');
+  return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(mac));
+}
+
+app.post('/api/github/webhook', express.json({ type: '*/*' }), async (req, res) => {
+  const secret = process.env.GITHUB_WEBHOOK_SECRET;
+  if (!secret || !verifyGitHubSig(req, secret)) return res.status(403).json({ error: 'bad_signature' });
+  
+  const evt = req.headers['x-github-event'];
+  try {
+    if (evt === 'star') {
+      const dir = req.body.action === 'created' ? +1 : -1;
+      await refreshGitHubStats().catch(() => {});
+      audit({ type: 'github_update', payload: { event: 'star', dir } });
+    } else if (evt === 'release') {
+      await refreshGitHubStats();
+    }
+    return res.status(204).end();
+  } catch (e) {
+    audit({ type: 'github_error', level: 'error', payload: { event: evt, message: e.message } });
+    return res.status(500).json({ error: 'hook_failed' });
+  }
+});
+
+// CSV History Export
+app.get('/api/github/history.csv', (req, res) => {
+  const rows = db.prepare('SELECT * FROM github_stats ORDER BY ts ASC').all();
+  const header = ['ts', 'repo', 'stars', 'forks', 'watchers', 'open_issues', 'release_count', 'release_downloads', 'latest_release_tag'];
+  const out = [header.join(',')].concat(
+    rows.map(r => header.map(k => (r[k] ?? '')).join(','))
+  ).join('\n');
+  res.type('text/csv').send(out);
+});
+
+// Sparkline SVG
+app.get('/api/github/history/sparkline.svg', (req, res) => {
+  const metric = String(req.query.metric || 'stars');
+  const n = Math.min(parseInt(req.query.points || '60', 10), 240);
+  const rows = db.prepare('SELECT * FROM github_stats ORDER BY ts ASC').all();
+  const vals = rows.map(r => Number(r[metric] || 0)).slice(-n);
+  const w = 240, h = 40, pad = 2;
+  const min = Math.min(...vals, 0), max = Math.max(...vals, 1);
+  const scaleX = (i) => pad + (i * (w - 2 * pad)) / Math.max(vals.length - 1, 1);
+  const scaleY = (v) => h - pad - ((v - min) * (h - 2 * pad)) / Math.max(max - min, 1);
+  const d = vals.map((v, i) => `${i ? 'L' : 'M'}${scaleX(i).toFixed(1)},${scaleY(v).toFixed(1)}`).join(' ');
+  res.type('image/svg+xml').send(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
+  <path d="${d}" fill="none" stroke="#93c5fd" stroke-width="1.5" />
+</svg>`);
+});
 
 // ---------------- User-Contributed Info ----------------
 const insertContrib = db.prepare('INSERT INTO user_contribs (id, user_id, content, created_at, approved) VALUES (?, ?, ?, ?, 0);');
-const listContribs = db.prepare('SELECT * FROM user_contribs WHERE approved = 1 ORDER BY created_at DESC LIMIT ?;');
 const approveContrib = db.prepare('UPDATE user_contribs SET approved = 1 WHERE id = ?;');
+const rejectContrib = db.prepare('UPDATE user_contribs SET approved = -1 WHERE id = ?;');
 
 app.get('/api/contribs', (req,res)=>{
-  const limit = Number(req.query.limit || 100);
-  const rows = listContribs.all(limit);
+  const state = String(req.query.state || 'approved');
+  const q = state === 'pending' ? 'approved = 0' : state === 'rejected' ? 'approved = -1' : 'approved = 1';
+  const limit = Number(req.query.limit || 200);
+  const rows = db.prepare(`SELECT * FROM user_contribs WHERE ${q} ORDER BY created_at DESC LIMIT ?`).all(limit);
   res.json(rows);
 });
 
@@ -323,6 +414,14 @@ app.post('/api/contribs/:id/approve', (req,res)=>{
   if (process.env.ADMIN_KEY && key !== process.env.ADMIN_KEY) return res.status(403).json({ error: 'forbidden' });
   approveContrib.run(req.params.id);
   audit({ type:'contrib_approve', payload:{ id: req.params.id } });
+  res.json({ ok: true });
+});
+
+app.post('/api/contribs/:id/reject', (req,res)=>{
+  const key = req.headers['x-admin-key'] || '';
+  if (process.env.ADMIN_KEY && key !== process.env.ADMIN_KEY) return res.status(403).json({ error: 'forbidden' });
+  rejectContrib.run(req.params.id);
+  audit({ type:'contrib_reject', payload:{ id: req.params.id } });
   res.json({ ok: true });
 });
 
@@ -394,6 +493,16 @@ app.post('/api/modules/:id/checklist', (req,res)=>{
   res.json({ ok:true });
 });
 
+// Ed25519 Signing
+function signBuffer(buf) {
+  const priv = fs.readFileSync(PRIV_PEM);
+  const hashHex = crypto.createHash('sha256').update(buf).digest('hex');
+  const sig = crypto.sign(null, Buffer.from(hashHex, 'utf8'), priv).toString('base64');
+  return { alg: 'Ed25519', key_id: 'oamtm-2025', hash: hashHex, sig };
+}
+
+app.get('/api/keys/public', (req,res)=> res.type('text/plain').send(fs.readFileSync(PUB_PEM)));
+
 // ---------------- Audit Export (JSON, Markdown, PDF+QR) ----------------
 function fetchEvents({ type=null, room_id=null, session_id=null, limit=1000 }){
   const clauses=[]; const params={};
@@ -458,13 +567,32 @@ async function generatePDF(title, events, jsonLink){
 
 app.get('/api/audit/export', async (req,res)=>{
   try {
-    const { format = 'json', type = null, room_id = null, session_id = null, title = 'Audit Export' } = req.query;
+    const { format = 'json', type = null, room_id = null, session_id = null, title = 'Audit Export', signed } = req.query;
     const limit = Math.min(Number(req.query.limit || 1000), 5000);
     const events = fetchEvents({ type, room_id, session_id, limit });
-    if (format === 'json') return res.json({ title, generated_at: Date.now(), events });
-    if (format === 'md')  return res.type('text/markdown').send(toMarkdown(title, events));
+    
+    if (format === 'json') {
+      const body = { title, generated_at: Date.now(), events };
+      if (signed) {
+        const buf = Buffer.from(JSON.stringify(body));
+        const signature = signBuffer(buf);
+        body.signature = signature;
+      }
+      return res.json(body);
+    }
+    
+    if (format === 'md') {
+      const md = toMarkdown(title, events);
+      if (signed) {
+        const sig = signBuffer(Buffer.from(md));
+        const fm = `---\nalg: ${sig.alg}\nkey_id: ${sig.key_id}\nsha256: ${sig.hash}\nsig: ${sig.sig}\n---\n`;
+        return res.type('text/markdown').send(fm + md);
+      }
+      return res.type('text/markdown').send(md);
+    }
+    
     if (format === 'pdf'){
-      const jsonURL = `${req.protocol}://${req.get('host')}${req.path}?${new URLSearchParams({ format: 'json', type: type||'', room_id: room_id||'', session_id: session_id||'', limit: String(limit), title })}`;
+      const jsonURL = `${req.protocol}://${req.get('host')}${req.path}?${new URLSearchParams({ format: 'json', type: type||'', room_id: room_id||'', session_id: session_id||'', limit: String(limit), title, signed: signed||'' })}`;
       const file = await generatePDF(String(title), events, jsonURL);
       return res.download(file, path.basename(file));
     }
@@ -505,6 +633,54 @@ app.post('/api/manifest', (req,res)=>{
   insertManifest.run(version, markdown, Date.now());
   audit({ type:'manifest_update', payload:{ version } });
   res.json({ ok: true });
+});
+
+// Machine-readable Manifest JSON
+app.get('/api/manifest.json', (req,res)=>{
+  const ver = getManifest.get();
+  const mods = db.prepare('SELECT id FROM modules ORDER BY id').all().map(x=>x.id);
+  res.json({
+    version: ver?.version || 'v1.0.0-audit',
+    branch: 'mainzero',
+    author: 'DD5BE',
+    ethics: 'Communication is Peace',
+    philosophy: {
+      mainzero: 'mainzero ist nicht nur ein Branch – es ist der Ursprung auditierter Wahrheit.',
+      aether: 'Der Aether vergisst nicht. OnAirMulTiMedia archiviert Stimmen – auditierbar, wiederherstellbar, unvergessen.'
+    },
+    modules: mods,
+    regulatory: ['RDI NL', 'BNetzA']
+  });
+});
+
+// Checklist as Markdown
+app.get('/api/modules/:id/checklist.md', (req,res)=>{
+  const rows = db.prepare('SELECT item, status FROM module_checklists WHERE module_id = ? ORDER BY updated_at ASC').all(req.params.id);
+  if (!rows.length) return res.status(404).type('text/markdown').send(`# ${req.params.id}\n\n(keine Checkliste)`);
+  const md = `# Audit-Checkliste – ${req.params.id}\n\n` + rows.map(r => `- [${r.status? 'x':' '}] ${r.item}`).join('\n') + '\n';
+  res.type('text/markdown').send(md);
+});
+
+// License QR Export
+app.get('/api/license/qr.png', async (req,res)=>{
+  const module = req.query.module || 'Unknown';
+  const license = req.query.license || 'DD5BE-QR-AUDIT-2025';
+  const payload = {
+    kind: 'OAMTM-License-Audit',
+    module,
+    license_id: license,
+    timestamp: new Date().toISOString(),
+    status: 'valid',
+    regulatory: ['RDI NL §3.2.1', 'BNetzA 226.4.5'],
+    audit_url: `${req.protocol}://${req.get('host')}/api/audit/export?format=json&type=LICENSE_CHECK&limit=200&signed=1`,
+    pubkey_url: `${req.protocol}://${req.get('host')}/api/keys/public`
+  };
+  const raw = Buffer.from(JSON.stringify(payload));
+  const sig = signBuffer(raw);
+  payload.sig = sig.sig;
+  const dataUrl = await QRCode.toDataURL(JSON.stringify(payload), { errorCorrectionLevel: 'M' });
+  const png = Buffer.from(dataUrl.split(',')[1], 'base64');
+  res.type('image/png').send(png);
 });
 
 // --- HTTP + Socket.IO ---
