@@ -1,27 +1,43 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Seite nicht gefunden – OnAirMulTiMedia</title>
-  <meta name="robots" content="noindex" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 - Seite nicht gefunden</title>
   <style>
-    :root{--bg:#0b0f17;--fg:#eaf0ff;--muted:#a6b0c9;--accent:#7dd3fc}
-    *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--fg);font:400 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto}
-    main{min-height:100%;display:grid;place-items:center;padding:2rem}
-    .card{max-width:720px;background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:2rem;text-align:center}
-    h1{margin:0 0 .5rem;font-size:clamp(28px,4vw,48px)}p{margin:.2rem 0;color:var(--muted)}
-    a.btn{display:inline-block;margin-top:1rem;padding:.8rem 1.1rem;border-radius:14px;background:linear-gradient(135deg,var(--accent),#f472b6);color:#001020;font-weight:700;text-decoration:none}
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0b0f17;
+      color: #eaf0ff;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 { color: #f472b6; }
+    a { color: #7dd3fc; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .loading { opacity: 0.7; }
   </style>
 </head>
 <body>
-  <main>
-    <section class="card" data-404>
-      <h1>404 – Seite nicht gefunden</h1>
-      <p>Die angeforderte Adresse existiert nicht oder ist umgezogen.</p>
-      <a class="btn" href="./">Zur Startseite</a>
-      <p style="margin-top:1rem">Fehlercode: <code>404</code></p>
-    </section>
-  </main>
+  <h1>404 - Seite nicht gefunden</h1>
+  <p>Die angeforderte Seite wird geladen...</p>
+  <p class="loading">Automatische Weiterleitung in 3 Sekunden...</p>
+  
+  <script>
+    (function(){
+      var l = window.location;
+      var base = '/OnAirMulTiMedia';
+      var target = base + '/index.html?redirect=' + encodeURIComponent(l.pathname + l.search + l.hash);
+      
+      // Sofortige Weiterleitung
+      window.location.replace(target);
+      
+      // Fallback nach 3 Sekunden
+      setTimeout(function() {
+        window.location.href = base + '/';
+      }, 3000);
+    })();
+  </script>
 </body>
 </html>

@@ -1,0 +1,136 @@
+{
+  "timestamp": "2025-10-02T09:37:52.018Z",
+  "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+  "totalUrls": 18,
+  "successCount": 18,
+  "errorCount": 0,
+  "successRate": 100,
+  "results": [
+    {
+      "url": "/",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:47.855Z"
+    },
+    {
+      "url": "/info.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:48.132Z"
+    },
+    {
+      "url": "/nomadic_swipe_nemo.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:48.382Z"
+    },
+    {
+      "url": "/test-dashboard.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:48.609Z"
+    },
+    {
+      "url": "/client.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:48.850Z"
+    },
+    {
+      "url": "/overlay.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:49.089Z"
+    },
+    {
+      "url": "/blueprints.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:49.329Z"
+    },
+    {
+      "url": "/manifest.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:49.565Z"
+    },
+    {
+      "url": "/regulatory.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:49.806Z"
+    },
+    {
+      "url": "/audit-export.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:50.053Z"
+    },
+    {
+      "url": "/settings/settings-panel.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:50.279Z"
+    },
+    {
+      "url": "/telemetry/telemetry-dashboard.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:50.514Z"
+    },
+    {
+      "url": "/web-remote/controller.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:50.746Z"
+    },
+    {
+      "url": "/web-remote/display.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:50.973Z"
+    },
+    {
+      "url": "/test.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:51.217Z"
+    },
+    {
+      "url": "/docs/index.html",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:51.447Z"
+    },
+    {
+      "url": "/o22/",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:51.678Z"
+    },
+    {
+      "url": "/o66/",
+      "status": 200,
+      "ok": true,
+      "statusText": "OK",
+      "timestamp": "2025-10-02T09:37:51.911Z"
+    }
+  ]
+}
