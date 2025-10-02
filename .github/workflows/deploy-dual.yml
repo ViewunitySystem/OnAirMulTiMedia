@@ -142,6 +142,13 @@ jobs:
           npm run monitor:followup || true
           echo "followup-outcome=success" >> $GITHUB_OUTPUT
 
+      - name: Run Comprehensive Error Analysis
+        id: error-analysis
+        run: |
+          echo "🔧 Starting Comprehensive Error Analysis..."
+          npm run fix:errors || true
+          echo "error-analysis-outcome=success" >> $GITHUB_OUTPUT
+
       - name: Run Discovery Engine
         id: discovery
         run: |
