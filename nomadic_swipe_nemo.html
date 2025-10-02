@@ -38,6 +38,33 @@
     .icon { font-size:20px; }
   </style>
 </head>
+
+    <!-- Navigation Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">🏠 Start</a> 
+      <span>›</span> 
+      <span>nomadic_swipe_nemo</span>
+    </nav>
+    
+    <style>
+      .breadcrumb {
+        background: rgba(255,255,255,0.05);
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.9rem;
+      }
+      .breadcrumb a {
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span {
+        color: #a6b0c9;
+        margin: 0 0.5rem;
+      }
+    </style>
 <body>
   <header>
     <span class="icon">🧭</span>
@@ -145,8 +172,8 @@
             <pre id="last" style="white-space:pre-wrap; margin:8px 0;">Warte auf Events...</pre>
           </div>
           <div style="display:flex; gap:8px; margin-top:8px;">
-            <a href="/api/audit/export?format=pdf&type=DIRECTION_CHANGE&limit=200&title=NEMO%20Trail" target="_blank" style="flex:1; text-align:center; padding:8px; background:#1f2a52; border-radius:8px; display:block;">📄 PDF Export</a>
-            <a href="/api/audit/export?format=json&type=NEMO_PATHFINDER&limit=200" target="_blank" style="flex:1; text-align:center; padding:8px; background:#1f2a52; border-radius:8px; display:block;">📦 JSON Export</a>
+            <a href="/api/audit/export?format=pdf&type=DIRECTION_CHANGE&limit=200&title=NEMO%20Trail"  style="flex:1; text-align:center; padding:8px; background:#1f2a52; border-radius:8px; display:block;">📄 PDF Export</a>
+            <a href="/api/audit/export?format=json&type=NEMO_PATHFINDER&limit=200"  style="flex:1; text-align:center; padding:8px; background:#1f2a52; border-radius:8px; display:block;">📦 JSON Export</a>
           </div>
         </div>
         
@@ -163,7 +190,7 @@
           
           <div style="margin-top:16px; padding:8px; background:#0b1020; border-radius:4px;">
             <small class="muted">Lizenz-QR für Audit:</small>
-            <a href="/api/license/qr.png?module=NEMO_PATHFINDER&license=DD5BE-QR-AUDIT-2025" target="_blank" style="display:block; margin-top:4px;">
+            <a href="/api/license/qr.png?module=NEMO_PATHFINDER&license=DD5BE-QR-AUDIT-2025"  style="display:block; margin-top:4px;">
               📱 QR-Code generieren ↗
             </a>
           </div>
@@ -643,6 +670,45 @@
     // WebTrit enhances existing swipe with voice control and advanced features
     console.log('✅ WebTrit Swipe universal navigation enabled');
   </script>
+
+    <script>
+      // Keyboard Navigation
+      document.addEventListener('keydown', function(e) {
+        // Alt + Left Arrow = Back
+        if (e.altKey && e.key === 'ArrowLeft') {
+          e.preventDefault();
+          window.history.back();
+        }
+        // Alt + Right Arrow = Forward
+        if (e.altKey && e.key === 'ArrowRight') {
+          e.preventDefault();
+          window.history.forward();
+        }
+        // Alt + Home = Go to Start
+        if (e.altKey && e.key === 'Home') {
+          e.preventDefault();
+          window.location.href = '/';
+        }
+        // Escape = Close modal/overlay
+        if (e.key === 'Escape') {
+          const modals = document.querySelectorAll('.modal, .overlay');
+          modals.forEach(modal => {
+            if (modal.style.display !== 'none') {
+              modal.style.display = 'none';
+            }
+          });
+        }
+      });
+      
+      // Add focus management
+      document.addEventListener('DOMContentLoaded', function() {
+        // Focus first interactive element
+        const firstInteractive = document.querySelector('a, button, input, select, textarea');
+        if (firstInteractive) {
+          firstInteractive.focus();
+        }
+      });
+    </script>
 </body>
 </html>
 

@@ -1,0 +1,679 @@
+{
+  "timestamp": "2025-10-02T09:44:03.590Z",
+  "monitoring": {
+    "githubPages": {
+      "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+      "results": [
+        {
+          "url": "/",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398243873,
+          "timestamp": "2025-10-02T09:44:03.873Z"
+        },
+        {
+          "url": "/info.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398244066,
+          "timestamp": "2025-10-02T09:44:04.066Z"
+        },
+        {
+          "url": "/nomadic_swipe_nemo.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398244233,
+          "timestamp": "2025-10-02T09:44:04.233Z"
+        },
+        {
+          "url": "/test-dashboard.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398244426,
+          "timestamp": "2025-10-02T09:44:04.426Z"
+        },
+        {
+          "url": "/client.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398244615,
+          "timestamp": "2025-10-02T09:44:04.615Z"
+        },
+        {
+          "url": "/overlay.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398244791,
+          "timestamp": "2025-10-02T09:44:04.791Z"
+        },
+        {
+          "url": "/blueprints.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398244970,
+          "timestamp": "2025-10-02T09:44:04.970Z"
+        },
+        {
+          "url": "/manifest.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398245149,
+          "timestamp": "2025-10-02T09:44:05.149Z"
+        },
+        {
+          "url": "/regulatory.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398245334,
+          "timestamp": "2025-10-02T09:44:05.334Z"
+        },
+        {
+          "url": "/audit-export.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398245505,
+          "timestamp": "2025-10-02T09:44:05.505Z"
+        },
+        {
+          "url": "/settings/settings-panel.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398245675,
+          "timestamp": "2025-10-02T09:44:05.675Z"
+        },
+        {
+          "url": "/telemetry/telemetry-dashboard.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398245853,
+          "timestamp": "2025-10-02T09:44:05.853Z"
+        },
+        {
+          "url": "/web-remote/controller.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398246054,
+          "timestamp": "2025-10-02T09:44:06.054Z"
+        },
+        {
+          "url": "/web-remote/display.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398246231,
+          "timestamp": "2025-10-02T09:44:06.231Z"
+        },
+        {
+          "url": "/test.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398246414,
+          "timestamp": "2025-10-02T09:44:06.414Z"
+        },
+        {
+          "url": "/docs/index.html",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398246590,
+          "timestamp": "2025-10-02T09:44:06.590Z"
+        },
+        {
+          "url": "/o22/",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398246763,
+          "timestamp": "2025-10-02T09:44:06.763Z"
+        },
+        {
+          "url": "/o66/",
+          "baseUrl": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398246940,
+          "timestamp": "2025-10-02T09:44:06.940Z"
+        }
+      ]
+    },
+    "firebaseProd": {
+      "baseUrl": "https://onairmultimedia.web.app",
+      "results": [
+        {
+          "url": "/",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247042,
+          "timestamp": "2025-10-02T09:44:07.042Z"
+        },
+        {
+          "url": "/info.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247126,
+          "timestamp": "2025-10-02T09:44:07.126Z"
+        },
+        {
+          "url": "/nomadic_swipe_nemo.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247284,
+          "timestamp": "2025-10-02T09:44:07.284Z"
+        },
+        {
+          "url": "/test-dashboard.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247547,
+          "timestamp": "2025-10-02T09:44:07.547Z"
+        },
+        {
+          "url": "/client.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247632,
+          "timestamp": "2025-10-02T09:44:07.632Z"
+        },
+        {
+          "url": "/overlay.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247720,
+          "timestamp": "2025-10-02T09:44:07.720Z"
+        },
+        {
+          "url": "/blueprints.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247797,
+          "timestamp": "2025-10-02T09:44:07.797Z"
+        },
+        {
+          "url": "/manifest.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398247973,
+          "timestamp": "2025-10-02T09:44:07.973Z"
+        },
+        {
+          "url": "/regulatory.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398248064,
+          "timestamp": "2025-10-02T09:44:08.064Z"
+        },
+        {
+          "url": "/audit-export.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398248196,
+          "timestamp": "2025-10-02T09:44:08.196Z"
+        },
+        {
+          "url": "/settings/settings-panel.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398248519,
+          "timestamp": "2025-10-02T09:44:08.519Z"
+        },
+        {
+          "url": "/telemetry/telemetry-dashboard.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398248599,
+          "timestamp": "2025-10-02T09:44:08.599Z"
+        },
+        {
+          "url": "/web-remote/controller.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398248877,
+          "timestamp": "2025-10-02T09:44:08.877Z"
+        },
+        {
+          "url": "/web-remote/display.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398249166,
+          "timestamp": "2025-10-02T09:44:09.166Z"
+        },
+        {
+          "url": "/test.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398249338,
+          "timestamp": "2025-10-02T09:44:09.338Z"
+        },
+        {
+          "url": "/docs/index.html",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398249562,
+          "timestamp": "2025-10-02T09:44:09.562Z"
+        },
+        {
+          "url": "/o22/",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398249806,
+          "timestamp": "2025-10-02T09:44:09.806Z"
+        },
+        {
+          "url": "/o66/",
+          "baseUrl": "https://onairmultimedia.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398250085,
+          "timestamp": "2025-10-02T09:44:10.085Z"
+        }
+      ]
+    },
+    "firebaseStaging": {
+      "baseUrl": "https://onairmultimedia-staging.web.app",
+      "results": [
+        {
+          "url": "/",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398250240,
+          "timestamp": "2025-10-02T09:44:10.240Z"
+        },
+        {
+          "url": "/info.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398250429,
+          "timestamp": "2025-10-02T09:44:10.429Z"
+        },
+        {
+          "url": "/nomadic_swipe_nemo.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398250563,
+          "timestamp": "2025-10-02T09:44:10.563Z"
+        },
+        {
+          "url": "/test-dashboard.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398250811,
+          "timestamp": "2025-10-02T09:44:10.811Z"
+        },
+        {
+          "url": "/client.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398250958,
+          "timestamp": "2025-10-02T09:44:10.958Z"
+        },
+        {
+          "url": "/overlay.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398251248,
+          "timestamp": "2025-10-02T09:44:11.248Z"
+        },
+        {
+          "url": "/blueprints.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398251477,
+          "timestamp": "2025-10-02T09:44:11.477Z"
+        },
+        {
+          "url": "/manifest.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398251609,
+          "timestamp": "2025-10-02T09:44:11.609Z"
+        },
+        {
+          "url": "/regulatory.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398251807,
+          "timestamp": "2025-10-02T09:44:11.807Z"
+        },
+        {
+          "url": "/audit-export.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398251932,
+          "timestamp": "2025-10-02T09:44:11.932Z"
+        },
+        {
+          "url": "/settings/settings-panel.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398252163,
+          "timestamp": "2025-10-02T09:44:12.163Z"
+        },
+        {
+          "url": "/telemetry/telemetry-dashboard.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398252364,
+          "timestamp": "2025-10-02T09:44:12.364Z"
+        },
+        {
+          "url": "/web-remote/controller.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398252618,
+          "timestamp": "2025-10-02T09:44:12.618Z"
+        },
+        {
+          "url": "/web-remote/display.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398252776,
+          "timestamp": "2025-10-02T09:44:12.776Z"
+        },
+        {
+          "url": "/test.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398252905,
+          "timestamp": "2025-10-02T09:44:12.905Z"
+        },
+        {
+          "url": "/docs/index.html",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398253059,
+          "timestamp": "2025-10-02T09:44:13.059Z"
+        },
+        {
+          "url": "/o22/",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398253191,
+          "timestamp": "2025-10-02T09:44:13.191Z"
+        },
+        {
+          "url": "/o66/",
+          "baseUrl": "https://onairmultimedia-staging.web.app",
+          "status": 200,
+          "ok": true,
+          "statusText": "OK",
+          "responseTime": 1759398253434,
+          "timestamp": "2025-10-02T09:44:13.434Z"
+        }
+      ]
+    },
+    "firebaseDev": {
+      "baseUrl": "https://onairmultimedia-dev.web.app",
+      "results": [
+        {
+          "url": "/",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398253552,
+          "timestamp": "2025-10-02T09:44:13.552Z"
+        },
+        {
+          "url": "/info.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398253675,
+          "timestamp": "2025-10-02T09:44:13.675Z"
+        },
+        {
+          "url": "/nomadic_swipe_nemo.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398253780,
+          "timestamp": "2025-10-02T09:44:13.780Z"
+        },
+        {
+          "url": "/test-dashboard.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254086,
+          "timestamp": "2025-10-02T09:44:14.086Z"
+        },
+        {
+          "url": "/client.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254204,
+          "timestamp": "2025-10-02T09:44:14.204Z"
+        },
+        {
+          "url": "/overlay.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254314,
+          "timestamp": "2025-10-02T09:44:14.314Z"
+        },
+        {
+          "url": "/blueprints.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254447,
+          "timestamp": "2025-10-02T09:44:14.447Z"
+        },
+        {
+          "url": "/manifest.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254548,
+          "timestamp": "2025-10-02T09:44:14.548Z"
+        },
+        {
+          "url": "/regulatory.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254643,
+          "timestamp": "2025-10-02T09:44:14.643Z"
+        },
+        {
+          "url": "/audit-export.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254753,
+          "timestamp": "2025-10-02T09:44:14.753Z"
+        },
+        {
+          "url": "/settings/settings-panel.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254859,
+          "timestamp": "2025-10-02T09:44:14.859Z"
+        },
+        {
+          "url": "/telemetry/telemetry-dashboard.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398254968,
+          "timestamp": "2025-10-02T09:44:14.968Z"
+        },
+        {
+          "url": "/web-remote/controller.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398255068,
+          "timestamp": "2025-10-02T09:44:15.068Z"
+        },
+        {
+          "url": "/web-remote/display.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398255175,
+          "timestamp": "2025-10-02T09:44:15.175Z"
+        },
+        {
+          "url": "/test.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398255352,
+          "timestamp": "2025-10-02T09:44:15.352Z"
+        },
+        {
+          "url": "/docs/index.html",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398255464,
+          "timestamp": "2025-10-02T09:44:15.464Z"
+        },
+        {
+          "url": "/o22/",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398255686,
+          "timestamp": "2025-10-02T09:44:15.686Z"
+        },
+        {
+          "url": "/o66/",
+          "baseUrl": "https://onairmultimedia-dev.web.app",
+          "status": 404,
+          "ok": false,
+          "statusText": "Not Found",
+          "responseTime": 1759398255794,
+          "timestamp": "2025-10-02T09:44:15.794Z"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "totalChecks": 72,
+    "successCount": 54,
+    "errorCount": 18,
+    "successRate": 75
+  }
+}

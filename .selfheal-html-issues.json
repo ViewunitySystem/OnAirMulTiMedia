@@ -1,0 +1,510 @@
+[
+  {
+    "file": "public/offline.html",
+    "issue": "Missing viewport meta"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/api-stub.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/server-nemo.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/sw.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/webtrit-swipe.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/api-stub.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/server-nemo.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/sw.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/webtrit-swipe.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/OnAirMulTiMedia/server-nemo.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/OnAirMulTiMedia/webtrit-swipe.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/public/sw.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/selfheal.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/CBRadioModule/cb-radio.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/DiscoveryEngine/audit.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/DiscoveryEngine/ethics.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/DiscoveryEngine/index.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/DiscoveryEngine/live-data-api.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/DiscoveryEngine/manifest.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/HamRadioModule/ham-radio.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/LicensePulse/pulse.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/OnAirMulTiMedia/server-nemo.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/OnAirMulTiMedia/webtrit-swipe.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/public/sw.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/selfheal.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/index.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-app-visibility.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-binary-files.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-duplication-jscpd.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-firebase-hosting-sync.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-firebase-preview-channels.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-html-validators.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-index-no-redirect.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-info-no-framebust.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-lockfiles.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-mocks-placeholders.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-pages-single-source.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-security-headers.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-sw-404-fallback.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/scripts/rules/rule-webtrit-swipe.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/api/enhanced-api-routes.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/CollaborativeCommSystem.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/enhanced-audit-service.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/huawei-usb-manager-real.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/huawei-usb-manager.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/IntegrationTestSuite.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/RFFrequencyValidator.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/SwipePerformanceOptimizer.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/usb-manager.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/WebTritAuditIntegration.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/WebTritTokenService.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/tools/discovery/scan.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/tools/manifest/build.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/tools/manifest/sign.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/tools/manifest/validate.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/tools/recovery/beacon.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/AuditQR/src/qr.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/CanvasAuditOverlay/src/overlay.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/ConsentLedger/src/consent.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/EdgeRelay/src/relay.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/GeoFenceGate/src/gate.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/KeyVaultBridge/src/kv.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/NomadicMap/src/model.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/OutageSimulator/src/sim.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/QRMeetingGenerator/src/qr.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/RFPolicyWatch/src/watch.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/SignalMirror/src/mirror.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/TelemetryLens/src/rollup.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/RegulatorySync/src/sync.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/TimeSyncGuardian/src/check.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/VoiceEcho/src/echo.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/modules/WebRTCSwitchboard/src/switch.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/CBRadioModule/cb-radio.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/DiscoveryEngine/audit.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/DiscoveryEngine/ethics.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/DiscoveryEngine/index.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/DiscoveryEngine/live-data-api.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/DiscoveryEngine/manifest.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/HamRadioModule/ham-radio.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/LicensePulse/pulse.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/index.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-app-visibility.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-binary-files.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-duplication-jscpd.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-firebase-hosting-sync.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-firebase-preview-channels.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-html-validators.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-index-no-redirect.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-info-no-framebust.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-lockfiles.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-mocks-placeholders.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-pages-single-source.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-security-headers.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-sw-404-fallback.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/rules/rule-webtrit-swipe.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/api/enhanced-api-routes.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/tools/discovery/scan.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/CollaborativeCommSystem.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/enhanced-audit-service.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/huawei-usb-manager-real.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/huawei-usb-manager.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/IntegrationTestSuite.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/RFFrequencyValidator.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/SwipePerformanceOptimizer.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/usb-manager.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/WebTritAuditIntegration.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/WebTritTokenService.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/tools/manifest/build.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/tools/manifest/sign.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/tools/manifest/validate.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/tools/recovery/beacon.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/AuditQR/src/qr.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/CanvasAuditOverlay/src/overlay.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/ConsentLedger/src/consent.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/EdgeRelay/src/relay.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/GeoFenceGate/src/gate.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/KeyVaultBridge/src/kv.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/NomadicMap/src/model.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/OutageSimulator/src/sim.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/QRMeetingGenerator/src/qr.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/RegulatorySync/src/sync.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/RFPolicyWatch/src/watch.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/TelemetryLens/src/rollup.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/SignalMirror/src/mirror.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/TimeSyncGuardian/src/check.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/VoiceEcho/src/echo.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/WebRTCSwitchboard/src/switch.ts.html",
+    "issue": "Links without href"
+  }
+]

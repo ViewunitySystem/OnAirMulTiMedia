@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-10-02T09:29:24.905Z",
+  "securityHeadersAdded": [
+    "Added X-Frame-Options to index.html",
+    "Added X-Content-Type-Options to index.html",
+    "Added Referrer-Policy to index.html",
+    "Added Strict-Transport-Security to index.html",
+    "Added Content-Security-Policy to info.html",
+    "Added X-Frame-Options to info.html",
+    "Added X-Content-Type-Options to info.html",
+    "Added Referrer-Policy to info.html",
+    "Added Strict-Transport-Security to info.html"
+  ],
+  "recommendation": "Security headers have been added to HTML files"
+}

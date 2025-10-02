@@ -59,3 +59,5 @@ git push origin gh-pages
 **Nächster Schritt**: Token in GitHub Secrets setzen  
 **Gültig bis**: 2025-04-18
 
+
+

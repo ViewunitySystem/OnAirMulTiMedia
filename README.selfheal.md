@@ -254,3 +254,5 @@ export default {
 **Version**: 1.0.0  
 **Letzte Aktualisierung**: 2025-01-18
 
+
+

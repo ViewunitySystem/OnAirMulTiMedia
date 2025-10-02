@@ -332,6 +332,33 @@
         }
     </style>
 </head>
+
+    <!-- Navigation Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">🏠 Start</a> 
+      <span>›</span> 
+      <span>test-dashboard</span>
+    </nav>
+    
+    <style>
+      .breadcrumb {
+        background: rgba(255,255,255,0.05);
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.9rem;
+      }
+      .breadcrumb a {
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span {
+        color: #a6b0c9;
+        margin: 0 0.5rem;
+      }
+    </style>
 <body>
     <!-- Header -->
     <div class="header">
@@ -841,6 +868,45 @@
         });
         
         console.log('🧪 Test Dashboard initialized with WebTrit Swipe');
+    </script>
+
+    <script>
+      // Keyboard Navigation
+      document.addEventListener('keydown', function(e) {
+        // Alt + Left Arrow = Back
+        if (e.altKey && e.key === 'ArrowLeft') {
+          e.preventDefault();
+          window.history.back();
+        }
+        // Alt + Right Arrow = Forward
+        if (e.altKey && e.key === 'ArrowRight') {
+          e.preventDefault();
+          window.history.forward();
+        }
+        // Alt + Home = Go to Start
+        if (e.altKey && e.key === 'Home') {
+          e.preventDefault();
+          window.location.href = '/';
+        }
+        // Escape = Close modal/overlay
+        if (e.key === 'Escape') {
+          const modals = document.querySelectorAll('.modal, .overlay');
+          modals.forEach(modal => {
+            if (modal.style.display !== 'none') {
+              modal.style.display = 'none';
+            }
+          });
+        }
+      });
+      
+      // Add focus management
+      document.addEventListener('DOMContentLoaded', function() {
+        // Focus first interactive element
+        const firstInteractive = document.querySelector('a, button, input, select, textarea');
+        if (firstInteractive) {
+          firstInteractive.focus();
+        }
+      });
     </script>
 </body>
 </html>

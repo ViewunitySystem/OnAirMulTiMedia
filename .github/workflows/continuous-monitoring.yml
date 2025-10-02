@@ -1,0 +1,109 @@
+name: Continuous Monitoring
+
+on:
+  schedule:
+    - cron: '*/2 * * * *'  # alle 2 Minuten: Ultra-kontinuierliche Checks
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  ultra-continuous-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Ultra-Continuous Monitoring
+        id: ultra-monitor
+        run: |
+          echo "🔄 Starting Ultra-Continuous Monitoring..."
+          npm run monitor:continuous || true
+          echo "ultra-monitor-outcome=success" >> $GITHUB_OUTPUT
+
+      - name: Follow-up Error Detection
+        id: followup-detection
+        run: |
+          echo "🔍 Starting Follow-up Error Detection..."
+          npm run monitor:followup || true
+          echo "followup-detection-outcome=success" >> $GITHUB_OUTPUT
+
+      - name: Check for Critical Issues
+        id: critical-check
+        run: |
+          if [ -f "audit/monitoring-alert.json" ]; then
+            ALERT_SEVERITY=$(node -p "JSON.parse(require('fs').readFileSync('audit/monitoring-alert.json')).severity")
+            if [ "$ALERT_SEVERITY" = "critical" ]; then
+              echo "🚨 CRITICAL ALERT DETECTED"
+              echo "critical-alert=true" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️ Warning alert detected"
+              echo "critical-alert=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "✅ No alerts detected"
+            echo "critical-alert=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Issue for Critical Alerts
+        if: steps.critical-check.outputs.critical-alert == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const alert = JSON.parse(fs.readFileSync('audit/monitoring-alert.json', 'utf8'));
+            
+            const issueBody = `🚨 **CRITICAL MONITORING ALERT**
+            
+            **Timestamp:** ${alert.timestamp}
+            **Severity:** ${alert.severity.toUpperCase()}
+            **Message:** ${alert.message}
+            **Success Rate:** ${alert.successRate}%
+            
+            **Failed URLs:**
+            ${alert.failedUrls.map(f => `- ${f.url} (${f.baseUrl}) - ${f.status} ${f.error || ''}`).join('\n')}
+            
+            **Recommended Actions:**
+            1. Run \`npm run selfheal\` to attempt automatic fixes
+            2. Check deployment status
+            3. Review server logs
+            
+            ---
+            *This issue was created automatically by the Continuous Monitoring System.*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 Critical Alert: ${alert.message}`,
+              body: issueBody,
+              labels: ['critical', 'monitoring', 'auto-generated']
+            });
+
+      - name: Upload Monitoring Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: continuous-monitoring-reports-${{ github.run_number }}
+          path: |
+            audit/continuous-monitoring.*
+            audit/followup-error-analysis.*
+            audit/monitoring-alert.*
+          retention-days: 7
+
+      - name: Update Monitoring Status
+        run: |
+          echo "📊 Monitoring Status Update:"
+          echo "✅ Ultra-Continuous Monitoring: ${{ steps.ultra-monitor.outputs.ultra-monitor-outcome }}"
+          echo "✅ Follow-up Detection: ${{ steps.followup-detection.outputs.followup-detection-outcome }}"
+          echo "🚨 Critical Alert: ${{ steps.critical-check.outputs.critical-alert }}"

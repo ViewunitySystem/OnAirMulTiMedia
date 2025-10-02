@@ -46,7 +46,7 @@ if (!fs.existsSync(REPORTS_DIR)) {
       console.log(`🔧 Running rule: ${ruleName}`);
       
       try {
-        const result = await (rule as any).run(ruleConfig);
+        const result = await (rule as any).run(cfg);
         
         if (result?.changed) {
           changed = true;

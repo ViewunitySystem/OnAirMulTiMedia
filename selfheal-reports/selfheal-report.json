@@ -1,0 +1,110 @@
+{
+  "timestamp": "2025-10-02T09:28:49.258Z",
+  "rules": {
+    "pagesSingleSource": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "indexNoRedirect": {
+      "status": "fixed",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "infoNoFramebust": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "serviceWorkerFallback": {
+      "status": "fixed",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "duplication": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "mocksPlaceholders": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "htmlValidators": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "firebaseHostingSync": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "firebasePreviewChannels": {
+      "status": "fixed",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "binaryFiles": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "lockfiles": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 1,
+      "errors": 0,
+      "details": "Missing lockfiles: Cargo.lock"
+    },
+    "securityHeaders": {
+      "status": "fixed",
+      "issues": 9,
+      "warnings": 0,
+      "errors": 0,
+      "details": "Added X-Frame-Options to index.html; Added X-Content-Type-Options to index.html; Added Referrer-Policy to index.html; Added Strict-Transport-Security to index.html; Added Content-Security-Policy to info.html; Added X-Frame-Options to info.html; Added X-Content-Type-Options to info.html; Added Referrer-Policy to info.html; Added Strict-Transport-Security to info.html"
+    },
+    "webtritSwipe": {
+      "status": "clean",
+      "issues": 0,
+      "warnings": 0,
+      "errors": 0,
+      "details": null
+    },
+    "appVisibility": {
+      "status": "clean",
+      "issues": 4,
+      "warnings": 0,
+      "errors": 0,
+      "details": "Only 17 app sections found in info.html, expected 18; Only 10 app links found in index.html, expected 18; Only 5 app sections found in index.html, expected 18; Missing app categories in index.html: Haupt-Apps, Navigation & Tools, Regulatory & Export, Settings & Monitoring, WebRTC Remote Control, Geschützte Bereiche"
+    }
+  },
+  "summary": {
+    "totalRules": 14,
+    "enabledRules": 14,
+    "fixedIssues": 4,
+    "warnings": 1,
+    "errors": 0
+  }
+}

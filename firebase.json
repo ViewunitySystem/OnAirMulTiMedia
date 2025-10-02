@@ -107,6 +107,14 @@
       "cleanUrls": true,
       "rewrites": [
         {
+          "source": "/api/**",
+          "destination": "/api/index.js"
+        },
+        {
+          "source": "/schemas/**",
+          "destination": "/schemas/index.js"
+        },
+        {
           "source": "**",
           "destination": "/index.html"
         }
@@ -117,6 +125,14 @@
       "public": ".",
       "cleanUrls": true,
       "rewrites": [
+        {
+          "source": "/api/**",
+          "destination": "/api/index.js"
+        },
+        {
+          "source": "/schemas/**",
+          "destination": "/schemas/index.js"
+        },
         {
           "source": "**",
           "destination": "/index.html"

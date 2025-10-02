@@ -198,6 +198,33 @@
   <!-- WebTrit Swipe Technology -->
   <script src="../webtrit-swipe.js"></script>
 </head>
+
+    <!-- Navigation Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">🏠 Start</a> 
+      <span>›</span> 
+      <span>docs › index</span>
+    </nav>
+    
+    <style>
+      .breadcrumb {
+        background: rgba(255,255,255,0.05);
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.9rem;
+      }
+      .breadcrumb a {
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span {
+        color: #a6b0c9;
+        margin: 0 0.5rem;
+      }
+    </style>
 <body data-swipe>
     <header>
         <div class="container">
@@ -258,10 +285,10 @@
             <div class="card">
                 <h2>🔗 Verwandte Dokumente</h2>
                 <ul>
-                    <li><a href="../MANIFEST.md" target="_blank">📄 MANIFEST.md (vollständig)</a></li>
-                    <li><a href="../audit_checklist.md" target="_blank">✅ Audit Checklist</a></li>
-                    <li><a href="../README.md" target="_blank">📚 README</a></li>
-                    <li><a href="../TESTING.md" target="_blank">🧪 Testing Guide</a></li>
+                    <li><a href="../MANIFEST.md" >📄 MANIFEST.md (vollständig)</a></li>
+                    <li><a href="../audit_checklist.md" >✅ Audit Checklist</a></li>
+                    <li><a href="../README.md" >📚 README</a></li>
+                    <li><a href="../TESTING.md" >🧪 Testing Guide</a></li>
                 </ul>
             </div>
         </div>
@@ -292,26 +319,26 @@
                     <div class="qr-card">
                         <h3>GlobalMeetingClock</h3>
                         <p style="color: #9ca3af;">Globale, auditierbare Meeting‑Codes (QR/Link)</p>
-                        <a href="../blueprints/global_meeting_clock.json" target="_blank">📐 Blueprint ansehen</a>
+                        <a href="../blueprints/global_meeting_clock.json" >📐 Blueprint ansehen</a>
                     </div>
                     
                     <div class="qr-card">
                         <h3>CanvasSwipe</h3>
                         <p style="color: #9ca3af;">Swipe‑Gesten → UI‑State + Audit</p>
-                        <a href="../blueprints/canvas_swipe.json" target="_blank">📐 Blueprint ansehen</a>
+                        <a href="../blueprints/canvas_swipe.json" >📐 Blueprint ansehen</a>
                     </div>
                     
                     <div class="qr-card">
                         <h3>RFValidationEngine</h3>
                         <p style="color: #9ca3af;">RF‑Regeln pro Land, HIL‑Trigger</p>
-                        <a href="../blueprints/rf_validation_engine.json" target="_blank">📐 Blueprint ansehen</a>
+                        <a href="../blueprints/rf_validation_engine.json" >📐 Blueprint ansehen</a>
                     </div>
                     
                     <div class="qr-card">
                         <h3>NEMO_PATHFINDER</h3>
                         <p style="color: #9ca3af;">Zeit‑/Pfad‑Kompass für Nomaden</p>
-                        <a href="../blueprints/nemo_pathfinder.json" target="_blank">📐 Blueprint ansehen</a>
-                        <a href="../modules/NEMO_PATHFINDER/README.md" target="_blank" style="display: block; margin-top: 5px;">📖 Dokumentation</a>
+                        <a href="../blueprints/nemo_pathfinder.json" >📐 Blueprint ansehen</a>
+                        <a href="../modules/NEMO_PATHFINDER/README.md"  style="display: block; margin-top: 5px;">📖 Dokumentation</a>
                     </div>
                 </div>
             </div>
@@ -396,7 +423,7 @@
             
             <div class="card">
                 <h2>📖 Vollständige Audit-Dokumentation</h2>
-                <a href="../audit_log.md" target="_blank">📄 audit_log.md ansehen</a>
+                <a href="../audit_log.md" >📄 audit_log.md ansehen</a>
             </div>
         </div>
         
@@ -485,6 +512,45 @@
         
         console.log('🌍 OAMTM Manifest Viewer loaded');
         console.log('mainzero - Ursprung auditierter Wahrheit');
+    </script>
+
+    <script>
+      // Keyboard Navigation
+      document.addEventListener('keydown', function(e) {
+        // Alt + Left Arrow = Back
+        if (e.altKey && e.key === 'ArrowLeft') {
+          e.preventDefault();
+          window.history.back();
+        }
+        // Alt + Right Arrow = Forward
+        if (e.altKey && e.key === 'ArrowRight') {
+          e.preventDefault();
+          window.history.forward();
+        }
+        // Alt + Home = Go to Start
+        if (e.altKey && e.key === 'Home') {
+          e.preventDefault();
+          window.location.href = '/';
+        }
+        // Escape = Close modal/overlay
+        if (e.key === 'Escape') {
+          const modals = document.querySelectorAll('.modal, .overlay');
+          modals.forEach(modal => {
+            if (modal.style.display !== 'none') {
+              modal.style.display = 'none';
+            }
+          });
+        }
+      });
+      
+      // Add focus management
+      document.addEventListener('DOMContentLoaded', function() {
+        // Focus first interactive element
+        const firstInteractive = document.querySelector('a, button, input, select, textarea');
+        if (firstInteractive) {
+          firstInteractive.focus();
+        }
+      });
     </script>
 </body>
 </html>

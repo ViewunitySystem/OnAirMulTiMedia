@@ -16,6 +16,33 @@
     code { background:#0b1020; padding:2px 6px; border-radius:4px; font-family:monospace; }
   </style>
 </head>
+
+    <!-- Navigation Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">🏠 Start</a> 
+      <span>›</span> 
+      <span>regulatory</span>
+    </nav>
+    
+    <style>
+      .breadcrumb {
+        background: rgba(255,255,255,0.05);
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.9rem;
+      }
+      .breadcrumb a {
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span {
+        color: #a6b0c9;
+        margin: 0 0.5rem;
+      }
+    </style>
 <body>
   <header>
     <h2>⚖️ Auditierbare RF-Kommunikation – Echt, Modular, Transparent</h2>
@@ -30,7 +57,7 @@
         <li>Manifest: <a href="/manifest.html">Open-Core Manifest</a></li>
       </ul>
       <div class="muted" style="margin-top:12px;">
-        📋 Regulatory Documentation: <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/blob/mainzero/REGULATORY.md" target="_blank">REGULATORY.md</a>
+        📋 Regulatory Documentation: <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/blob/mainzero/REGULATORY.md" >REGULATORY.md</a>
       </div>
     </section>
     <section class="card">
@@ -40,7 +67,7 @@
         <li>CI/CD-Hinweise: Schema-Validierung, Tests, Audit-Events</li>
         <li>Hackathon-Canvas & Test-Client: <a href="/client.html">/client.html</a></li>
         <li>Live Audit Overlay: <a href="/overlay.html">/overlay.html</a></li>
-        <li>API Documentation: <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/blob/mainzero/MANIFEST.md" target="_blank">MANIFEST.md</a></li>
+        <li>API Documentation: <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/blob/mainzero/MANIFEST.md" >MANIFEST.md</a></li>
       </ul>
     </section>
     <section class="card">
@@ -49,22 +76,61 @@
         <li>Open-Core Manifest: <a href="/manifest.html">/manifest.html</a></li>
         <li>UI-Demos & Inlays: YouTube/Embeds im <a href="/client.html">Test-Client</a></li>
         <li>Beiträge: <a href="/info.html">/info.html</a></li>
-        <li>GitHub Repository: <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia" target="_blank">OnAirMulTiMedia</a></li>
+        <li>GitHub Repository: <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia" >OnAirMulTiMedia</a></li>
         <li>Info Dashboard: <a href="/info.html">Live Stats & Community</a></li>
       </ul>
     </section>
     <section class="card">
       <h3>📚 Weitere Ressourcen</h3>
       <ul>
-        <li>🇩🇪 BNetzA: <a href="https://www.bundesnetzagentur.de/" target="_blank">bundesnetzagentur.de</a></li>
-        <li>🇪🇺 ETSI: <a href="https://www.etsi.org/" target="_blank">etsi.org</a></li>
-        <li>🇺🇸 FCC: <a href="https://www.fcc.gov/" target="_blank">fcc.gov</a></li>
-        <li>🇳🇱 Agentschap Telecom: <a href="https://www.agentschaptelecom.nl/" target="_blank">agentschaptelecom.nl</a></li>
-        <li>🌐 ITU: <a href="https://www.itu.int/" target="_blank">itu.int</a></li>
+        <li>🇩🇪 BNetzA: <a href="https://www.bundesnetzagentur.de/" >bundesnetzagentur.de</a></li>
+        <li>🇪🇺 ETSI: <a href="https://www.etsi.org/" >etsi.org</a></li>
+        <li>🇺🇸 FCC: <a href="https://www.fcc.gov/" >fcc.gov</a></li>
+        <li>🇳🇱 Agentschap Telecom: <a href="https://www.agentschaptelecom.nl/" >agentschaptelecom.nl</a></li>
+        <li>🌐 ITU: <a href="https://www.itu.int/" >itu.int</a></li>
       </ul>
     </section>
   </main>
   <script src="/webtrit-swipe.js"></script>
+
+    <script>
+      // Keyboard Navigation
+      document.addEventListener('keydown', function(e) {
+        // Alt + Left Arrow = Back
+        if (e.altKey && e.key === 'ArrowLeft') {
+          e.preventDefault();
+          window.history.back();
+        }
+        // Alt + Right Arrow = Forward
+        if (e.altKey && e.key === 'ArrowRight') {
+          e.preventDefault();
+          window.history.forward();
+        }
+        // Alt + Home = Go to Start
+        if (e.altKey && e.key === 'Home') {
+          e.preventDefault();
+          window.location.href = '/';
+        }
+        // Escape = Close modal/overlay
+        if (e.key === 'Escape') {
+          const modals = document.querySelectorAll('.modal, .overlay');
+          modals.forEach(modal => {
+            if (modal.style.display !== 'none') {
+              modal.style.display = 'none';
+            }
+          });
+        }
+      });
+      
+      // Add focus management
+      document.addEventListener('DOMContentLoaded', function() {
+        // Focus first interactive element
+        const firstInteractive = document.querySelector('a, button, input, select, textarea');
+        if (firstInteractive) {
+          firstInteractive.focus();
+        }
+      });
+    </script>
 </body>
 </html>
 

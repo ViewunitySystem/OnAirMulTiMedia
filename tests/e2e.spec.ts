@@ -32,3 +32,5 @@ test('Service Worker registriert', async ({ page }) => {
   expect(swRegistered).toBe(true);
 });
 
+
+

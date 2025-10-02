@@ -21,13 +21,40 @@
     a { color:#93c5fd; cursor: pointer; }
   </style>
 </head>
+
+    <!-- Navigation Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">🏠 Start</a> 
+      <span>›</span> 
+      <span>blueprints</span>
+    </nav>
+    
+    <style>
+      .breadcrumb {
+        background: rgba(255,255,255,0.05);
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        font-size: 0.9rem;
+      }
+      .breadcrumb a {
+        color: #7dd3fc;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+      .breadcrumb span {
+        color: #a6b0c9;
+        margin: 0 0.5rem;
+      }
+    </style>
 <body>
   <header>
     <strong>Blueprints & Checklisten</strong>
-    <a href="/schemas/blueprint.schema.json" target="_blank">Schema</a>
-    <a href="/client.html" target="_blank">Test-Client</a>
-    <a href="/overlay.html" target="_blank">Overlay</a>
-    <a href="/info.html" target="_blank">Info</a>
+    <a href="/schemas/blueprint.schema.json" >Schema</a>
+    <a href="/client.html" >Test-Client</a>
+    <a href="/overlay.html" >Overlay</a>
+    <a href="/info.html" >Info</a>
   </header>
 
   <main>
@@ -38,7 +65,7 @@
 
     <section class="card">
       <h3>Blueprint registrieren</h3>
-      <div class="muted">JSON per Schema einreichen. Beispiel: <a href="/blueprints/global_meeting_clock.json" target="_blank">GlobalMeetingClock</a></div>
+      <div class="muted">JSON per Schema einreichen. Beispiel: <a href="/blueprints/global_meeting_clock.json" >GlobalMeetingClock</a></div>
       <textarea id="bp" rows="12"></textarea>
       <button id="reg">Registrieren</button>
       <div id="regMsg" class="muted"></div>
@@ -96,6 +123,45 @@
 
     loadMods();
   </script>
+
+    <script>
+      // Keyboard Navigation
+      document.addEventListener('keydown', function(e) {
+        // Alt + Left Arrow = Back
+        if (e.altKey && e.key === 'ArrowLeft') {
+          e.preventDefault();
+          window.history.back();
+        }
+        // Alt + Right Arrow = Forward
+        if (e.altKey && e.key === 'ArrowRight') {
+          e.preventDefault();
+          window.history.forward();
+        }
+        // Alt + Home = Go to Start
+        if (e.altKey && e.key === 'Home') {
+          e.preventDefault();
+          window.location.href = '/';
+        }
+        // Escape = Close modal/overlay
+        if (e.key === 'Escape') {
+          const modals = document.querySelectorAll('.modal, .overlay');
+          modals.forEach(modal => {
+            if (modal.style.display !== 'none') {
+              modal.style.display = 'none';
+            }
+          });
+        }
+      });
+      
+      // Add focus management
+      document.addEventListener('DOMContentLoaded', function() {
+        // Focus first interactive element
+        const firstInteractive = document.querySelector('a, button, input, select, textarea');
+        if (firstInteractive) {
+          firstInteractive.focus();
+        }
+      });
+    </script>
 </body>
 </html>
 

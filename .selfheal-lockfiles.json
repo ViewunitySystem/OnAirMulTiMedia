@@ -1,0 +1,8 @@
+{
+  "timestamp": "2025-10-02T09:29:24.879Z",
+  "missingLockfiles": [
+    "Cargo.lock"
+  ],
+  "recommendation": "Generate missing lockfiles for reproducible builds",
+  "action": "Run: npm install && cargo build"
+}
