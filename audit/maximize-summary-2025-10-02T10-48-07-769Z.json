@@ -1,0 +1,233 @@
+{
+  "timestamp": "2025-10-02T10:47:36.293Z",
+  "totalChecks": 456,
+  "successRate": "49.34%",
+  "targetSuccessRate": "undefined%",
+  "errors": 231,
+  "warnings": 0,
+  "recommendations": 57,
+  "expansionPoints": 144,
+  "maxDepth": 10,
+  "growthMetrics": {
+    "githubPages": {
+      "totalPaths": 114,
+      "workingPaths": 19,
+      "expansionPaths": 36,
+      "apiPaths": 22,
+      "modulePaths": 60,
+      "schemaPaths": 14,
+      "maxDepth": 10,
+      "depthDistribution": {
+        "1": {
+          "total": 11,
+          "working": 11
+        },
+        "2": {
+          "total": 32,
+          "working": 8
+        },
+        "3": {
+          "total": 26,
+          "working": 0
+        },
+        "4": {
+          "total": 10,
+          "working": 0
+        },
+        "5": {
+          "total": 5,
+          "working": 0
+        },
+        "6": {
+          "total": 5,
+          "working": 0
+        },
+        "7": {
+          "total": 5,
+          "working": 0
+        },
+        "8": {
+          "total": 5,
+          "working": 0
+        },
+        "9": {
+          "total": 5,
+          "working": 0
+        },
+        "10": {
+          "total": 5,
+          "working": 0
+        },
+        "11": {
+          "total": 5,
+          "working": 0
+        }
+      }
+    },
+    "firebaseProd": {
+      "totalPaths": 114,
+      "workingPaths": 92,
+      "expansionPaths": 36,
+      "apiPaths": 22,
+      "modulePaths": 60,
+      "schemaPaths": 14,
+      "maxDepth": 10,
+      "depthDistribution": {
+        "1": {
+          "total": 11,
+          "working": 11
+        },
+        "2": {
+          "total": 32,
+          "working": 21
+        },
+        "3": {
+          "total": 26,
+          "working": 15
+        },
+        "4": {
+          "total": 10,
+          "working": 10
+        },
+        "5": {
+          "total": 5,
+          "working": 5
+        },
+        "6": {
+          "total": 5,
+          "working": 5
+        },
+        "7": {
+          "total": 5,
+          "working": 5
+        },
+        "8": {
+          "total": 5,
+          "working": 5
+        },
+        "9": {
+          "total": 5,
+          "working": 5
+        },
+        "10": {
+          "total": 5,
+          "working": 5
+        },
+        "11": {
+          "total": 5,
+          "working": 5
+        }
+      }
+    },
+    "firebaseStaging": {
+      "totalPaths": 114,
+      "workingPaths": 114,
+      "expansionPaths": 36,
+      "apiPaths": 22,
+      "modulePaths": 60,
+      "schemaPaths": 14,
+      "maxDepth": 10,
+      "depthDistribution": {
+        "1": {
+          "total": 11,
+          "working": 11
+        },
+        "2": {
+          "total": 32,
+          "working": 32
+        },
+        "3": {
+          "total": 26,
+          "working": 26
+        },
+        "4": {
+          "total": 10,
+          "working": 10
+        },
+        "5": {
+          "total": 5,
+          "working": 5
+        },
+        "6": {
+          "total": 5,
+          "working": 5
+        },
+        "7": {
+          "total": 5,
+          "working": 5
+        },
+        "8": {
+          "total": 5,
+          "working": 5
+        },
+        "9": {
+          "total": 5,
+          "working": 5
+        },
+        "10": {
+          "total": 5,
+          "working": 5
+        },
+        "11": {
+          "total": 5,
+          "working": 5
+        }
+      }
+    },
+    "firebaseDev": {
+      "totalPaths": 114,
+      "workingPaths": 0,
+      "expansionPaths": 36,
+      "apiPaths": 22,
+      "modulePaths": 60,
+      "schemaPaths": 14,
+      "maxDepth": 10,
+      "depthDistribution": {
+        "1": {
+          "total": 11,
+          "working": 0
+        },
+        "2": {
+          "total": 32,
+          "working": 0
+        },
+        "3": {
+          "total": 26,
+          "working": 0
+        },
+        "4": {
+          "total": 10,
+          "working": 0
+        },
+        "5": {
+          "total": 5,
+          "working": 0
+        },
+        "6": {
+          "total": 5,
+          "working": 0
+        },
+        "7": {
+          "total": 5,
+          "working": 0
+        },
+        "8": {
+          "total": 5,
+          "working": 0
+        },
+        "9": {
+          "total": 5,
+          "working": 0
+        },
+        "10": {
+          "total": 5,
+          "working": 0
+        },
+        "11": {
+          "total": 5,
+          "working": 0
+        }
+      }
+    }
+  }
+}

@@ -156,6 +156,13 @@ jobs:
           npm run audit:deep || true
           echo "deep-audit-outcome=success" >> $GITHUB_OUTPUT
 
+      - name: Run Maximize Audit System
+        id: maximize-audit
+        run: |
+          echo "🎯 Starting Maximize Audit System (110% Target)..."
+          npm run audit:maximize || true
+          echo "maximize-audit-outcome=success" >> $GITHUB_OUTPUT
+
       - name: Run Discovery Engine
         id: discovery
         run: |
@@ -233,6 +240,8 @@ jobs:
                 audit/monitoring-alert.*
                 audit/deep-audit-*
                 audit/audit-summary-*
+                audit/maximize-audit-*
+                audit/maximize-summary-*
             hfrf-universal-sdr/target/**
             test-reports/**
             
