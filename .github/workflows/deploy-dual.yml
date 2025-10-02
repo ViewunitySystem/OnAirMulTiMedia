@@ -149,6 +149,13 @@ jobs:
           npm run fix:errors || true
           echo "error-analysis-outcome=success" >> $GITHUB_OUTPUT
 
+      - name: Run Deep Audit System
+        id: deep-audit
+        run: |
+          echo "🔍 Starting Deep Audit System..."
+          npm run audit:deep || true
+          echo "deep-audit-outcome=success" >> $GITHUB_OUTPUT
+
       - name: Run Discovery Engine
         id: discovery
         run: |
@@ -221,9 +228,11 @@ jobs:
             jscpd-report/**
             audit/sqlite/**
             audit/url-healthcheck.*
-            audit/continuous-monitoring.*
-            audit/followup-error-analysis.*
-            audit/monitoring-alert.*
+                audit/continuous-monitoring.*
+                audit/followup-error-analysis.*
+                audit/monitoring-alert.*
+                audit/deep-audit-*
+                audit/audit-summary-*
             hfrf-universal-sdr/target/**
             test-reports/**
             
