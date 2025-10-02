@@ -53,33 +53,6 @@
               "value": "public, max-age=3600"
             }
           ]
-        },
-        {
-          "source": "public/sw.js",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "no-cache"
-            }
-          ]
-        },
-        {
-          "source": "404.html",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "public, max-age=300"
-            }
-          ]
-        },
-        {
-          "source": "offline.html",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "public, max-age=300"
-            }
-          ]
         }
       ],
       "rewrites": [
@@ -100,72 +73,6 @@
           "destination": "/index.html"
         }
       ]
-    },
-    {
-      "site": "onairmultimedia-staging",
-      "public": ".",
-      "cleanUrls": true,
-      "rewrites": [
-        {
-          "source": "/api/**",
-          "destination": "/api/index.js"
-        },
-        {
-          "source": "/schemas/**",,
-        {
-          "source": "/api/github/stats",
-          "destination": "/api/github/stats.js"
-        },
-        {
-          "source": "/api/contribs",
-          "destination": "/api/contribs.js"
-        },
-        {
-          "source": "/api/modules",
-          "destination": "/api/modules.js"
-        },
-        {
-          "source": "/api/github/stats",
-          "destination": "/api/github/stats.js"
-        },
-        {
-          "source": "/api/contribs",
-          "destination": "/api/contribs.js"
-        },
-        {
-          "source": "/api/modules",
-          "destination": "/api/modules.js"
-        }
-          "destination": "/schemas/index.js"
-        },
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    },
-    {
-      "site": "onairmultimedia-dev",
-      "public": ".",
-      "cleanUrls": true,
-      "rewrites": [
-        {
-          "source": "/api/**",
-          "destination": "/api/index.js"
-        },
-        {
-          "source": "/schemas/**",
-          "destination": "/schemas/index.js"
-        },
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
     }
-  ],
-  "functions": {
-    "source": "functions",
-    "runtime": "nodejs20"
-  }
+  ]
 }

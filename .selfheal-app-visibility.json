@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-10-02T09:29:25.049Z",
+  "timestamp": "2025-10-02T11:56:01.839Z",
   "appVisibilityIssues": [
     "Only 17 app sections found in info.html, expected 18",
-    "Only 10 app links found in index.html, expected 18",
-    "Only 5 app sections found in index.html, expected 18",
+    "Only 0 app links found in index.html, expected 18",
+    "Only 0 app sections found in index.html, expected 18",
     "Missing app categories in index.html: Haupt-Apps, Navigation & Tools, Regulatory & Export, Settings & Monitoring, WebRTC Remote Control, Geschützte Bereiche"
   ],
   "expectedApps": 18,
