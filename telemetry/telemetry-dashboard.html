@@ -8,8 +8,10 @@
   <!-- Sentry Error Tracking -->
   <script src="https://browser.sentry-cdn.com/7.120.0/bundle.tracing.min.js" crossorigin="anonymous"></script>
   <script>
-    Sentry.init({
-      dsn: 'YOUR_SENTRY_DSN_HERE', // Ersetze mit echtem DSN
+    if (dsn !== 'disabled') {
+        if (dsn !== 'disabled') {
+        Sentry.init({
+      dsn: 'disabled', // Ersetze mit echtem DSN
       tracesSampleRate: 0.1,
       environment: 'production',
       beforeSend(event) {
@@ -22,6 +24,12 @@
                   frame.filename = '[FILTERED]';
                 }
               });
+      } else {
+        console.log('Sentry disabled - no DSN provided');
+      }
+      } else {
+        console.log('Sentry disabled - no DSN provided');
+      }
             }
           });
         }

@@ -126,7 +126,7 @@
   </div>
 
   <script src="/webtrit-swipe.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
     let socket = null; let session_id = null; let user_id = null;
     const logDiv = document.getElementById('log');
@@ -137,6 +137,18 @@
     }
 
     function connect(){
+      // Check if socket.io is available
+      if (typeof io === 'undefined') {
+        log('Socket.IO not available - using fallback mode');
+        document.getElementById('status').textContent = 'fallback mode';
+        return;
+      }
+      // Check if socket.io is available
+      if (typeof io === 'undefined') {
+        log('Socket.IO not available - using fallback mode');
+        document.getElementById('status').textContent = 'fallback mode';
+        return;
+      }
       user_id = document.getElementById('userId').value || `user_${Math.random().toString(36).slice(2,7)}`;
       const variant = document.getElementById('variant').value || 'web-ui';
       socket = io('/bridge', { auth: { userId: user_id, variant } });

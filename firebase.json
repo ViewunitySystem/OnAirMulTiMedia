@@ -111,7 +111,31 @@
           "destination": "/api/index.js"
         },
         {
-          "source": "/schemas/**",
+          "source": "/schemas/**",,
+        {
+          "source": "/api/github/stats",
+          "destination": "/api/github/stats.js"
+        },
+        {
+          "source": "/api/contribs",
+          "destination": "/api/contribs.js"
+        },
+        {
+          "source": "/api/modules",
+          "destination": "/api/modules.js"
+        },
+        {
+          "source": "/api/github/stats",
+          "destination": "/api/github/stats.js"
+        },
+        {
+          "source": "/api/contribs",
+          "destination": "/api/contribs.js"
+        },
+        {
+          "source": "/api/modules",
+          "destination": "/api/modules.js"
+        }
           "destination": "/schemas/index.js"
         },
         {
