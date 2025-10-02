@@ -111,18 +111,12 @@
           "destination": "/api/index.js"
         },
         {
-          "source": "/schemas/**",,
-        {
-          "source": "/api/github/stats",
-          "destination": "/api/github/stats.js"
+          "source": "/api/health",
+          "destination": "/api/health.js"
         },
         {
-          "source": "/api/contribs",
-          "destination": "/api/contribs.js"
-        },
-        {
-          "source": "/api/modules",
-          "destination": "/api/modules.js"
+          "source": "/api/status",
+          "destination": "/api/status.js"
         },
         {
           "source": "/api/github/stats",
@@ -135,7 +129,9 @@
         {
           "source": "/api/modules",
           "destination": "/api/modules.js"
-        }
+        },
+        {
+          "source": "/schemas/**",
           "destination": "/schemas/index.js"
         },
         {
@@ -149,6 +145,26 @@
       "public": ".",
       "cleanUrls": true,
       "rewrites": [
+        {
+          "source": "/api/health",
+          "destination": "/api/health.js"
+        },
+        {
+          "source": "/api/status",
+          "destination": "/api/status.js"
+        },
+        {
+          "source": "/api/github/stats",
+          "destination": "/api/github/stats.js"
+        },
+        {
+          "source": "/api/contribs",
+          "destination": "/api/contribs.js"
+        },
+        {
+          "source": "/api/modules",
+          "destination": "/api/modules.js"
+        },
         {
           "source": "/api/**",
           "destination": "/api/index.js"

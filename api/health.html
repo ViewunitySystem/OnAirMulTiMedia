@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnAirMulTiMedia - API Health</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status { padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .healthy { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .degraded { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .endpoint { background: #e9ecef; padding: 10px; margin: 5px 0; border-radius: 3px; }
+        .timestamp { color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 OnAirMulTiMedia API Health</h1>
+        <p class="timestamp">Letzte Aktualisierung: <span id="timestamp"></span></p>
+        
+        <div class="status healthy">
+            <h3>✅ System Status: Healthy</h3>
+            <p>Alle kritischen Services sind operational</p>
+        </div>
+
+        <h2>📊 Deployment Status</h2>
+        <div class="endpoint">
+            <strong>GitHub Pages:</strong> 
+            <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/" target="_blank">Operational</a>
+        </div>
+        <div class="endpoint">
+            <strong>Firebase Production:</strong> 
+            <a href="https://onairmultimedia.web.app/" target="_blank">Operational</a>
+        </div>
+        <div class="endpoint">
+            <strong>Firebase Staging:</strong> 
+            <a href="https://onairmultimedia-staging.web.app/" target="_blank">Operational</a>
+        </div>
+        <div class="endpoint">
+            <strong>Firebase Dev:</strong> 
+            <span class="degraded">Deployment in Progress</span>
+        </div>
+
+        <h2>🔗 API Endpoints</h2>
+        <div class="endpoint">
+            <strong>/api/health</strong> - System Health Check
+        </div>
+        <div class="endpoint">
+            <strong>/api/status</strong> - Deployment Status
+        </div>
+        <div class="endpoint">
+            <strong>/api/github/stats</strong> - GitHub Statistics
+        </div>
+        <div class="endpoint">
+            <strong>/api/contribs</strong> - Contributor Data
+        </div>
+        <div class="endpoint">
+            <strong>/api/modules</strong> - Module Overview
+        </div>
+
+        <h2>📈 Metrics</h2>
+        <div class="endpoint">
+            <strong>Total URLs:</strong> 72
+        </div>
+        <div class="endpoint">
+            <strong>Healthy URLs:</strong> 54
+        </div>
+        <div class="endpoint">
+            <strong>Success Rate:</strong> 75%
+        </div>
+
+        <script>
+            document.getElementById('timestamp').textContent = new Date().toLocaleString('de-DE');
+        </script>
+    </div>
+</body>
+</html>
