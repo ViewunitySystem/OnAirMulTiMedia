@@ -20,22 +20,6 @@
     "issue": "Links without href"
   },
   {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/api-stub.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/server-nemo.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/sw.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/webtrit-swipe.js.html",
-    "issue": "Links without href"
-  },
-  {
     "file": "coverage/OnAirMulTiMedia/OnAirMulTiMedia/server-nemo.js.html",
     "issue": "Links without href"
   },
@@ -49,6 +33,22 @@
   },
   {
     "file": "coverage/OnAirMulTiMedia/scripts/selfheal.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/api-stub.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/server-nemo.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/sw.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/webtrit-swipe.js.html",
     "issue": "Links without href"
   },
   {
@@ -81,22 +81,6 @@
   },
   {
     "file": "coverage/OnAirMulTiMedia/modules/LicensePulse/pulse.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/OnAirMulTiMedia/server-nemo.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/OnAirMulTiMedia/webtrit-swipe.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/public/sw.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/selfheal.ts.html",
     "issue": "Links without href"
   },
   {
@@ -168,18 +152,6 @@
     "issue": "Links without href"
   },
   {
-    "file": "coverage/OnAirMulTiMedia/src/services/enhanced-audit-service.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/OnAirMulTiMedia/src/services/huawei-usb-manager-real.ts.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/OnAirMulTiMedia/src/services/huawei-usb-manager.js.html",
-    "issue": "Links without href"
-  },
-  {
     "file": "coverage/OnAirMulTiMedia/src/services/IntegrationTestSuite.js.html",
     "issue": "Links without href"
   },
@@ -192,15 +164,27 @@
     "issue": "Links without href"
   },
   {
-    "file": "coverage/OnAirMulTiMedia/src/services/usb-manager.ts.html",
-    "issue": "Links without href"
-  },
-  {
     "file": "coverage/OnAirMulTiMedia/src/services/WebTritAuditIntegration.js.html",
     "issue": "Links without href"
   },
   {
     "file": "coverage/OnAirMulTiMedia/src/services/WebTritTokenService.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/enhanced-audit-service.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/huawei-usb-manager-real.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/huawei-usb-manager.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/OnAirMulTiMedia/src/services/usb-manager.ts.html",
     "issue": "Links without href"
   },
   {
@@ -221,6 +205,22 @@
   },
   {
     "file": "coverage/OnAirMulTiMedia/tools/recovery/beacon.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/OnAirMulTiMedia/server-nemo.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/OnAirMulTiMedia/webtrit-swipe.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/public/sw.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/scripts/selfheal.ts.html",
     "issue": "Links without href"
   },
   {
@@ -264,15 +264,15 @@
     "issue": "Links without href"
   },
   {
+    "file": "coverage/OnAirMulTiMedia/modules/RegulatorySync/src/sync.ts.html",
+    "issue": "Links without href"
+  },
+  {
     "file": "coverage/OnAirMulTiMedia/modules/SignalMirror/src/mirror.ts.html",
     "issue": "Links without href"
   },
   {
     "file": "coverage/OnAirMulTiMedia/modules/TelemetryLens/src/rollup.ts.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/OnAirMulTiMedia/modules/RegulatorySync/src/sync.ts.html",
     "issue": "Links without href"
   },
   {
@@ -384,23 +384,7 @@
     "issue": "Links without href"
   },
   {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/tools/discovery/scan.js.html",
-    "issue": "Links without href"
-  },
-  {
     "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/CollaborativeCommSystem.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/enhanced-audit-service.js.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/huawei-usb-manager-real.ts.html",
-    "issue": "Links without href"
-  },
-  {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/huawei-usb-manager.js.html",
     "issue": "Links without href"
   },
   {
@@ -416,15 +400,31 @@
     "issue": "Links without href"
   },
   {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/usb-manager.ts.html",
-    "issue": "Links without href"
-  },
-  {
     "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/WebTritAuditIntegration.js.html",
     "issue": "Links without href"
   },
   {
     "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/WebTritTokenService.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/enhanced-audit-service.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/huawei-usb-manager-real.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/huawei-usb-manager.js.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/src/services/usb-manager.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/tools/discovery/scan.js.html",
     "issue": "Links without href"
   },
   {
@@ -480,19 +480,19 @@
     "issue": "Links without href"
   },
   {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/RegulatorySync/src/sync.ts.html",
-    "issue": "Links without href"
-  },
-  {
     "file": "coverage/lcov-report/OnAirMulTiMedia/modules/RFPolicyWatch/src/watch.ts.html",
     "issue": "Links without href"
   },
   {
-    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/TelemetryLens/src/rollup.ts.html",
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/RegulatorySync/src/sync.ts.html",
     "issue": "Links without href"
   },
   {
     "file": "coverage/lcov-report/OnAirMulTiMedia/modules/SignalMirror/src/mirror.ts.html",
+    "issue": "Links without href"
+  },
+  {
+    "file": "coverage/lcov-report/OnAirMulTiMedia/modules/TelemetryLens/src/rollup.ts.html",
     "issue": "Links without href"
   },
   {
