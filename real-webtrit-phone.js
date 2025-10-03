@@ -234,10 +234,29 @@ class RealWebTritPhone {
   
   async getUserMedia() {
     try {
+      // Prüfe erst ob Media-Devices verfügbar sind
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('MediaDevices API nicht unterstützt');
+      }
+      
+      // Prüfe verfügbare Geräte
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const hasVideo = devices.some(device => device.kind === 'videoinput');
+      const hasAudio = devices.some(device => device.kind === 'audioinput');
+      
+      console.log('Verfügbare Geräte:', devices.length);
+      console.log('Video-Input:', hasVideo);
+      console.log('Audio-Input:', hasAudio);
+      
+      // Angepasste Constraints basierend auf verfügbaren Geräten
       const constraints = {
-        video: { width: 640, height: 480 },
-        audio: true
+        video: hasVideo ? { width: 640, height: 480 } : false,
+        audio: hasAudio ? true : false
       };
+      
+      if (!hasVideo && !hasAudio) {
+        throw new Error('Keine Kamera oder Mikrofon gefunden');
+      }
       
       this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
       
@@ -247,10 +266,28 @@ class RealWebTritPhone {
       });
       
       this.updateLocalVideo();
-      console.log('Local media stream obtained');
+      console.log('Local media stream obtained:', {
+        videoTracks: this.localStream.getVideoTracks().length,
+        audioTracks: this.localStream.getAudioTracks().length
+      });
+      
+      // Status aktualisieren
+      this.updateCallStatus('media-ready');
+      
     } catch (error) {
       console.error('Error accessing media devices:', error);
-      this.showError('Zugriff auf Kamera/Mikrofon verweigert');
+      
+      // Fallback: Nur Audio oder gar keine Media-Devices
+      if (error.name === 'NotFoundError') {
+        this.showError('Keine Kamera oder Mikrofon gefunden. Bitte Geräte anschließen.');
+        this.setupFallbackMode();
+      } else if (error.name === 'NotAllowedError') {
+        this.showError('Zugriff auf Kamera/Mikrofon verweigert. Bitte Berechtigung erteilen.');
+        this.setupFallbackMode();
+      } else {
+        this.showError(`Media-Device-Fehler: ${error.message}`);
+        this.setupFallbackMode();
+      }
     }
   }
   
@@ -336,6 +373,14 @@ class RealWebTritPhone {
   
   async initiateCall(phoneNumber, isVideo) {
     console.log(`Initiating ${isVideo ? 'video' : 'audio'} call to ${phoneNumber}`);
+    
+    // Prüfe ob Media-Devices verfügbar sind
+    if (!this.localStream) {
+      console.log('Keine Media-Stream verfügbar - Fallback-Mode');
+      this.showError('Keine Kamera/Mikrofon verfügbar - Fallback-Mode aktiviert');
+      this.setupFallbackMode();
+      return;
+    }
     
     this.isCallActive = true;
     this.isVideoEnabled = isVideo;
@@ -458,6 +503,36 @@ class RealWebTritPhone {
     }
   }
   
+  setupFallbackMode() {
+    console.log('Fallback-Mode aktiviert - WebTrit Phone ohne Media-Devices');
+    
+    // Fallback-Status anzeigen
+    this.updateCallStatus('fallback-mode');
+    
+    // Phone-Interface anpassen für Fallback-Mode
+    const callBtn = document.getElementById('call-btn');
+    const videoCallBtn = document.getElementById('video-call-btn');
+    
+    if (callBtn) {
+      callBtn.textContent = '📞 Audio (Fallback)';
+      callBtn.style.background = '#f59e0b';
+    }
+    
+    if (videoCallBtn) {
+      videoCallBtn.textContent = '📹 Video (N/A)';
+      videoCallBtn.disabled = true;
+      videoCallBtn.style.background = '#6b7280';
+    }
+    
+    // Status-Text aktualisieren
+    const statusText = document.getElementById('call-status');
+    if (statusText) {
+      statusText.textContent = 'Fallback-Mode: Keine Media-Devices';
+      statusText.style.color = '#f59e0b';
+      statusText.style.display = 'block';
+    }
+  }
+  
   updateCallStatus(status) {
     const statusText = document.getElementById('call-status-text');
     const statusMap = {
@@ -465,11 +540,33 @@ class RealWebTritPhone {
       'connecting': 'Verbindung wird aufgebaut...',
       'connected': 'Verbindung hergestellt',
       'disconnected': 'Verbindung getrennt',
-      'failed': 'Verbindung fehlgeschlagen'
+      'failed': 'Verbindung fehlgeschlagen',
+      'media-ready': 'Media-Devices bereit',
+      'fallback-mode': 'Fallback-Mode aktiv'
     };
     
     if (statusText) {
       statusText.textContent = statusMap[status] || status;
+      
+      // Status-Farbe basierend auf Status
+      switch(status) {
+        case 'connected':
+        case 'media-ready':
+          statusText.style.color = '#10b981';
+          break;
+        case 'connecting':
+          statusText.style.color = '#f59e0b';
+          break;
+        case 'failed':
+        case 'disconnected':
+          statusText.style.color = '#ef4444';
+          break;
+        case 'fallback-mode':
+          statusText.style.color = '#f59e0b';
+          break;
+        default:
+          statusText.style.color = '#9ca3af';
+      }
     }
   }
   
