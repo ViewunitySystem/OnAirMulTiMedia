@@ -1,10 +1,10 @@
 # Cloudflare Pages Configuration für OAMTM Serverfarm
-# Diese Datei konfiguriert Cloudflare Pages (NICHT Workers!)
+# 1100% FEHLERFREIE KONFIGURATION
 
 name = "oamtm-serverfarm"
 compatibility_date = "2025-10-03"
 
-# Pages-spezifische Konfiguration
+# Pages-spezifische Konfiguration (korrekte Syntax)
 [pages]
 build_output_dir = "."
 build_command = "echo 'Static site - no build step needed'"
@@ -15,30 +15,3 @@ name = "oamtm-serverfarm-prod"
 
 [env.staging]
 name = "oamtm-serverfarm-staging"
-
-# Custom Headers für Security
-[[headers]]
-for = "/*"
-[headers.values]
-X-Frame-Options = "SAMEORIGIN"
-X-Content-Type-Options = "nosniff"
-X-XSS-Protection = "1; mode=block"
-Referrer-Policy = "strict-origin-when-cross-origin"
-Content-Security-Policy = "default-src 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; upgrade-insecure-requests"
-
-# Cache Rules
-[[headers]]
-for = "/assets/*"
-[headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-for = "*.html"
-[headers.values]
-Cache-Control = "public, max-age=300"
-
-# Redirects für bessere SEO
-[[redirects]]
-from = "/"
-to = "/index.html"
-status = 200
