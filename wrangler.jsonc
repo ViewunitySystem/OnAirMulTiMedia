@@ -1,0 +1,42 @@
+{
+  "name": "oamtm-serverfarm",
+  "compatibility_date": "2025-10-03",
+  "assets": {
+    "directory": "."
+  },
+  "build": {
+    "command": "echo 'Static build - no build step needed'",
+    "publish": "."
+  },
+  "headers": [
+    {
+      "for": "/*",
+      "values": {
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Content-Type-Options": "nosniff",
+        "X-XSS-Protection": "1; mode=block",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Content-Security-Policy": "default-src 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; upgrade-insecure-requests"
+      }
+    },
+    {
+      "for": "/assets/*",
+      "values": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "for": "*.html",
+      "values": {
+        "Cache-Control": "public, max-age=300"
+      }
+    }
+  ],
+  "redirects": [
+    {
+      "from": "/",
+      "to": "/index.html",
+      "status": 200
+    }
+  ]
+}
