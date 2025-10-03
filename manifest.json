@@ -1,5 +1,16 @@
 {
-  "modules": [],
+  "modules": [
+    {
+      "id": "module-basic-mga54tt3-d0b8a199",
+      "blueprint": "module-basic",
+      "path": "modules/module-basic-mga54tt3-d0b8a199"
+    },
+    {
+      "id": "app-pwa-mga54tta-7f0cc0a4",
+      "blueprint": "app-pwa",
+      "path": "apps/app-pwa-mga54tta-7f0cc0a4"
+    }
+  ],
   "apps": [],
   "services": [],
   "meta": {
