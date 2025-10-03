@@ -1,0 +1,14 @@
+{
+  "name": "oamtm-serverfarm-static",
+  "version": "1.0.0",
+  "description": "Static site for OnAirMulTiMedia Serverfarm",
+  "scripts": {
+    "build": "echo 'Static site - no build step needed'",
+    "dev": "echo 'Static site - no dev server needed'",
+    "preview": "echo 'Static site ready'"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
