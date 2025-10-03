@@ -1,0 +1,8 @@
+{
+  "uplink": { "band": "UHF", "centerHz": 437200000, "mod": "FSK", "rate": 9600, "power": 5 },
+  "downlink": { "band": "S", "centerHz": 2250000000, "mod": "QPSK", "rate": 1024000, "power": 3 },
+  "antennas": { "gs": "YA-2x", "point": "auto-rotator" },
+  "protocols": [ "AX.25", "CCSDS", "custom-telemetry" ],
+  "regulatory": [ "ITU", "CEPT", "BNetzA", "RDI NL" ],
+  "security": { "cipher": "AES-256-GCM", "auth": "Ed25519" }
+}

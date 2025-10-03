@@ -1,0 +1,31 @@
+<!doctype html><meta charset="utf-8"><title>OAMTM Mission – 2025 PN7</title>
+<style>body{font-family:system-ui;max-width:1000px;margin:2rem auto;padding:0 1rem} pre{background:#f6f6f6;border-radius:10px;padding:1rem;overflow:auto}</style>
+<h1>Mission: 2025 PN7 (Quasi‑Mond)</h1>
+<section>
+  <h2>Timeline</h2>
+  <ol>
+    <li>T‑30..T‑1 d: Fenster/ΔV konsolidieren (NEMO/Transfer)</li>
+    <li>T‑0: Start Anflug, RecoveryBeacon aktiv, Audit start</li>
+    <li>T+1..T+3 d: Korrekturen, Relativnavigation</li>
+    <li>T+Ankunft: Touchdown/Docking, Telemetrie‑Dump</li>
+  </ol>
+</section>
+<section>
+  <h2>Live</h2>
+  <div id="status">Lade Status…</div>
+  <script type="module">
+    async function j(u){ try{ const r=await fetch(u,{cache:'no-store'}); return r.ok? r.json():null }catch{ return null } }
+    const base = location.pathname.includes('/OnAirMulTiMedia/')? '/OnAirMulTiMedia' : '';
+    const [transfer, comms, targets] = await Promise.all([
+      j(base+'/mission/orbital-transfer.json'),
+      j(base+'/mission/comms-config.json'),
+      j(base+'/status/targets.json')
+    ]);
+    const html = `
+      <h3>Transfer</h3><pre>${escape(JSON.stringify(transfer,null,2))}</pre>
+      <h3>Comms</h3><pre>${escape(JSON.stringify(comms,null,2))}</pre>
+      <h3>Health</h3><pre>${escape(JSON.stringify(targets,null,2))}</pre>`;
+    document.getElementById('status').innerHTML = html;
+    function escape(s){return s? s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])):''}
+  </script>
+</section>

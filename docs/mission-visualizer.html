@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM Mission Visualizer - 2025 PN7</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: #000;
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #333;
+            background: #222;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #333;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .canvas-container {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .orbit-view {
+            flex: 1;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        .status-panel {
+            flex: 1;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        canvas {
+            border: 1px solid #333;
+            border-radius: 4px;
+            background: #000;
+        }
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: #111;
+            border-radius: 4px;
+        }
+        .status-label {
+            font-weight: bold;
+            color: #888;
+        }
+        .status-value {
+            color: #fff;
+        }
+        .doppler-chart {
+            margin-top: 1rem;
+            height: 200px;
+            border: 1px solid #333;
+            border-radius: 4px;
+        }
+        .legend {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        .earth { background: #4A90E2; }
+        .pn7 { background: #F5A623; }
+        .spacecraft { background: #50E3C2; }
+        .trajectory { background: #9013FE; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌑 OAMTM Mission Visualizer</h1>
+            <h2>2025 PN7 Quasi-Moon Approach</h2>
+        </div>
+        
+        <div class="controls">
+            <button id="startBtn">Start Mission</button>
+            <button id="stopBtn" disabled>Stop</button>
+            <button id="resetBtn">Reset</button>
+            <button id="hohmannBtn">Hohmann Transfer</button>
+        </div>
+        
+        <div class="canvas-container">
+            <div class="orbit-view">
+                <h3>Orbit View</h3>
+                <canvas id="orbitCanvas" width="400" height="400"></canvas>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color earth"></div>
+                        <span>Earth</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color pn7"></div>
+                        <span>2025 PN7</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color spacecraft"></div>
+                        <span>Spacecraft</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color trajectory"></div>
+                        <span>Trajectory</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status-panel">
+                <h3>Mission Status</h3>
+                <div class="status-item">
+                    <span class="status-label">Time:</span>
+                    <span class="status-value" id="timeValue">0.0s</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Distance:</span>
+                    <span class="status-value" id="distanceValue">100.0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Speed:</span>
+                    <span class="status-value" id="speedValue">0.0</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Doppler Shift:</span>
+                    <span class="status-value" id="dopplerValue">0 Hz</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Status:</span>
+                    <span class="status-value" id="statusValue">Ready</span>
+                </div>
+                
+                <div class="doppler-chart">
+                    <canvas id="dopplerCanvas" width="300" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        class MissionVisualizer {
+            constructor() {
+                this.canvas = document.getElementById('orbitCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.dopplerCanvas = document.getElementById('dopplerCanvas');
+                this.dopplerCtx = this.dopplerCanvas.getContext('2d');
+                
+                this.time = 0;
+                this.position = { x: 0, y: 0 };
+                this.velocity = { x: 0, y: 0 };
+                this.target = { x: 100, y: 0 };
+                this.trajectory = [];
+                this.dopplerData = [];
+                this.running = false;
+                this.animationId = null;
+                
+                this.setupEventListeners();
+                this.draw();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('startBtn').addEventListener('click', () => this.start());
+                document.getElementById('stopBtn').addEventListener('click', () => this.stop());
+                document.getElementById('resetBtn').addEventListener('click', () => this.reset());
+                document.getElementById('hohmannBtn').addEventListener('click', () => this.showHohmann());
+            }
+            
+            start() {
+                this.running = true;
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                document.getElementById('statusValue').textContent = 'Running';
+                this.animate();
+            }
+            
+            stop() {
+                this.running = false;
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('statusValue').textContent = 'Stopped';
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                }
+            }
+            
+            reset() {
+                this.stop();
+                this.time = 0;
+                this.position = { x: 0, y: 0 };
+                this.velocity = { x: 0, y: 0 };
+                this.trajectory = [];
+                this.dopplerData = [];
+                document.getElementById('statusValue').textContent = 'Ready';
+                this.updateStatus();
+                this.draw();
+            }
+            
+            showHohmann() {
+                const r1 = 1.0;
+                const r2 = 1.002;
+                const v1 = Math.sqrt(1.0 / r1);
+                const v2 = Math.sqrt(1.0 / r2);
+                const a = (r1 + r2) / 2;
+                const v_transfer_1 = Math.sqrt(2 * (1.0 / r1 - 1.0 / (2 * a)));
+                const v_transfer_2 = Math.sqrt(2 * (1.0 / r2 - 1.0 / (2 * a)));
+                const deltaV1 = (v_transfer_1 - v1) * 29.78;
+                const deltaV2 = (v2 - v_transfer_2) * 29.78;
+                const totalDeltaV = deltaV1 + deltaV2;
+                const transferTime = Math.PI * Math.sqrt(a * a * a) * 365.25;
+                
+                alert(`Hohmann Transfer Analysis:\n\nΔV1: ${deltaV1.toFixed(2)} km/s\nΔV2: ${deltaV2.toFixed(2)} km/s\nTotal ΔV: ${totalDeltaV.toFixed(2)} km/s\nTransfer Time: ${transferTime.toFixed(1)} days`);
+            }
+            
+            animate() {
+                if (!this.running) return;
+                
+                this.update();
+                this.draw();
+                this.updateStatus();
+                
+                this.animationId = requestAnimationFrame(() => this.animate());
+            }
+            
+            update() {
+                const dx = this.target.x - this.position.x;
+                const dy = this.target.y - this.position.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 0.1) {
+                    const k = 0.1;
+                    this.velocity.x += k * dx * 0.016; // ~60fps
+                    this.velocity.y += k * dy * 0.016;
+                } else {
+                    this.stop();
+                    document.getElementById('statusValue').textContent = 'Arrived at PN7';
+                }
+                
+                this.position.x += this.velocity.x * 0.016;
+                this.position.y += this.velocity.y * 0.016;
+                this.time += 0.016;
+                
+                this.trajectory.push({ ...this.position });
+                if (this.trajectory.length > 1000) {
+                    this.trajectory.shift();
+                }
+                
+                const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
+                const dopplerShift = speed * 437200000 / 299792458; // UHF frequency
+                this.dopplerData.push({ time: this.time, shift: dopplerShift });
+                if (this.dopplerData.length > 200) {
+                    this.dopplerData.shift();
+                }
+            }
+            
+            draw() {
+                // Clear canvas
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw grid
+                this.ctx.strokeStyle = '#333';
+                this.ctx.lineWidth = 1;
+                for (let i = 0; i < this.canvas.width; i += 50) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(i, 0);
+                    this.ctx.lineTo(i, this.canvas.height);
+                    this.ctx.stroke();
+                }
+                for (let i = 0; i < this.canvas.height; i += 50) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, i);
+                    this.ctx.lineTo(this.canvas.width, i);
+                    this.ctx.stroke();
+                }
+                
+                // Scale and center
+                const scale = 2;
+                const centerX = this.canvas.width / 2;
+                const centerY = this.canvas.height / 2;
+                
+                // Draw Earth
+                this.ctx.fillStyle = '#4A90E2';
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+                this.ctx.fill();
+                
+                // Draw PN7
+                this.ctx.fillStyle = '#F5A623';
+                this.ctx.beginPath();
+                this.ctx.arc(centerX + this.target.x * scale, centerY + this.target.y * scale, 6, 0, 2 * Math.PI);
+                this.ctx.fill();
+                
+                // Draw trajectory
+                if (this.trajectory.length > 1) {
+                    this.ctx.strokeStyle = '#9013FE';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(centerX + this.trajectory[0].x * scale, centerY + this.trajectory[0].y * scale);
+                    for (let i = 1; i < this.trajectory.length; i++) {
+                        this.ctx.lineTo(centerX + this.trajectory[i].x * scale, centerY + this.trajectory[i].y * scale);
+                    }
+                    this.ctx.stroke();
+                }
+                
+                // Draw spacecraft
+                this.ctx.fillStyle = '#50E3C2';
+                this.ctx.beginPath();
+                this.ctx.arc(centerX + this.position.x * scale, centerY + this.position.y * scale, 4, 0, 2 * Math.PI);
+                this.ctx.fill();
+                
+                // Draw Doppler chart
+                this.drawDopplerChart();
+            }
+            
+            drawDopplerChart() {
+                this.dopplerCtx.fillStyle = '#000';
+                this.dopplerCtx.fillRect(0, 0, this.dopplerCanvas.width, this.dopplerCanvas.height);
+                
+                if (this.dopplerData.length < 2) return;
+                
+                const maxShift = Math.max(...this.dopplerData.map(d => d.shift));
+                const minShift = Math.min(...this.dopplerData.map(d => d.shift));
+                const range = maxShift - minShift || 1;
+                
+                this.dopplerCtx.strokeStyle = '#50E3C2';
+                this.dopplerCtx.lineWidth = 2;
+                this.dopplerCtx.beginPath();
+                
+                for (let i = 0; i < this.dopplerData.length; i++) {
+                    const x = (i / (this.dopplerData.length - 1)) * this.dopplerCanvas.width;
+                    const y = this.dopplerCanvas.height - ((this.dopplerData[i].shift - minShift) / range) * this.dopplerCanvas.height;
+                    
+                    if (i === 0) {
+                        this.dopplerCtx.moveTo(x, y);
+                    } else {
+                        this.dopplerCtx.lineTo(x, y);
+                    }
+                }
+                
+                this.dopplerCtx.stroke();
+                
+                // Draw axes
+                this.dopplerCtx.strokeStyle = '#666';
+                this.dopplerCtx.lineWidth = 1;
+                this.dopplerCtx.beginPath();
+                this.dopplerCtx.moveTo(0, this.dopplerCanvas.height - 1);
+                this.dopplerCtx.lineTo(this.dopplerCanvas.width, this.dopplerCanvas.height - 1);
+                this.dopplerCtx.moveTo(0, 0);
+                this.dopplerCtx.lineTo(0, this.dopplerCanvas.height);
+                this.dopplerCtx.stroke();
+                
+                // Labels
+                this.dopplerCtx.fillStyle = '#888';
+                this.dopplerCtx.font = '12px monospace';
+                this.dopplerCtx.fillText('Doppler Shift (Hz)', 5, 15);
+                this.dopplerCtx.fillText(`${maxShift.toFixed(0)}`, 5, 25);
+                this.dopplerCtx.fillText(`${minShift.toFixed(0)}`, 5, this.dopplerCanvas.height - 5);
+            }
+            
+            updateStatus() {
+                const distance = Math.sqrt(
+                    Math.pow(this.target.x - this.position.x, 2) +
+                    Math.pow(this.target.y - this.position.y, 2)
+                );
+                
+                const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
+                const dopplerShift = speed * 437200000 / 299792458;
+                
+                document.getElementById('timeValue').textContent = `${this.time.toFixed(1)}s`;
+                document.getElementById('distanceValue').textContent = `${distance.toFixed(2)}`;
+                document.getElementById('speedValue').textContent = `${speed.toFixed(2)}`;
+                document.getElementById('dopplerValue').textContent = `${dopplerShift.toFixed(0)} Hz`;
+            }
+        }
+        
+        // Initialize visualizer when page loads
+        window.addEventListener('load', () => {
+            new MissionVisualizer();
+        });
+    </script>
+</body>
+</html>
