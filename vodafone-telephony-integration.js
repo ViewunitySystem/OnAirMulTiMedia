@@ -12,6 +12,8 @@ class VodafoneTelephonyIntegration {
     this.connectionStatus = 'disconnected';
     this.availableNetworks = [];
     this.signalStrength = 0;
+    this.isCallActive = false;
+    this.currentCallStatus = 'idle';
     
     // Vodafone-spezifische Konfiguration
     this.vodafoneConfig = {
@@ -181,6 +183,9 @@ class VodafoneTelephonyIntegration {
       
       if (response.includes('OK')) {
         console.log('✅ Anruf erfolgreich initiiert');
+        this.isCallActive = true;
+        this.currentCallStatus = 'calling';
+        this.callStartTime = Date.now();
         this.updateCallStatus('calling');
         
         // Call-Status überwachen
@@ -193,6 +198,8 @@ class VodafoneTelephonyIntegration {
       
     } catch (error) {
       console.error('❌ Anruf fehlgeschlagen:', error);
+      this.isCallActive = false;
+      this.currentCallStatus = 'failed';
       this.updateCallStatus('failed');
       throw error;
     }
@@ -226,6 +233,8 @@ class VodafoneTelephonyIntegration {
       
       if (response.includes('OK')) {
         console.log('✅ Anruf erfolgreich beendet');
+        this.isCallActive = false;
+        this.currentCallStatus = 'idle';
         this.updateCallStatus('idle');
         return true;
       } else {
@@ -234,6 +243,8 @@ class VodafoneTelephonyIntegration {
       
     } catch (error) {
       console.error('❌ Anruf-Beendigung fehlgeschlagen:', error);
+      this.isCallActive = false;
+      this.currentCallStatus = 'failed';
       throw error;
     }
   }
@@ -331,10 +342,37 @@ class VodafoneTelephonyIntegration {
       'AT+CMGF=1': 'OK',
       'AT+CNMI=1,2,0,0,0': 'OK',
       'AT+CREG?': '+CREG: 0,1',
-      'AT+CGREG?': '+CGREG: 0,1'
+      'AT+CGREG?': '+CGREG: 0,1',
+      'AT+CPAS': this.getCurrentCallStatus()
     };
     
     return responses[command] || 'OK';
+  }
+  
+  getCurrentCallStatus() {
+    // Simuliere echte Call-Status-Codes basierend auf aktuellem Zustand
+    if (this.isCallActive) {
+      // Simuliere Call-Status-Sequenz: Calling -> Ringing -> Connected
+      const now = Date.now();
+      const callDuration = now - (this.callStartTime || now);
+      
+      if (callDuration < 2000) {
+        // Erste 2 Sekunden: Calling
+        return '+CPAS: 1'; // Ready
+      } else if (callDuration < 5000) {
+        // 2-5 Sekunden: Ringing
+        this.currentCallStatus = 'ringing';
+        this.updateCallStatus('ringing');
+        return '+CPAS: 2'; // Ringing
+      } else {
+        // Nach 5 Sekunden: Connected
+        this.currentCallStatus = 'connected';
+        this.updateCallStatus('connected');
+        return '+CPAS: 4'; // Connected
+      }
+    } else {
+      return '+CPAS: 0'; // Idle
+    }
   }
   
   createSimulatedVodafoneSDR() {
