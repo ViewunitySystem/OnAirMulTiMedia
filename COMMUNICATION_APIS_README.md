@@ -2,7 +2,7 @@
 
 ## 📡 **Raymond Demitrio Tel Kontakt**
 - **Telefon**: +31 613 803 782
-- **Email**: raymond@tel1.nl
+- **Email**: gentlyoverdone@outlook.com
 - **WebTrit-Swipe Erfinder**: Revolutionäre Swipe-Technik für intuitive Kommunikation
 
 ## 🌐 **Kommunikations-APIs & Protokolle**
@@ -271,5 +271,5 @@ Alle Kommunikationsprotokolle unterstützen die WebTrit-Swipe-Technik:
 **Entwickelt von Raymond Demitrio Tel**  
 **WebTrit-Swipe Technologie**  
 **Kontakt: +31 613 803 782**  
-**Email: raymond@tel1.nl**
+**Email: gentlyoverdone@outlook.com**
 

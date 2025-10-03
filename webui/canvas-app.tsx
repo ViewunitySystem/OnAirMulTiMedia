@@ -875,7 +875,7 @@ function HFRFSwipeHub() {
           <ContactCard 
             name="Raymond Demitrio Tel"
             phone="+31 613 803 782"
-            email="raymond@tel1.nl"
+            email="gentlyoverdone@outlook.com"
             description="HFRF-SDR Entwickler, WebTrit-Swipe Erfinder, Kommunikations-Experte"
           />
           <Card className="rounded-2xl shadow bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
