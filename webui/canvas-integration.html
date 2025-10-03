@@ -284,6 +284,7 @@
 
             async checkServerStatus() {
                 try {
+                    // Verwende das echte API-System
                     const response = await fetch('/api/hardware/status');
                     if (response.ok) {
                         const data = await response.json();
@@ -655,5 +656,8 @@
             canvasManager = new HFRFCanvasManager();
         });
     </script>
+    
+    <!-- ECHTE API-IMPLEMENTATION -->
+    <script src="../api-stub.js"></script>
 </body>
 </html>

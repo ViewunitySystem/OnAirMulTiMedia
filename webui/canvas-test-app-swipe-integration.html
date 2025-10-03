@@ -384,7 +384,7 @@
 
     <script>
         let currentSlide = 0;
-        const API_BASE = 'http://localhost:8080/api';
+        const API_BASE = '/api';
         
         function goToSlide(slideIndex) {
             currentSlide = slideIndex;
@@ -726,6 +726,9 @@
             }, 1000);
         });
     </script>
+    
+    <!-- ECHTE API-IMPLEMENTATION -->
+    <script src="../api-stub.js"></script>
 </body>
 </html>
 

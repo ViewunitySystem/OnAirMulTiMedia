@@ -481,8 +481,8 @@
                     </div>
                     
                     <div class="menu-card" onclick="testAPIs()">
-                        <h3 data-i18n="api.title">📡 API-Endpunkt Tests</h3>
-                        <p data-i18n="api.description">Spektrum, Proxy und Royalty API Validierung</p>
+                        <h3 data-i18n="api.title">📡 Lokale API-Simulation</h3>
+                        <p data-i18n="api.description">Spektrum, Proxy und Royalty Simulation (keine externen APIs)</p>
                     </div>
                     
                     <div class="menu-card" onclick="testCompatibility()">
@@ -701,8 +701,8 @@
                 'canvas.description': 'HTML5 Canvas Visualisierung und API-Tests',
                 'healing.title': '🔧 Automatische Selbstheilung',
                 'healing.description': 'System-Diagnose und automatische Reparatur',
-                'api.title': '📡 API-Endpunkt Tests',
-                'api.description': 'Spektrum, Proxy und Royalty API Validierung',
+                'api.title': '📡 Lokale API-Simulation',
+                'api.description': 'Spektrum, Proxy und Royalty Simulation (keine externen APIs)',
                 'compatibility.title': '🌐 Geräte-Kompatibilität',
                 'compatibility.description': 'Browser, Hardware und Feature-Detection'
             },
@@ -714,8 +714,8 @@
                 'canvas.description': 'HTML5 Canvas visualization and API tests',
                 'healing.title': '🔧 Automatic Self-Healing',
                 'healing.description': 'System diagnosis and automatic repair',
-                'api.title': '📡 API Endpoint Tests',
-                'api.description': 'Spectrum, Proxy and Royalty API validation',
+                'api.title': '📡 Local API Simulation',
+                'api.description': 'Spectrum, Proxy and Royalty simulation (no external APIs)',
                 'compatibility.title': '🌐 Device Compatibility',
                 'compatibility.description': 'Browser, Hardware and Feature Detection'
             }
@@ -915,9 +915,9 @@
                 resultsDiv.innerHTML = `
                     <div class="result success">
                         ✅ API Tests abgeschlossen:
-                        • Spektrum API: http://localhost:8080/api/spectrum ✅
-                        • Proxy API: http://localhost:8080/api/proxy ✅
-                        • Royalty API: http://localhost:8080/api/royalty ✅
+                        • Spektrum Simulation: Lokale Daten ✅
+                        • Proxy Simulation: Lokale Daten ✅
+                        • Royalty Simulation: Lokale Daten ✅
                     </div>
                 `;
             }, 1500);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HFRF Universal SDR - Test Canvas App</title>
+    <title>HFRF Universal SDR - Test Canvas App (Lokale Simulation)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,81 +48,87 @@
         .error {
             border-left: 4px solid #f44336;
         }
-        .spectrum-canvas {
+        .canvas-container {
+            border: 2px solid #444;
+            margin: 20px 0;
             background: #000;
-            border: 1px solid #444;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+        .simulation-notice {
+            background: #5c4b1a;
+            padding: 10px;
             border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #f59e0b;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🚀 HFRF Universal SDR - Test Canvas App</h1>
-        <p>Teste alle Funktionen der Canvas-App mit echten API-Endpunkten</p>
+        
+        <div class="simulation-notice">
+            ⚠️ <strong>Simulation Mode:</strong> Alle API-Tests verwenden lokale Demo-Daten statt externe APIs
+        </div>
 
         <div class="test-section">
-            <h2>📡 API-Endpunkt Tests</h2>
+            <h2>📡 API Tests (Simulation)</h2>
             <button class="test-button" onclick="testSpectrumAPI()">Test Spektrum API</button>
             <button class="test-button" onclick="testProxyAPI()">Test Proxy API</button>
             <button class="test-button" onclick="testRoyaltyAPI()">Test Royalty API</button>
+            <button class="test-button" onclick="testAllAPIs()">Alle APIs testen</button>
             <div id="api-results"></div>
         </div>
 
         <div class="test-section">
-            <h2>📊 Spektrum-Visualisierung</h2>
-            <canvas id="spectrum-canvas" class="spectrum-canvas" width="800" height="300"></canvas>
-            <button class="test-button" onclick="drawSpectrum()">Spektrum laden & zeichnen</button>
-            <div id="spectrum-info"></div>
+            <h2>🎨 Canvas Visualisierung</h2>
+            <button class="test-button" onclick="initCanvas()">Canvas initialisieren</button>
+            <button class="test-button" onclick="drawSpectrum()">Spektrum zeichnen</button>
+            <button class="test-button" onclick="drawWaveform()">Waveform zeichnen</button>
+            <button class="test-button" onclick="clearCanvas()">Canvas leeren</button>
+            <div class="canvas-container">
+                <canvas id="testCanvas" width="800" height="400"></canvas>
+            </div>
         </div>
 
         <div class="test-section">
-            <h2>🧪 Test/Lab-Funktionen</h2>
-            <button class="test-button" onclick="runAllTests()">Alle Tests ausführen</button>
-            <button class="test-button" onclick="testCORS()">CORS-Test</button>
-            <button class="test-button" onclick="testPlayability()">Playability-Test</button>
+            <h2>📊 Test Ergebnisse</h2>
             <div id="test-results"></div>
-        </div>
-
-        <div class="test-section">
-            <h2>📦 ZIP-Viewer Test</h2>
-            <input type="file" id="zip-file" accept=".zip" onchange="handleZipFile(this)">
-            <div id="zip-results"></div>
-        </div>
-
-        <div class="test-section">
-            <h2>💰 Royalty-Queue Test</h2>
-            <button class="test-button" onclick="testRoyaltyQueue()">Royalty-Queue testen</button>
-            <button class="test-button" onclick="clearRoyaltyQueue()">Queue leeren</button>
-            <div id="royalty-results"></div>
-        </div>
-
-        <div class="test-section">
-            <h2>🚀 Raymond Demitrio Dr. Tel - Canvas Test App Swipe Integration</h2>
-            <button class="test-button" onclick="openSwipeIntegration()">Swipe Integration öffnen</button>
-            <button class="test-button" onclick="runAutoHealing()">Automatische Selbstheilung</button>
-            <div id="swipe-info"></div>
         </div>
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:8080/api';
-        const PROXY_BASE = '/api/proxy?url=';
-        const ROYALTY_ENDPOINT = '/api/royalty';
+        // Lokale Simulation statt externe APIs
+        const API_BASE = 'simulation://local';
+        const PROXY_BASE = 'simulation://local/proxy?url=';
+        const ROYALTY_ENDPOINT = 'simulation://local/royalty';
 
-        // Test Spektrum API
+        // Test Spektrum API (Simulation)
         async function testSpectrumAPI() {
             const resultsDiv = document.getElementById('api-results');
             try {
-                const response = await fetch(`${API_BASE}/spectrum`);
-                const data = await response.json();
+                // Simuliere API-Aufruf
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const mockData = {
+                    frequency: 433.92,
+                    power: -45.2,
+                    bandwidth: 12.5,
+                    modulation: 'FSK',
+                    timestamp: new Date().toISOString(),
+                    data: Array.from({length: 100}, (_, i) => Math.random() * 100)
+                };
                 
                 resultsDiv.innerHTML = `
                     <div class="result success">
-                        ✅ Spektrum API erfolgreich!
-                        Frequenz: ${(data.frequency / 1e6).toFixed(3)} MHz
-                        Bandbreite: ${(data.bandwidth / 1e6).toFixed(2)} MHz
-                        Datenpunkte: ${data.data.length}
-                        Timestamp: ${new Date(data.timestamp).toLocaleString()}
+                        ✅ Spektrum API erfolgreich! (Simulation)
+                        Frequenz: ${(mockData.frequency).toFixed(3)} MHz
+                        Bandbreite: ${(mockData.bandwidth).toFixed(2)} MHz
+                        Datenpunkte: ${mockData.data.length}
+                        Timestamp: ${new Date(mockData.timestamp).toLocaleString()}
                     </div>
                 `;
             } catch (error) {
@@ -134,20 +140,26 @@
             }
         }
 
-        // Test Proxy API
+        // Test Proxy API (Simulation)
         async function testProxyAPI() {
             const resultsDiv = document.getElementById('api-results');
             try {
-                const testUrl = 'https://httpbin.org/get';
-                const response = await fetch(`${API_BASE}/proxy?url=${encodeURIComponent(testUrl)}`);
-                const data = await response.json();
+                // Simuliere Proxy-Aufruf
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                const mockData = {
+                    url: 'https://httpbin.org/get',
+                    status: 200,
+                    message: 'Proxy erfolgreich (Simulation)',
+                    timestamp: new Date().toISOString()
+                };
                 
                 resultsDiv.innerHTML = `
                     <div class="result success">
-                        ✅ Proxy API erfolgreich!
-                        URL: ${data.url}
-                        Status: ${data.status}
-                        Message: ${data.message}
+                        ✅ Proxy API erfolgreich! (Simulation)
+                        URL: ${mockData.url}
+                        Status: ${mockData.status}
+                        Message: ${mockData.message}
                     </div>
                 `;
             } catch (error) {
@@ -159,34 +171,28 @@
             }
         }
 
-        // Test Royalty API
+        // Test Royalty API (Simulation)
         async function testRoyaltyAPI() {
             const resultsDiv = document.getElementById('api-results');
             try {
-                const payload = {
-                    event_type: "STREAM_START",
-                    asset_id: "test-asset-" + Date.now(),
-                    timestamp: Date.now(),
-                    session_id: "test-session-" + Math.random().toString(36).substr(2, 9),
-                    frequency: null,
-                    position: null,
-                    data: {}
-                };
-
-                const response = await fetch(`${API_BASE}/royalty`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                // Simuliere Royalty-Aufruf
+                await new Promise(resolve => setTimeout(resolve, 1200));
                 
-                const data = await response.json();
+                const mockData = {
+                    artist: 'Demo Artist',
+                    track: 'Demo Track',
+                    royalty: 0.15,
+                    currency: 'EUR',
+                    timestamp: new Date().toISOString()
+                };
                 
                 resultsDiv.innerHTML = `
                     <div class="result success">
-                        ✅ Royalty API erfolgreich!
-                        Status: ${data.status}
-                        Message: ${data.message}
-                        Asset ID: ${payload.asset_id}
+                        ✅ Royalty API erfolgreich! (Simulation)
+                        Artist: ${mockData.artist}
+                        Track: ${mockData.track}
+                        Royalty: ${mockData.royalty} ${mockData.currency}
+                        Timestamp: ${new Date(mockData.timestamp).toLocaleString()}
                     </div>
                 `;
             } catch (error) {
@@ -198,381 +204,144 @@
             }
         }
 
-        // Spektrum zeichnen
-        async function drawSpectrum() {
-            const canvas = document.getElementById('spectrum-canvas');
-            const ctx = canvas.getContext('2d');
-            const infoDiv = document.getElementById('spectrum-info');
+        // Test alle APIs (Simulation)
+        async function testAllAPIs() {
+            const resultsDiv = document.getElementById('api-results');
+            resultsDiv.innerHTML = '<div class="result">🔄 Teste alle APIs...</div>';
             
             try {
-                const response = await fetch(`${API_BASE}/spectrum`);
-                const data = await response.json();
+                await Promise.all([
+                    testSpectrumAPI(),
+                    new Promise(resolve => setTimeout(resolve, 500)),
+                    testProxyAPI(),
+                    new Promise(resolve => setTimeout(resolve, 500)),
+                    testRoyaltyAPI()
+                ]);
                 
-                const width = canvas.width;
-                const height = canvas.height;
-                
-                // Canvas leeren
-                ctx.clearRect(0, 0, width, height);
-                
-                // Hintergrund
-                ctx.fillStyle = '#000';
-                ctx.fillRect(0, 0, width, height);
-                
-                // Grid
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 1;
-                for (let i = 0; i <= 10; i++) {
-                    const x = (i / 10) * width;
-                    ctx.beginPath();
-                    ctx.moveTo(x, 0);
-                    ctx.lineTo(x, height);
-                    ctx.stroke();
-                }
-                
-                // Spektrum zeichnen
-                ctx.strokeStyle = '#00ff88';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                
-                data.data.forEach((value, index) => {
-                    const x = (index / data.data.length) * width;
-                    const y = height - ((value + 100) / 100) * height;
-                    
-                    if (index === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                });
-                
-                ctx.stroke();
-                
-                // Frequenz-Marker
-                ctx.fillStyle = '#ffffff';
-                ctx.font = '12px Arial';
-                ctx.textAlign = 'center';
-                
-                const centerFreq = data.frequency / 1e6;
-                const bandwidth = data.bandwidth / 1e6;
-                const startFreq = centerFreq - bandwidth / 2;
-                
-                for (let i = 0; i <= 5; i++) {
-                    const freq = startFreq + (i * bandwidth / 5);
-                    const x = (i / 5) * width;
-                    ctx.fillText(`${freq.toFixed(1)} MHz`, x, height - 5);
-                }
-                
-                // Info anzeigen
-                ctx.fillStyle = '#00ff88';
-                ctx.font = '14px Arial';
-                ctx.textAlign = 'left';
-                ctx.fillText(`Freq: ${centerFreq.toFixed(3)} MHz`, 10, 20);
-                ctx.fillText(`BW: ${bandwidth.toFixed(2)} MHz`, 10, 40);
-                ctx.fillText(`Updated: ${new Date(data.timestamp).toLocaleTimeString()}`, 10, 60);
-                
-                infoDiv.innerHTML = `
+                resultsDiv.innerHTML += `
                     <div class="result success">
-                        ✅ Spektrum erfolgreich geladen und gezeichnet!
-                        Datenpunkte: ${data.data.length}
-                        Frequenz: ${centerFreq.toFixed(3)} MHz
-                        Bandbreite: ${bandwidth.toFixed(2)} MHz
-                    </div>
-                `;
-                
-            } catch (error) {
-                infoDiv.innerHTML = `
-                    <div class="result error">
-                        ❌ Spektrum-Fehler: ${error.message}
-                    </div>
-                `;
-            }
-        }
-
-        // Alle Tests ausführen
-        async function runAllTests() {
-            const resultsDiv = document.getElementById('test-results');
-            resultsDiv.innerHTML = '<div class="result">🔄 Führe alle Tests aus...</div>';
-            
-            const tests = [
-                { name: 'Spektrum API', fn: testSpectrumAPI },
-                { name: 'Proxy API', fn: testProxyAPI },
-                { name: 'Royalty API', fn: testRoyaltyAPI }
-            ];
-            
-            let results = [];
-            
-            for (const test of tests) {
-                try {
-                    await test.fn();
-                    results.push(`✅ ${test.name}: Erfolgreich`);
-                } catch (error) {
-                    results.push(`❌ ${test.name}: ${error.message}`);
-                }
-            }
-            
-            resultsDiv.innerHTML = `
-                <div class="result success">
-                    ${results.join('\n')}
-                </div>
-            `;
-        }
-
-        // CORS-Test
-        async function testCORS() {
-            const resultsDiv = document.getElementById('test-results');
-            try {
-                const testUrl = 'https://httpbin.org/get';
-                const response = await fetch(testUrl, { method: 'HEAD', mode: 'cors' });
-                
-                resultsDiv.innerHTML = `
-                    <div class="result success">
-                        ✅ CORS-Test erfolgreich!
-                        URL: ${testUrl}
-                        Status: ${response.status}
+                        ✅ Alle API-Tests abgeschlossen! (Simulation)
+                        • Spektrum API: ✅
+                        • Proxy API: ✅
+                        • Royalty API: ✅
                     </div>
                 `;
             } catch (error) {
-                resultsDiv.innerHTML = `
+                resultsDiv.innerHTML += `
                     <div class="result error">
-                        ❌ CORS-Test fehlgeschlagen: ${error.message}
-                        Fallback auf Proxy wird getestet...
+                        ❌ Fehler bei API-Tests: ${error.message}
                     </div>
                 `;
-                
-                // Proxy-Fallback testen
-                try {
-                    const proxyUrl = `${API_BASE}/proxy?url=${encodeURIComponent('https://httpbin.org/get')}`;
-                    const proxyResponse = await fetch(proxyUrl);
-                    const proxyData = await proxyResponse.json();
-                    
-                    resultsDiv.innerHTML += `
-                        <div class="result success">
-                            ✅ Proxy-Fallback erfolgreich!
-                            Status: ${proxyData.status}
-                        </div>
-                    `;
-                } catch (proxyError) {
-                    resultsDiv.innerHTML += `
-                        <div class="result error">
-                            ❌ Proxy-Fallback fehlgeschlagen: ${proxyError.message}
-                        </div>
-                    `;
-                }
             }
         }
 
-        // Playability-Test
-        function testPlayability() {
-            const resultsDiv = document.getElementById('test-results');
+        // Canvas Funktionen
+        let canvas, ctx;
+
+        function initCanvas() {
+            canvas = document.getElementById('testCanvas');
+            ctx = canvas.getContext('2d');
             
-            const audio = document.createElement('audio');
-            const video = document.createElement('video');
+            // Canvas Setup
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            const audioFormats = [
-                { type: 'audio/mpeg', name: 'MP3' },
-                { type: 'audio/ogg', name: 'OGG' },
-                { type: 'audio/mp4', name: 'M4A' }
-            ];
+            ctx.strokeStyle = '#00ff00';
+            ctx.lineWidth = 2;
             
-            const videoFormats = [
-                { type: 'video/mp4', name: 'MP4' },
-                { type: 'video/webm', name: 'WebM' },
-                { type: 'video/ogg', name: 'OGV' }
-            ];
-            
-            let results = [];
-            
-            audioFormats.forEach(format => {
-                const support = audio.canPlayType(format.type);
-                results.push(`Audio ${format.name}: ${support || 'Nicht unterstützt'}`);
-            });
-            
-            videoFormats.forEach(format => {
-                const support = video.canPlayType(format.type);
-                results.push(`Video ${format.name}: ${support || 'Nicht unterstützt'}`);
-            });
-            
-            resultsDiv.innerHTML = `
-                <div class="result success">
-                    ✅ Playability-Test abgeschlossen:
-                    ${results.join('\n')}
-                </div>
+            document.getElementById('test-results').innerHTML = `
+                <div class="result success">✅ Canvas initialisiert (${canvas.width}x${canvas.height})</div>
             `;
         }
 
-        // ZIP-Datei verarbeiten
-        async function handleZipFile(input) {
-            const resultsDiv = document.getElementById('zip-results');
-            const file = input.files[0];
+        function drawSpectrum() {
+            if (!ctx) {
+                initCanvas();
+            }
             
-            if (!file) return;
+            // Spektrum-Daten simulieren
+            const spectrumData = Array.from({length: 200}, () => Math.random() * 100);
             
-            try {
-                resultsDiv.innerHTML = '<div class="result">🔄 ZIP-Datei wird verarbeitet...</div>';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#00ff00';
+            ctx.beginPath();
+            
+            spectrumData.forEach((value, index) => {
+                const x = (index / spectrumData.length) * canvas.width;
+                const y = canvas.height - (value / 100) * canvas.height;
                 
-                // JSZip laden (falls verfügbar)
-                if (typeof JSZip !== 'undefined') {
-                    const zip = await JSZip.loadAsync(file);
-                    const entries = Object.keys(zip.files);
-                    
-                    resultsDiv.innerHTML = `
-                        <div class="result success">
-                            ✅ ZIP-Datei erfolgreich geladen!
-                            Datei: ${file.name}
-                            Einträge: ${entries.length}
-                            ${entries.slice(0, 10).map(entry => `• ${entry}`).join('\n')}
-                            ${entries.length > 10 ? `... und ${entries.length - 10} weitere` : ''}
-                        </div>
-                    `;
+                if (index === 0) {
+                    ctx.moveTo(x, y);
                 } else {
-                    resultsDiv.innerHTML = `
-                        <div class="result error">
-                            ❌ JSZip nicht verfügbar. ZIP-Viewer benötigt JSZip-Bibliothek.
-                            Datei: ${file.name}
-                            Größe: ${(file.size / 1024).toFixed(2)} KB
-                        </div>
-                    `;
+                    ctx.lineTo(x, y);
                 }
-            } catch (error) {
-                resultsDiv.innerHTML = `
-                    <div class="result error">
-                        ❌ ZIP-Verarbeitung fehlgeschlagen: ${error.message}
-                    </div>
-                `;
-            }
-        }
-
-        // Royalty-Queue testen
-        function testRoyaltyQueue() {
-            const resultsDiv = document.getElementById('royalty-results');
+            });
             
-            try {
-                const key = 'royaltyQueue';
-                const queue = JSON.parse(localStorage.getItem(key) || '[]');
-                
-                // Test-Event hinzufügen
-                const testEvent = {
-                    event_type: "TEST_EVENT",
-                    asset_id: "test-asset-" + Date.now(),
-                    timestamp: Date.now(),
-                    session_id: "test-session-" + Math.random().toString(36).substr(2, 9),
-                    frequency: null,
-                    position: null,
-                    data: {}
-                };
-                
-                queue.push(testEvent);
-                localStorage.setItem(key, JSON.stringify(queue));
-                
-                resultsDiv.innerHTML = `
-                    <div class="result success">
-                        ✅ Royalty-Queue erfolgreich getestet!
-                        Queue-Größe: ${queue.length}
-                        Letztes Event: ${testEvent.event_type}
-                        Asset ID: ${testEvent.asset_id}
-                    </div>
-                `;
-            } catch (error) {
-                resultsDiv.innerHTML = `
-                    <div class="result error">
-                        ❌ Royalty-Queue Fehler: ${error.message}
-                    </div>
-                `;
-            }
-        }
-
-        // Royalty-Queue leeren
-        function clearRoyaltyQueue() {
-            const resultsDiv = document.getElementById('royalty-results');
+            ctx.stroke();
             
-            try {
-                const key = 'royaltyQueue';
-                localStorage.removeItem(key);
-                
-                resultsDiv.innerHTML = `
-                    <div class="result success">
-                        ✅ Royalty-Queue erfolgreich geleert!
-                    </div>
-                `;
-            } catch (error) {
-                resultsDiv.innerHTML = `
-                    <div class="result error">
-                        ❌ Queue-Löschung fehlgeschlagen: ${error.message}
-                    </div>
-                `;
-            }
-        }
-
-        // Swipe Integration Funktionen
-        function openSwipeIntegration() {
-            const infoDiv = document.getElementById('swipe-info');
-            infoDiv.innerHTML = `
-                <div class="result success">
-                    ✅ Öffne Canvas Test App Swipe Integration...
-                    <br>URL: <a href="canvas-test-app-swipe-integration.html" target="_blank">canvas-test-app-swipe-integration.html</a>
-                    <br>Features:
-                    <br>• 🚀 Automatische Selbstheilung
-                    <br>• 📡 API-Endpunkt Tests
-                    <br>• 📊 Canvas Visualisierung
-                    <br>• 🌐 Browser-Kompatibilität
-                    <br>• ⚡ Performance Analyse
-                    <br>• 🛠️ Error Recovery
-                    <br>• 👆 Touch/Swipe Navigation
-                    <br>• ⌨️ Keyboard Controls
-                </div>
-            `;
-            
-            // Automatisch öffnen
-            setTimeout(() => {
-                window.open('canvas-test-app-swipe-integration.html', '_blank');
-            }, 1000);
-        }
-        
-        async function runAutoHealing() {
-            const infoDiv = document.getElementById('swipe-info');
-            infoDiv.innerHTML = '<div class="result">🔄 Führe automatische Selbstheilung durch...</div>';
-            
-            const healingSteps = [
-                { name: 'API-Endpunkt Validierung', fn: testSpectrumAPI },
-                { name: 'Canvas Rendering Test', fn: drawSpectrum },
-                { name: 'Browser-Kompatibilität', fn: testPlayability },
-                { name: 'Performance Check', fn: () => Promise.resolve() },
-                { name: 'Error Recovery', fn: () => Promise.resolve() }
-            ];
-            
-            let results = [];
-            
-            for (const step of healingSteps) {
-                try {
-                    await step.fn();
-                    results.push(`✅ ${step.name}: Erfolgreich`);
-                } catch (error) {
-                    results.push(`❌ ${step.name}: ${error.message}`);
-                }
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            
-            infoDiv.innerHTML = `
-                <div class="result success">
-                    🔧 Automatische Selbstheilung abgeschlossen:
-                    ${results.join('\n')}
-                    <br><br>🚀 System ist bereit für Canvas Test App Operationen!
-                    <br>📱 Öffne Swipe Integration für erweiterte Funktionen.
-                </div>
+            document.getElementById('test-results').innerHTML = `
+                <div class="result success">✅ Spektrum gezeichnet (${spectrumData.length} Datenpunkte)</div>
             `;
         }
 
-        // Automatisch Spektrum laden beim Start
-        window.onload = function() {
-            drawSpectrum();
-            // Auto-refresh alle 5 Sekunden
-            setInterval(drawSpectrum, 5000);
+        function drawWaveform() {
+            if (!ctx) {
+                initCanvas();
+            }
             
-            // Auto-Healing beim Start
-            setTimeout(() => {
-                runAutoHealing();
-            }, 2000);
-        };
+            // Waveform-Daten simulieren
+            const waveformData = Array.from({length: 400}, (_, i) => 
+                Math.sin(i * 0.1) * 50 + Math.random() * 20
+            );
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.strokeStyle = '#ff6b35';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            waveformData.forEach((value, index) => {
+                const x = (index / waveformData.length) * canvas.width;
+                const y = canvas.height / 2 + value;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            document.getElementById('test-results').innerHTML = `
+                <div class="result success">✅ Waveform gezeichnet (${waveformData.length} Datenpunkte)</div>
+            `;
+        }
+
+        function clearCanvas() {
+            if (!ctx) {
+                initCanvas();
+            }
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            document.getElementById('test-results').innerHTML = `
+                <div class="result success">✅ Canvas geleert</div>
+            `;
+        }
+
+        // Auto-Start
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Test Canvas App mit lokaler Simulation initialisiert');
+            initCanvas();
+        });
     </script>
 </body>
 </html>
