@@ -1,0 +1,109 @@
+{
+  "name": "OAMTM Hub",
+  "version": "1.0.0",
+  "description": "OnAirMulTiMedia Hub - Modular OS Integration Platform",
+  "scopes": [
+    "camera",
+    "microphone", 
+    "contacts",
+    "calendar",
+    "notifications",
+    "location",
+    "storage",
+    "share",
+    "telephony",
+    "sms"
+  ],
+  "purpose": {
+    "camera": "QR/Video scanning, document capture, video calls",
+    "microphone": "Voice commands, audio recording, communication",
+    "contacts": "Meeting autofill, communication integration",
+    "calendar": "Event scheduling, meeting coordination",
+    "notifications": "System alerts, mission updates, health monitoring",
+    "location": "Mission tracking, navigation, geofencing",
+    "storage": "Data persistence, offline capabilities, backup",
+    "share": "Content sharing, collaboration, export",
+    "telephony": "Voice calls, emergency communication",
+    "sms": "Text messaging, alerts, notifications"
+  },
+  "retention": {
+    "logs": "30d",
+    "telemetry": "90d",
+    "audit": "1y",
+    "user_data": "until_deleted"
+  },
+  "export": {
+    "user": "jsonl+zip",
+    "audit": "pdf+json",
+    "telemetry": "csv+json"
+  },
+  "privacy": {
+    "gdpr_compliant": true,
+    "data_minimization": true,
+    "purpose_limitation": true,
+    "storage_limitation": true,
+    "transparency": true,
+    "user_control": true
+  },
+  "security": {
+    "encryption": "AES-256-GCM",
+    "authentication": "Ed25519",
+    "integrity": "SHA-256",
+    "csp": "strict",
+    "sandbox": true
+  },
+  "platforms": {
+    "web": {
+      "pwa": true,
+      "service_worker": true,
+      "manifest": true,
+      "offline": true
+    },
+    "android": {
+      "capacitor": true,
+      "intents": ["tel", "sms", "share", "camera"],
+      "permissions": ["CAMERA", "READ_CONTACTS", "SEND_SMS", "CALL_PHONE"],
+      "launcher": "optional"
+    },
+    "ios": {
+      "capacitor": true,
+      "url_schemes": ["oamtm", "tel", "sms"],
+      "siri_shortcuts": true,
+      "app_clips": true,
+      "permissions": ["NSCameraUsageDescription", "NSContactsUsageDescription"]
+    },
+    "desktop": {
+      "electron": true,
+      "tauri": true,
+      "auto_updater": true,
+      "code_signing": true
+    }
+  },
+  "integration_modes": {
+    "system_option": {
+      "description": "1:1 OS replacement as default launcher/hub",
+      "android": "Default Launcher + Intent Handler",
+      "ios": "Homescreen PWA + Siri Shortcuts",
+      "audit_level": "full"
+    },
+    "customizable_shell": {
+      "description": "White-label theming and branding",
+      "theming": "CSS Variables + Design Tokens",
+      "branding": "Manifest + Icons + Splash",
+      "audit_level": "medium"
+    },
+    "component_integration": {
+      "description": "Individual component adoption",
+      "isolation": "ESM + iframe + postMessage",
+      "capability_claims": "JSON manifest",
+      "audit_level": "basic"
+    }
+  },
+  "audit": {
+    "enabled": true,
+    "trail": "jsonl",
+    "export": "user_controlled",
+    "transparency": "public_capabilities",
+    "compliance": ["GDPR", "CCPA", "ISO27001"]
+  }
+}
