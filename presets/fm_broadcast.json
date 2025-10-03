@@ -1,0 +1,21 @@
+{
+  "name": "FM Stereo Broadcast",
+  "frequency": 101400000,
+  "modulation": "fm",
+  "bandwidth": 200000,
+  "gain": 35,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "stereo_encoder",
+    "rds_encoder",
+    "fm_modulator"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true,
+    "hash_iq": true,
+    "generate_report": true
+  }
+}
+
+

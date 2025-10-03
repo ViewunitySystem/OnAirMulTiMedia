@@ -1,0 +1,20 @@
+{
+  "name": "DVB-T Television",
+  "frequency": 474000000,
+  "modulation": "ofdm",
+  "bandwidth": 8000000,
+  "gain": 45,
+  "sample_rate": 10000000,
+  "dsp_chain": [
+    "mpeg_encoder",
+    "ofdm_modulator"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true,
+    "hash_iq": true,
+    "generate_report": true
+  }
+}
+
+

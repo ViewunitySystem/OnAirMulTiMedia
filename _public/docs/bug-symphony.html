@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎶 OAMTM Bug-Symphony Klangspiel</title>
+  <style>
+    :root {
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #16213e;
+      --bg-tertiary: #0f3460;
+      --accent-primary: #e94560;
+      --accent-secondary: #533483;
+      --accent-tertiary: #f5b700;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+      --success: #00ff88;
+      --warning: #ffaa00;
+      --error: #ff4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, var(--accent-primary), var(--accent-tertiary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .controls-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .control-group {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .control-group h3 {
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0.3rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.bug {
+      background: linear-gradient(45deg, var(--error), #cc0000);
+    }
+
+    .btn.fix {
+      background: linear-gradient(45deg, var(--success), #00cc66);
+    }
+
+    .btn.recovery {
+      background: linear-gradient(45deg, var(--warning), #cc8800);
+    }
+
+    .btn.jam {
+      background: linear-gradient(45deg, var(--accent-tertiary), var(--accent-secondary));
+    }
+
+    .visualization-panel {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .visualization-panel h3 {
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+    }
+
+    #canvas {
+      width: 100%;
+      height: 300px;
+      background: #000;
+      border-radius: 8px;
+      border: 2px solid var(--bg-secondary);
+    }
+
+    .metrics-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .metric-card {
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--accent-primary);
+    }
+
+    .metric-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 0.3rem;
+    }
+
+    .log-panel {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .log-panel h3 {
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+    }
+
+    #log-container {
+      background: #000;
+      border-radius: 8px;
+      padding: 1rem;
+      height: 200px;
+      overflow-y: auto;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.9rem;
+    }
+
+    .log-entry {
+      margin-bottom: 0.3rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .log-entry.bug {
+      background: rgba(255, 68, 68, 0.1);
+      border-left: 3px solid var(--error);
+    }
+
+    .log-entry.fix {
+      background: rgba(0, 255, 136, 0.1);
+      border-left: 3px solid var(--success);
+    }
+
+    .log-entry.recovery {
+      background: rgba(255, 170, 0, 0.1);
+      border-left: 3px solid var(--warning);
+    }
+
+    .log-entry.info {
+      background: rgba(233, 69, 96, 0.1);
+      border-left: 3px solid var(--accent-primary);
+    }
+
+    .export-panel {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .export-panel h3 {
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+    }
+
+    .export-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .export-btn {
+      background: var(--accent-secondary);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .export-btn:hover {
+      background: var(--accent-primary);
+      transform: translateY(-2px);
+    }
+
+    .guitar-fretboard {
+      background: #8B4513;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    .fretboard-strings {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .string {
+      width: 2px;
+      height: 100px;
+      background: #C0C0C0;
+      position: relative;
+    }
+
+    .fret {
+      position: absolute;
+      width: 100%;
+      height: 1px;
+      background: #666;
+      top: 50%;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    .pulse {
+      animation: pulse 0.5s ease-in-out;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .controls-panel {
+        grid-template-columns: 1fr;
+      }
+      
+      .metrics-panel {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎶 Bug-Symphony Klangspiel</h1>
+    <p>OAMTM musikalische Entwicklungsumgebung - Debugging wird zur Komposition</p>
+  </div>
+
+  <div class="main-container">
+    <!-- Controls Panel -->
+    <div class="controls-panel">
+      <div class="control-group">
+        <h3>🎸 Gitarren-Sounds</h3>
+        <button class="btn bug" onclick="playBug()">Bug (Moll)</button>
+        <button class="btn fix" onclick="playFix()">Fix (Dur)</button>
+        <button class="btn recovery" onclick="playRecovery()">Recovery (Sept)</button>
+        <button class="btn jam" onclick="playJam()">Jam Session</button>
+      </div>
+
+      <div class="control-group">
+        <h3>🎹 Synthesizer</h3>
+        <button class="btn" onclick="playSynth('sine')">Sine Wave</button>
+        <button class="btn" onclick="playSynth('sawtooth')">Sawtooth</button>
+        <button class="btn" onclick="playSynth('square')">Square Wave</button>
+        <button class="btn" onclick="playSynth('triangle')">Triangle</button>
+      </div>
+
+      <div class="control-group">
+        <h3>🎼 Komposition</h3>
+        <button class="btn" onclick="generateBugSymphony()">Bug-Symphonie</button>
+        <button class="btn" onclick="playRandomMelody()">Zufalls-Melodie</button>
+        <button class="btn" onclick="startLiveMode()">Live-Modus</button>
+        <button class="btn" onclick="exportMIDI()">MIDI Export</button>
+      </div>
+    </div>
+
+    <!-- Metrics Panel -->
+    <div class="metrics-panel">
+      <div class="metric-card">
+        <div class="metric-value" id="bugCount">0</div>
+        <div class="metric-label">Bugs gespielt</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="fixCount">0</div>
+        <div class="metric-label">Fixes gespielt</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="recoveryCount">0</div>
+        <div class="metric-label">Recoveries</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="harmonyScore">0%</div>
+        <div class="metric-label">Harmonie-Score</div>
+      </div>
+    </div>
+
+    <!-- Visualization Panel -->
+    <div class="visualization-panel">
+      <h3>🎵 Live-Spektrum & Gitarren-Fretboard</h3>
+      <canvas id="canvas"></canvas>
+      <div class="guitar-fretboard">
+        <div class="fretboard-strings">
+          <div class="string" id="string1"></div>
+          <div class="string" id="string2"></div>
+          <div class="string" id="string3"></div>
+          <div class="string" id="string4"></div>
+          <div class="string" id="string5"></div>
+          <div class="string" id="string6"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Log Panel -->
+    <div class="log-panel">
+      <h3>📜 Kompositions-Log</h3>
+      <div id="log-container"></div>
+    </div>
+
+    <!-- Export Panel -->
+    <div class="export-panel">
+      <h3>💾 Export & Partitur</h3>
+      <div class="export-buttons">
+        <button class="export-btn" onclick="exportAudio()">Audio Export (WAV)</button>
+        <button class="export-btn" onclick="exportMIDI()">MIDI Export</button>
+        <button class="export-btn" onclick="exportScore()">Partitur (PDF)</button>
+        <button class="export-btn" onclick="exportAudit()">Audit-Score</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    // Audio Context und Web Audio API Setup
+    let audioContext;
+    let analyser;
+    let gainNode;
+    let isInitialized = false;
+
+    // Metriken
+    let bugCount = 0;
+    let fixCount = 0;
+    let recoveryCount = 0;
+    let harmonyScore = 0;
+
+    // Canvas und Visualisierung
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = 300;
+
+    // Log-Funktionen
+    function log(message, type = 'info') {
+      const logContainer = document.getElementById('log-container');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logContainer.prepend(entry);
+      
+      // Limit log entries
+      if (logContainer.children.length > 50) {
+        logContainer.removeChild(logContainer.lastChild);
+      }
+    }
+
+    // Audio-Initialisierung
+    async function initializeAudio() {
+      if (isInitialized) return;
+      
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        gainNode = audioContext.createGain();
+        
+        analyser.fftSize = 2048;
+        gainNode.connect(analyser);
+        analyser.connect(audioContext.destination);
+        
+        isInitialized = true;
+        log('Audio-Kontext initialisiert', 'info');
+        startVisualization();
+      } catch (error) {
+        log(`Audio-Fehler: ${error.message}`, 'bug');
+      }
+    }
+
+    // Ton-Generierung
+    function createOscillator(frequency, type = 'sine', duration = 0.5, volume = 0.3) {
+      if (!audioContext) return;
+      
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      
+      oscillator.type = type;
+      oscillator.frequency.value = frequency;
+      
+      gain.gain.setValueAtTime(0, audioContext.currentTime);
+      gain.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+      
+      oscillator.connect(gain);
+      gain.connect(gainNode);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration);
+      
+      return oscillator;
+    }
+
+    // Gitarren-Akkorde
+    function playBug() {
+      // A-Moll (A-C-E) - dissonant
+      const frequencies = [220, 261.63, 329.63]; // A3, C4, E4
+      frequencies.forEach((freq, index) => {
+        setTimeout(() => {
+          createOscillator(freq, 'sawtooth', 1.0, 0.2);
+        }, index * 100);
+      });
+      
+      bugCount++;
+      updateMetrics();
+      log(`Bug gespielt: A-Moll (${frequencies.join('Hz, ')}Hz)`, 'bug');
+      animateGuitarStrings();
+    }
+
+    function playFix() {
+      // C-Dur (C-E-G) - harmonisch
+      const frequencies = [261.63, 329.63, 392.00]; // C4, E4, G4
+      frequencies.forEach((freq, index) => {
+        setTimeout(() => {
+          createOscillator(freq, 'triangle', 1.0, 0.25);
+        }, index * 50);
+      });
+      
+      fixCount++;
+      updateMetrics();
+      log(`Fix gespielt: C-Dur (${frequencies.join('Hz, ')}Hz)`, 'fix');
+      animateGuitarStrings();
+    }
+
+    function playRecovery() {
+      // G7 (G-B-D-F) - Septakkord
+      const frequencies = [392.00, 493.88, 587.33, 698.46]; // G4, B4, D5, F5
+      frequencies.forEach((freq, index) => {
+        setTimeout(() => {
+          createOscillator(freq, 'square', 1.5, 0.2);
+        }, index * 75);
+      });
+      
+      recoveryCount++;
+      updateMetrics();
+      log(`Recovery gespielt: G7 (${frequencies.join('Hz, ')}Hz)`, 'recovery');
+      animateGuitarStrings();
+    }
+
+    function playJam() {
+      // Komplexe Jam-Session
+      const chordProgression = [
+        [261.63, 329.63, 392.00], // C-Dur
+        [293.66, 369.99, 440.00], // D-Moll
+        [329.63, 415.30, 493.88], // E-Moll
+        [349.23, 440.00, 523.25]  // F-Dur
+      ];
+      
+      chordProgression.forEach((chord, chordIndex) => {
+        setTimeout(() => {
+          chord.forEach((freq, noteIndex) => {
+            setTimeout(() => {
+              createOscillator(freq, 'sine', 0.8, 0.15);
+            }, noteIndex * 100);
+          });
+        }, chordIndex * 1000);
+      });
+      
+      log('Jam-Session gestartet: C-Dm-Em-F Progression', 'info');
+    }
+
+    function playSynth(type) {
+      const frequencies = [220, 330, 440, 550]; // A3, E4, A4, C#5
+      frequencies.forEach((freq, index) => {
+        setTimeout(() => {
+          createOscillator(freq, type, 1.0, 0.2);
+        }, index * 150);
+      });
+      
+      log(`Synthesizer: ${type} Wave gespielt`, 'info');
+    }
+
+    // Kompositions-Funktionen
+    function generateBugSymphony() {
+      log('Generiere Bug-Symphonie...', 'info');
+      
+      const symphony = [
+        { type: 'bug', delay: 0 },
+        { type: 'fix', delay: 2000 },
+        { type: 'recovery', delay: 4000 },
+        { type: 'jam', delay: 6000 }
+      ];
+      
+      symphony.forEach(note => {
+        setTimeout(() => {
+          if (note.type === 'bug') playBug();
+          else if (note.type === 'fix') playFix();
+          else if (note.type === 'recovery') playRecovery();
+          else if (note.type === 'jam') playJam();
+        }, note.delay);
+      });
+    }
+
+    function playRandomMelody() {
+      const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+      const melody = [];
+      
+      for (let i = 0; i < 8; i++) {
+        melody.push({
+          freq: notes[Math.floor(Math.random() * notes.length)],
+          delay: i * 300
+        });
+      }
+      
+      melody.forEach(note => {
+        setTimeout(() => {
+          createOscillator(note.freq, 'sine', 0.5, 0.2);
+        }, note.delay);
+      });
+      
+      log('Zufalls-Melodie gespielt', 'info');
+    }
+
+    function startLiveMode() {
+      log('Live-Modus aktiviert - Keyboard-Steuerung', 'info');
+      
+      document.addEventListener('keydown', (e) => {
+        const keyMap = {
+          '1': () => playBug(),
+          '2': () => playFix(),
+          '3': () => playRecovery(),
+          '4': () => playJam(),
+          ' ': () => playRandomMelody()
+        };
+        
+        if (keyMap[e.key]) {
+          e.preventDefault();
+          keyMap[e.key]();
+        }
+      });
+    }
+
+    // Visualisierung
+    function startVisualization() {
+      if (!analyser) return;
+      
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      function draw() {
+        requestAnimationFrame(draw);
+        
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Canvas löschen
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Spektrum zeichnen
+        const barWidth = (canvas.width / bufferLength) * 2.5;
+        let x = 0;
+        
+        for (let i = 0; i < bufferLength; i++) {
+          const barHeight = (dataArray[i] / 255) * canvas.height;
+          
+          // Farbverlauf basierend auf Frequenz
+          const hue = (i / bufferLength) * 360;
+          ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+          ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+          
+          x += barWidth + 1;
+        }
+      }
+      
+      draw();
+    }
+
+    // Gitarren-Animation
+    function animateGuitarStrings() {
+      const strings = document.querySelectorAll('.string');
+      strings.forEach((string, index) => {
+        string.classList.add('pulse');
+        setTimeout(() => {
+          string.classList.remove('pulse');
+        }, 500);
+      });
+    }
+
+    // Metriken-Update
+    function updateMetrics() {
+      document.getElementById('bugCount').textContent = bugCount;
+      document.getElementById('fixCount').textContent = fixCount;
+      document.getElementById('recoveryCount').textContent = recoveryCount;
+      
+      // Harmonie-Score berechnen
+      const total = bugCount + fixCount + recoveryCount;
+      if (total > 0) {
+        harmonyScore = Math.round(((fixCount + recoveryCount) / total) * 100);
+        document.getElementById('harmonyScore').textContent = harmonyScore + '%';
+      }
+    }
+
+    // Export-Funktionen
+    function exportAudio() {
+      log('Audio-Export gestartet...', 'info');
+      // Hier würde die Audio-Aufnahme und WAV-Export implementiert
+      alert('Audio-Export: WAV-Datei wird generiert...');
+    }
+
+    function exportMIDI() {
+      log('MIDI-Export gestartet...', 'info');
+      // Hier würde der MIDI-Export implementiert
+      alert('MIDI-Export: MIDI-Datei wird generiert...');
+    }
+
+    function exportScore() {
+      log('Partitur-Export gestartet...', 'info');
+      // Hier würde die PDF-Partitur generiert
+      alert('Partitur-Export: PDF wird generiert...');
+    }
+
+    function exportAudit() {
+      log('Audit-Score Export gestartet...', 'info');
+      
+      const auditData = {
+        timestamp: new Date().toISOString(),
+        session: {
+          bugs: bugCount,
+          fixes: fixCount,
+          recoveries: recoveryCount,
+          harmonyScore: harmonyScore
+        },
+        composition: {
+          totalNotes: bugCount + fixCount + recoveryCount,
+          averageHarmony: harmonyScore,
+          complexity: 'medium'
+        }
+      };
+      
+      const blob = new Blob([JSON.stringify(auditData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bug-symphony-audit.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      log('Audit-Score exportiert', 'info');
+    }
+
+    // Initialisierung
+    document.addEventListener('DOMContentLoaded', () => {
+      initializeAudio();
+      log('Bug-Symphony Klangspiel initialisiert', 'info');
+      log('Verwende Keyboard: 1=Bug, 2=Fix, 3=Recovery, 4=Jam, Leertaste=Melodie', 'info');
+    });
+
+    // Canvas-Resize
+    window.addEventListener('resize', () => {
+      canvas.width = canvas.offsetWidth;
+    });
+  </script>
+</body>
+</html>

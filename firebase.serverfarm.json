@@ -1,0 +1,83 @@
+{
+  "hosting": {
+    "public": "_public",
+    "ignore": [
+      "**/.*",
+      "**/node_modules/**",
+      "firebase*.json",
+      "**/backup/**",
+      "**/logs/**"
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "/assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "*.html",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=300"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          }
+        ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/modules/rf/loopback-node",
+        "destination": "/modules/rf/loopback-node/ui/security-status.html"
+      },
+      {
+        "source": "/info",
+        "destination": "/info.html"
+      },
+      {
+        "source": "/blueprints",
+        "destination": "/blueprints.html"
+      },
+      {
+        "source": "/regulatory",
+        "destination": "/regulatory.html"
+      },
+      {
+        "source": "/manifest",
+        "destination": "/manifest.html"
+      },
+      {
+        "source": "/overlay",
+        "destination": "/overlay.html"
+      },
+      {
+        "source": "/client",
+        "destination": "/client.html"
+      },
+      {
+        "source": "/audit",
+        "destination": "/audit-export.html"
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "/index.html",
+        "type": 200
+      }
+    ]
+  }
+}

@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM Tool Map - OS Integration Catalog</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin: 0.5rem 0 0 0;
+        }
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        .platform-selector {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .platform-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #95a5a6;
+            background: white;
+            color: #95a5a6;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .platform-btn:hover, .platform-btn.active {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border-left: 5px solid #3498db;
+        }
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .tool-card.available {
+            border-left-color: #27ae60;
+        }
+        .tool-card.unavailable {
+            border-left-color: #e74c3c;
+            opacity: 0.7;
+        }
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .tool-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+        .tool-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .tool-status {
+            margin-left: auto;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .tool-status.available {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        .tool-status.unavailable {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+        .tool-description {
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .tool-platforms {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .platform-tag {
+            padding: 0.25rem 0.5rem;
+            background: #ecf0f1;
+            color: #34495e;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .platform-tag.supported {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        .platform-tag.unsupported {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+        .integration-modes {
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .integration-modes h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        .mode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .mode-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .mode-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .mode-description {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 2rem auto;
+            position: relative;
+        }
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 25px;
+            font-size: 1rem;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #95a5a6;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #7f8c8d;
+        }
+        .error {
+            background: #fadbd8;
+            color: #e74c3c;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 OAMTM Tool Map</h1>
+            <p>Live OS Integration Catalog - Feature Detection & Capability Matrix</p>
+        </div>
+
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search tools and capabilities...">
+        </div>
+
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTools">0</div>
+                <div class="stat-label">Total Tools</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="availableTools">0</div>
+                <div class="stat-label">Available</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="unavailableTools">0</div>
+                <div class="stat-label">Unavailable</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="platforms">0</div>
+                <div class="stat-label">Platforms</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="filter-btn active" data-filter="all">All Tools</button>
+            <button class="filter-btn" data-filter="available">Available</button>
+            <button class="filter-btn" data-filter="unavailable">Unavailable</button>
+            <button class="filter-btn" data-filter="communication">Communication</button>
+            <button class="filter-btn" data-filter="media">Media</button>
+            <button class="filter-btn" data-filter="data">Data</button>
+            <button class="filter-btn" data-filter="system">System</button>
+        </div>
+
+        <div class="platform-selector">
+            <button class="platform-btn active" data-platform="all">All Platforms</button>
+            <button class="platform-btn" data-platform="web">Web/PWA</button>
+            <button class="platform-btn" data-platform="android">Android</button>
+            <button class="platform-btn" data-platform="ios">iOS</button>
+            <button class="platform-btn" data-platform="desktop">Desktop</button>
+        </div>
+
+        <div class="loading" id="loading">Detecting capabilities...</div>
+        <div class="error" id="error" style="display: none;"></div>
+        <div class="tool-grid" id="toolGrid" style="display: none;"></div>
+
+        <div class="integration-modes">
+            <h3>🚀 Integration Modes</h3>
+            <div class="mode-grid">
+                <div class="mode-card">
+                    <div class="mode-title">1:1 System Option</div>
+                    <div class="mode-description">
+                        Complete OS replacement as default launcher/hub. 
+                        Android: Default Launcher + Intent Handler. 
+                        iOS: Homescreen PWA + Siri Shortcuts.
+                    </div>
+                </div>
+                <div class="mode-card">
+                    <div class="mode-title">Customizable Shell</div>
+                    <div class="mode-description">
+                        White-label theming and branding without code fork. 
+                        Design Tokens + CSS Variables + Manifest customization.
+                    </div>
+                </div>
+                <div class="mode-card">
+                    <div class="mode-title">Component Integration</div>
+                    <div class="mode-description">
+                        Individual component adoption via ESM + iframe + postMessage. 
+                        Capability Claims via JSON manifest.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { FeatureDetector } from '../scripts/feature-detection.mjs';
+
+        class ToolMap {
+            constructor() {
+                this.detector = null;
+                this.tools = [];
+                this.filteredTools = [];
+                this.currentFilter = 'all';
+                this.currentPlatform = 'all';
+                this.searchTerm = '';
+                
+                this.initialize();
+            }
+
+            async initialize() {
+                try {
+                    this.showLoading();
+                    this.detector = new FeatureDetector();
+                    await this.detector.initialize();
+                    this.tools = this.generateToolList();
+                    this.setupEventListeners();
+                    this.render();
+                    this.hideLoading();
+                } catch (error) {
+                    this.showError('Failed to detect capabilities: ' + error.message);
+                }
+            }
+
+            generateToolList() {
+                const report = this.detector.generateReport();
+                const tools = [];
+
+                // Communication Tools
+                Object.entries(report.matrix.communication || {}).forEach(([tool, available]) => {
+                    tools.push({
+                        id: `comm-${tool}`,
+                        category: 'communication',
+                        name: this.formatToolName(tool),
+                        description: this.getToolDescription(tool, 'communication'),
+                        icon: this.getToolIcon(tool, 'communication'),
+                        available: available,
+                        platforms: this.getToolPlatforms(tool, 'communication'),
+                        capabilities: this.getToolCapabilities(tool, 'communication')
+                    });
+                });
+
+                // Media Tools
+                Object.entries(report.matrix.media || {}).forEach(([tool, available]) => {
+                    tools.push({
+                        id: `media-${tool}`,
+                        category: 'media',
+                        name: this.formatToolName(tool),
+                        description: this.getToolDescription(tool, 'media'),
+                        icon: this.getToolIcon(tool, 'media'),
+                        available: available,
+                        platforms: this.getToolPlatforms(tool, 'media'),
+                        capabilities: this.getToolCapabilities(tool, 'media')
+                    });
+                });
+
+                // Data Tools
+                Object.entries(report.matrix.data || {}).forEach(([tool, available]) => {
+                    tools.push({
+                        id: `data-${tool}`,
+                        category: 'data',
+                        name: this.formatToolName(tool),
+                        description: this.getToolDescription(tool, 'data'),
+                        icon: this.getToolIcon(tool, 'data'),
+                        available: available,
+                        platforms: this.getToolPlatforms(tool, 'data'),
+                        capabilities: this.getToolCapabilities(tool, 'data')
+                    });
+                });
+
+                // System Tools
+                Object.entries(report.matrix.system || {}).forEach(([tool, available]) => {
+                    tools.push({
+                        id: `sys-${tool}`,
+                        category: 'system',
+                        name: this.formatToolName(tool),
+                        description: this.getToolDescription(tool, 'system'),
+                        icon: this.getToolIcon(tool, 'system'),
+                        available: available,
+                        platforms: this.getToolPlatforms(tool, 'system'),
+                        capabilities: this.getToolCapabilities(tool, 'system')
+                    });
+                });
+
+                return tools;
+            }
+
+            formatToolName(tool) {
+                return tool.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
+            }
+
+            getToolDescription(tool, category) {
+                const descriptions = {
+                    communication: {
+                        telephony: 'Voice calls and telephony integration',
+                        sms: 'Text messaging and SMS functionality',
+                        email: 'Email composition and sending',
+                        messaging: 'Real-time messaging and chat',
+                        videoCall: 'Video calling and conferencing',
+                        voiceCall: 'Voice-only calling'
+                    },
+                    media: {
+                        camera: 'Camera access and photo/video capture',
+                        microphone: 'Microphone access and audio recording',
+                        screenRecord: 'Screen recording and capture',
+                        qrScan: 'QR code scanning and barcode detection',
+                        fileAccess: 'File system access and management',
+                        gallery: 'Photo gallery and media library'
+                    },
+                    data: {
+                        contacts: 'Contact management and access',
+                        calendar: 'Calendar integration and event management',
+                        location: 'GPS and location services',
+                        storage: 'Data storage and persistence',
+                        sync: 'Data synchronization across devices',
+                        backup: 'Data backup and restoration'
+                    },
+                    system: {
+                        notifications: 'Push notifications and alerts',
+                        background: 'Background processing and services',
+                        offline: 'Offline functionality and caching',
+                        install: 'App installation and updates',
+                        updates: 'Automatic updates and maintenance',
+                        launcher: 'System launcher and app management'
+                    }
+                };
+                return descriptions[category]?.[tool] || 'OS integration capability';
+            }
+
+            getToolIcon(tool, category) {
+                const icons = {
+                    communication: {
+                        telephony: '📞',
+                        sms: '💬',
+                        email: '📧',
+                        messaging: '💭',
+                        videoCall: '📹',
+                        voiceCall: '🎤'
+                    },
+                    media: {
+                        camera: '📷',
+                        microphone: '🎙️',
+                        screenRecord: '🖥️',
+                        qrScan: '📱',
+                        fileAccess: '📁',
+                        gallery: '🖼️'
+                    },
+                    data: {
+                        contacts: '👥',
+                        calendar: '📅',
+                        location: '📍',
+                        storage: '💾',
+                        sync: '🔄',
+                        backup: '💿'
+                    },
+                    system: {
+                        notifications: '🔔',
+                        background: '⚙️',
+                        offline: '📡',
+                        install: '⬇️',
+                        updates: '🔄',
+                        launcher: '🚀'
+                    }
+                };
+                return icons[category]?.[tool] || '🔧';
+            }
+
+            getToolPlatforms(tool, category) {
+                const report = this.detector.generateReport();
+                const platforms = {
+                    web: report.platform.web,
+                    android: report.platform.android,
+                    ios: report.platform.ios,
+                    desktop: report.platform.desktop
+                };
+                return platforms;
+            }
+
+            getToolCapabilities(tool, category) {
+                // Return additional capability information
+                return {
+                    pwa: this.detector.getCapability('system', 'offline'),
+                    native: this.detector.getCapability('system', 'background'),
+                    api: this.detector.getCapability('data', 'storage')
+                };
+            }
+
+            setupEventListeners() {
+                // Filter buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentFilter = e.target.dataset.filter;
+                        this.filterAndRender();
+                    });
+                });
+
+                // Platform buttons
+                document.querySelectorAll('.platform-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+                        e.target.classList.add('active');
+                        this.currentPlatform = e.target.dataset.platform;
+                        this.filterAndRender();
+                    });
+                });
+
+                // Search input
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.searchTerm = e.target.value.toLowerCase();
+                    this.filterAndRender();
+                });
+            }
+
+            filterAndRender() {
+                this.filteredTools = this.tools.filter(tool => {
+                    // Category filter
+                    if (this.currentFilter !== 'all' && this.currentFilter !== tool.category) {
+                        return false;
+                    }
+
+                    // Availability filter
+                    if (this.currentFilter === 'available' && !tool.available) {
+                        return false;
+                    }
+                    if (this.currentFilter === 'unavailable' && tool.available) {
+                        return false;
+                    }
+
+                    // Platform filter
+                    if (this.currentPlatform !== 'all') {
+                        if (!tool.platforms[this.currentPlatform]) {
+                            return false;
+                        }
+                    }
+
+                    // Search filter
+                    if (this.searchTerm) {
+                        const searchableText = `${tool.name} ${tool.description} ${tool.category}`.toLowerCase();
+                        if (!searchableText.includes(this.searchTerm)) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                });
+
+                this.render();
+            }
+
+            render() {
+                this.renderStats();
+                this.renderTools();
+            }
+
+            renderStats() {
+                const total = this.filteredTools.length;
+                const available = this.filteredTools.filter(t => t.available).length;
+                const unavailable = total - available;
+                const platforms = new Set(this.filteredTools.flatMap(t => 
+                    Object.keys(t.platforms).filter(p => t.platforms[p])
+                )).size;
+
+                document.getElementById('totalTools').textContent = total;
+                document.getElementById('availableTools').textContent = available;
+                document.getElementById('unavailableTools').textContent = unavailable;
+                document.getElementById('platforms').textContent = platforms;
+            }
+
+            renderTools() {
+                const grid = document.getElementById('toolGrid');
+                grid.innerHTML = '';
+
+                if (this.filteredTools.length === 0) {
+                    grid.innerHTML = '<div class="loading">No tools found matching your criteria.</div>';
+                    return;
+                }
+
+                this.filteredTools.forEach(tool => {
+                    const card = this.createToolCard(tool);
+                    grid.appendChild(card);
+                });
+            }
+
+            createToolCard(tool) {
+                const card = document.createElement('div');
+                card.className = `tool-card ${tool.available ? 'available' : 'unavailable'}`;
+                
+                const platformTags = Object.entries(tool.platforms)
+                    .filter(([_, supported]) => supported)
+                    .map(([platform, _]) => {
+                        const supported = this.isPlatformSupported(platform, tool);
+                        return `<span class="platform-tag ${supported ? 'supported' : 'unsupported'}">${platform}</span>`;
+                    }).join('');
+
+                card.innerHTML = `
+                    <div class="tool-header">
+                        <div class="tool-icon">${tool.icon}</div>
+                        <h3 class="tool-title">${tool.name}</h3>
+                        <div class="tool-status ${tool.available ? 'available' : 'unavailable'}">
+                            ${tool.available ? 'Available' : 'Unavailable'}
+                        </div>
+                    </div>
+                    <div class="tool-description">${tool.description}</div>
+                    <div class="tool-platforms">${platformTags}</div>
+                `;
+
+                return card;
+            }
+
+            isPlatformSupported(platform, tool) {
+                // Check if tool is actually supported on this platform
+                const report = this.detector.generateReport();
+                return report.platform[platform] && tool.available;
+            }
+
+            showLoading() {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('toolGrid').style.display = 'none';
+                document.getElementById('error').style.display = 'none';
+            }
+
+            hideLoading() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('toolGrid').style.display = 'grid';
+            }
+
+            showError(message) {
+                document.getElementById('error').textContent = message;
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('toolGrid').style.display = 'none';
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            new ToolMap();
+        });
+    </script>
+</body>
+</html>

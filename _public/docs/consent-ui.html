@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM Consent Management</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin: 0.5rem 0 0 0;
+        }
+        .consent-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .consent-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .capability-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        .capability-info {
+            flex: 1;
+        }
+        .capability-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        .capability-description {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .capability-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #bdc3c7;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .capability-toggle.active {
+            background: #27ae60;
+        }
+        .capability-toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .capability-toggle.active::after {
+            transform: translateX(30px);
+        }
+        .consent-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #229954;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-indicator.granted {
+            background: #27ae60;
+        }
+        .status-indicator.denied {
+            background: #e74c3c;
+        }
+        .status-indicator.pending {
+            background: #f39c12;
+        }
+        .privacy-notice {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .privacy-notice h4 {
+            color: #0c5460;
+            margin: 0 0 0.5rem 0;
+        }
+        .privacy-notice p {
+            color: #0c5460;
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .audit-trail {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        .audit-trail h4 {
+            color: #2c3e50;
+            margin: 0 0 1rem 0;
+        }
+        .audit-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            background: white;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        .audit-action {
+            font-weight: 600;
+        }
+        .audit-action.grant {
+            color: #27ae60;
+        }
+        .audit-action.revoke {
+            color: #e74c3c;
+        }
+        .audit-timestamp {
+            color: #7f8c8d;
+        }
+        .export-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .export-section h4 {
+            color: #2c3e50;
+            margin: 0 0 1rem 0;
+        }
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .consent-actions {
+                flex-direction: column;
+            }
+            .export-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 OAMTM Consent Management</h1>
+            <p>GDPR-compliant consent management for OS integration capabilities</p>
+        </div>
+
+        <div class="privacy-notice">
+            <h4>🛡️ Privacy Notice</h4>
+            <p>
+                OAMTM respects your privacy and complies with GDPR regulations. 
+                You can grant or revoke consent for specific capabilities at any time. 
+                Essential capabilities are required for basic functionality and cannot be disabled.
+            </p>
+        </div>
+
+        <div class="consent-section">
+            <h3>
+                <span class="status-indicator" id="overallStatus"></span>
+                System Capabilities
+            </h3>
+            <div id="capabilitiesList">
+                <div class="loading">Loading capabilities...</div>
+            </div>
+        </div>
+
+        <div class="consent-actions">
+            <button class="btn btn-primary" id="saveConsent">Save Consent</button>
+            <button class="btn btn-secondary" id="resetConsent">Reset All</button>
+            <button class="btn btn-success" id="exportData">Export Data</button>
+        </div>
+
+        <div class="export-section">
+            <h4>📊 Data Export & Audit</h4>
+            <div class="export-options">
+                <button class="btn btn-secondary" id="exportConsent">Export Consent</button>
+                <button class="btn btn-secondary" id="exportAudit">Export Audit Trail</button>
+                <button class="btn btn-secondary" id="viewReport">View Report</button>
+            </div>
+        </div>
+
+        <div class="audit-trail" id="auditTrail" style="display: none;">
+            <h4>📋 Recent Consent Actions</h4>
+            <div id="auditEntries">
+                <!-- Audit entries will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { ConsentManager } from '../scripts/consent-manager.mjs';
+
+        class ConsentUI {
+            constructor() {
+                this.consentManager = new ConsentManager();
+                this.capabilities = {};
+                this.initialize();
+            }
+
+            async initialize() {
+                await this.consentManager.initialize();
+                this.capabilities = this.consentManager.getConsentStatus();
+                this.setupEventListeners();
+                this.renderCapabilities();
+                this.updateOverallStatus();
+                this.loadAuditTrail();
+            }
+
+            setupEventListeners() {
+                document.getElementById('saveConsent').addEventListener('click', () => {
+                    this.saveConsent();
+                });
+
+                document.getElementById('resetConsent').addEventListener('click', () => {
+                    this.resetConsent();
+                });
+
+                document.getElementById('exportData').addEventListener('click', () => {
+                    this.exportData();
+                });
+
+                document.getElementById('exportConsent').addEventListener('click', () => {
+                    this.exportConsent();
+                });
+
+                document.getElementById('exportAudit').addEventListener('click', () => {
+                    this.exportAudit();
+                });
+
+                document.getElementById('viewReport').addEventListener('click', () => {
+                    this.viewReport();
+                });
+            }
+
+            renderCapabilities() {
+                const container = document.getElementById('capabilitiesList');
+                container.innerHTML = '';
+
+                Object.entries(this.capabilities).forEach(([capability, status]) => {
+                    const item = this.createCapabilityItem(capability, status);
+                    container.appendChild(item);
+                });
+            }
+
+            createCapabilityItem(capability, status) {
+                const item = document.createElement('div');
+                item.className = 'capability-item';
+                
+                const isEssential = !status.required;
+                const isGranted = status.granted;
+                
+                item.innerHTML = `
+                    <div class="capability-info">
+                        <div class="capability-name">
+                            ${this.formatCapabilityName(capability)}
+                            ${isEssential ? '<span style="color: #e74c3c; font-size: 0.8rem;"> (Essential)</span>' : ''}
+                        </div>
+                        <div class="capability-description">
+                            ${status.purpose} • Retention: ${status.retention}
+                        </div>
+                    </div>
+                    <div class="capability-toggle ${isGranted ? 'active' : ''}" 
+                         data-capability="${capability}" 
+                         ${isEssential ? 'style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                    </div>
+                `;
+
+                // Add click handler for non-essential capabilities
+                if (!isEssential) {
+                    const toggle = item.querySelector('.capability-toggle');
+                    toggle.addEventListener('click', () => {
+                        this.toggleCapability(capability);
+                    });
+                }
+
+                return item;
+            }
+
+            formatCapabilityName(capability) {
+                return capability.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
+            }
+
+            toggleCapability(capability) {
+                const status = this.capabilities[capability];
+                if (status.granted) {
+                    this.consentManager.revokeConsent(capability);
+                } else {
+                    this.consentManager.grantConsent(capability);
+                }
+                
+                // Update UI
+                this.capabilities = this.consentManager.getConsentStatus();
+                this.renderCapabilities();
+                this.updateOverallStatus();
+                this.loadAuditTrail();
+            }
+
+            updateOverallStatus() {
+                const statusIndicator = document.getElementById('overallStatus');
+                const granted = Object.values(this.capabilities).filter(s => s.granted).length;
+                const total = Object.keys(this.capabilities).length;
+                
+                if (granted === total) {
+                    statusIndicator.className = 'status-indicator granted';
+                } else if (granted === 0) {
+                    statusIndicator.className = 'status-indicator denied';
+                } else {
+                    statusIndicator.className = 'status-indicator pending';
+                }
+            }
+
+            saveConsent() {
+                // Consent is automatically saved when toggled
+                this.showNotification('Consent preferences saved successfully!', 'success');
+            }
+
+            resetConsent() {
+                if (confirm('Are you sure you want to reset all consent preferences? This will revoke all non-essential capabilities.')) {
+                    this.consentManager.resetConsent();
+                    this.capabilities = this.consentManager.getConsentStatus();
+                    this.renderCapabilities();
+                    this.updateOverallStatus();
+                    this.loadAuditTrail();
+                    this.showNotification('Consent preferences reset successfully!', 'info');
+                }
+            }
+
+            exportData() {
+                const data = this.consentManager.exportConsentData();
+                this.downloadJSON(data, 'oamtm-consent-data.json');
+                this.showNotification('Consent data exported successfully!', 'success');
+            }
+
+            exportConsent() {
+                const data = {
+                    consent: this.consentManager.consentData,
+                    status: this.capabilities,
+                    exported: new Date().toISOString()
+                };
+                this.downloadJSON(data, 'oamtm-consent-status.json');
+                this.showNotification('Consent status exported successfully!', 'success');
+            }
+
+            exportAudit() {
+                const auditTrail = JSON.parse(localStorage.getItem('oamtm-audit-trail') || '[]');
+                this.downloadJSON(auditTrail, 'oamtm-audit-trail.json');
+                this.showNotification('Audit trail exported successfully!', 'success');
+            }
+
+            viewReport() {
+                const report = this.consentManager.generateConsentReport();
+                this.downloadJSON(report, 'oamtm-consent-report.json');
+                this.showNotification('Consent report generated successfully!', 'success');
+            }
+
+            loadAuditTrail() {
+                const auditTrail = JSON.parse(localStorage.getItem('oamtm-audit-trail') || '[]');
+                const container = document.getElementById('auditEntries');
+                const trailContainer = document.getElementById('auditTrail');
+                
+                if (auditTrail.length === 0) {
+                    trailContainer.style.display = 'none';
+                    return;
+                }
+                
+                trailContainer.style.display = 'block';
+                container.innerHTML = '';
+                
+                // Show last 10 entries
+                auditTrail.slice(-10).reverse().forEach(entry => {
+                    const item = document.createElement('div');
+                    item.className = 'audit-entry';
+                    item.innerHTML = `
+                        <span class="audit-action ${entry.action}">${entry.action.toUpperCase()}</span>
+                        <span>${entry.capability}</span>
+                        <span class="audit-timestamp">${new Date(entry.timestamp).toLocaleString()}</span>
+                    `;
+                    container.appendChild(item);
+                });
+            }
+
+            downloadJSON(data, filename) {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            showNotification(message, type = 'info') {
+                // Simple notification - could be enhanced with a proper notification system
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    z-index: 1000;
+                    font-weight: 600;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            new ConsentUI();
+        });
+    </script>
+</body>
+</html>

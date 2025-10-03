@@ -1,0 +1,15 @@
+module: Loopback-Node
+version: 1.0.0
+interfaces: [RF-In, RF-Out, Audit-Export, Security-Status]
+audit_flags:
+  - checksum_verified
+  - regulatory_passed
+  - self_healing_active
+ci_cd_hooks: [pre-cert-check, post-deploy-validation]
+compliance:
+  RDI-NL: true
+  Referat_226: true
+  Bundesnetzagentur: true
+ui:
+  entry: modules/rf/loopback-node/ui/security-status.html
+  hackathon_canvas: modules/rf/loopback-node/ui/hackathon-canvas.html

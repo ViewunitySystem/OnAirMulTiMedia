@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://oamtm.example/blueprint.schema.json",
+  "title": "Module Blueprint",
+  "type": "object",
+  "required": ["module", "description", "interfaces", "validation", "regulatory"],
+  "properties": {
+    "module": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{2,64}$" },
+    "version": { "type": "string", "default": "1.0.0" },
+    "description": { "type": "string", "minLength": 10 },
+    "interfaces": {
+      "type": "object",
+      "required": ["inputs", "outputs", "logs"],
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "required": { "type": "boolean", "default": false },
+              "example": {}
+            }
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "example": {}
+            }
+          }
+        },
+        "logs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["event", "level", "description"],
+            "properties": {
+              "event": { "type": "string" },
+              "level": { "type": "string", "enum": ["info", "warn", "error"] },
+              "description": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["ci", "tests", "recovery"],
+      "properties": {
+        "ci": { "type": "boolean" },
+        "tests": { "type": "array", "items": { "type": "string" } },
+        "hil_tests": { "type": "array", "items": { "type": "string" } },
+        "recovery": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "regulatory": {
+      "type": "object",
+      "required": ["license_required", "references"],
+      "properties": {
+        "license_required": { "type": "boolean" },
+        "references": {
+          "type": "array",
+          "items": { "type": "object", "required": ["jurisdiction", "section"], "properties": { "jurisdiction": { "type": "string" }, "section": { "type": "string" } } }
+        }
+      }
+    },
+    "checklist": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}
+

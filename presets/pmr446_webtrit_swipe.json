@@ -1,0 +1,83 @@
+{
+  "name": "PMR446 WebTrit-Swipe",
+  "frequency": 44600625000,
+  "modulation": "fm",
+  "bandwidth": 12500,
+  "gain": 30,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "fm_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "PMR446 mit WebTrit-Swipe zwischen 8 Kanälen",
+  "power_limit": 0.5,
+  "antenna": "PMR446-Antenne",
+  "webtrit_swipe": {
+    "enabled": true,
+    "variants": [
+      {
+        "name": "PMR446 Kanal 1",
+        "frequency": 44600625000,
+        "channel": 1,
+        "ctcss": 0
+      },
+      {
+        "name": "PMR446 Kanal 2", 
+        "frequency": 44601875000,
+        "channel": 2,
+        "ctcss": 0
+      },
+      {
+        "name": "PMR446 Kanal 3",
+        "frequency": 44603125000,
+        "channel": 3,
+        "ctcss": 0
+      },
+      {
+        "name": "PMR446 Kanal 4",
+        "frequency": 44604375000,
+        "channel": 4,
+        "ctcss": 0
+      },
+      {
+        "name": "PMR446 Kanal 5",
+        "frequency": 44605625000,
+        "channel": 5,
+        "ctcss": 0
+      },
+      {
+        "name": "PMR446 Kanal 6",
+        "frequency": 44606875000,
+        "channel": 6,
+        "ctcss": 0
+      },
+      {
+        "name": "PMR446 Kanal 7",
+        "frequency": 44608125000,
+        "channel": 7,
+        "ctcss": 0
+      },
+      {
+        "name": "PMR446 Kanal 8",
+        "frequency": 44609375000,
+        "channel": 8,
+        "ctcss": 0
+      }
+    ],
+    "swipe_gestures": {
+      "left": "previous_channel",
+      "right": "next_channel",
+      "up": "increase_ctcss",
+      "down": "decrease_ctcss"
+    }
+  }
+}
+

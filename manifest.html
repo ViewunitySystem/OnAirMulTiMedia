@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Open-Core Manifest</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
+    header { background:#121a34; padding:16px; position:sticky; top:0; z-index:10; display:flex; gap:12px; align-items:center; }
+    main { padding:16px; display:grid; gap:16px; max-width:900px; margin:0 auto; }
+    .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:12px; }
+    textarea, input, button { width:100%; padding:8px; border-radius:8px; border:1px solid #374151; background:#0b1020; color:#e5e7eb; }
+    button { cursor:pointer; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background:#0b1020; padding:12px; border-radius:12px; border:1px solid #1f2a52; }
+    .muted { opacity:.8; font-size:12px; }
+    a { color:#93c5fd; cursor: pointer; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>Open-Core Manifest</strong>
+    <a href="./info.html">Info</a>
+    <a href="./blueprints.html">Blueprints</a>
+  </header>
+  <main>
+    <section class="card">
+      <h3>Aktuelle Version</h3>
+      <div id="ver" class="muted"></div>
+      <pre id="md"></pre>
+    </section>
+    <section class="card">
+      <h3>Versionen</h3>
+      <ul id="vers"></ul>
+    </section>
+    <section class="card">
+      <h3>Neue Version einspielen (Admin)</h3>
+      <input id="v" placeholder="z. B. v1.1.0-neuro" />
+      <textarea id="t" rows="10" placeholder="# Manifest ..."></textarea>
+      <input id="k" placeholder="X-ADMIN-KEY" type="password" />
+      <button id="save">Speichern</button>
+      <div id="m" class="muted"></div>
+    </section>
+  </main>
+  <script src="/webtrit-swipe.js"></script>
+  <script>
+    async function load(){
+      const cur = await fetch('/api/manifest').then(r=>r.json()).catch(()=>null);
+      if (cur) {
+        document.getElementById('ver').textContent = cur.version+' • '+new Date(cur.created_at).toLocaleString();
+        document.getElementById('md').textContent = cur.markdown;
+      }
+      const vs = await fetch('/api/manifest/versions').then(r=>r.json()).catch(()=>[]);
+      const ul = document.getElementById('vers'); ul.innerHTML='';
+      vs.forEach(v=>{
+        const li = document.createElement('li');
+        const a = document.createElement('a'); a.href='#'; a.textContent = v.version + ' • ' + new Date(v.created_at).toLocaleString();
+        a.onclick = async (e)=>{
+          e.preventDefault();
+          const d = await fetch('/api/manifest/'+encodeURIComponent(v.version)).then(r=>r.json());
+          document.getElementById('ver').textContent = d.version+' • '+new Date(d.created_at).toLocaleString();
+          document.getElementById('md').textContent = d.markdown;
+        };
+        li.appendChild(a); ul.appendChild(li);
+      });
+    }
+    document.getElementById('save').onclick = async ()=>{
+      const v = document.getElementById('v').value;
+      const t = document.getElementById('t').value;
+      const k = document.getElementById('k').value;
+      const r = await fetch('/api/manifest', { method:'POST', headers:{ 'Content-Type':'application/json', 'X-ADMIN-KEY': k }, body: JSON.stringify({ version: v, markdown: t }) });
+      const m = document.getElementById('m'); m.textContent = r.ok ? 'Gespeichert' : 'Fehler';
+      if (r.ok) load();
+    };
+    load();
+  </script>
+</body>
+</html>
+

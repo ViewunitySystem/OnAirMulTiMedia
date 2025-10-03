@@ -1,0 +1,432 @@
+{
+  "version": 1,
+  "generatedAt": "2025-01-03T05:00:00.000Z",
+  "sources": ["webui", "sw", "backend", "ci", "pages", "firebase", "regulatory"],
+  "taxonomy": {
+    "systemic": [
+      "module_unregistered",
+      "recovery_unlinked", 
+      "audit_incomplete",
+      "csp_disabled",
+      "asset_missing",
+      "restore_unknown",
+      "learning_empty",
+      "selfheal_inactive",
+      "performance_degraded",
+      "monitoring_offline"
+    ],
+    "technical": [
+      "pages_redirect_missing",
+      "firebase_drift",
+      "sqlite_blocked",
+      "ci_interrupted",
+      "manifest_load_fail",
+      "qr_unlinked",
+      "license_view_empty",
+      "service_worker_fail",
+      "build_timeout",
+      "deployment_failed",
+      "cdn_unreachable",
+      "database_corrupted"
+    ],
+    "regulatory": [
+      "gdpr_export_missing",
+      "rf_proof_missing",
+      "external_unmoderated",
+      "rate_limits_undefined",
+      "privacy_policy_missing",
+      "terms_of_service_outdated",
+      "accessibility_non_compliant",
+      "security_headers_missing"
+    ],
+    "philosophical": [
+      "treat_as_defect",
+      "no_resonance",
+      "ai_tool_only",
+      "recovery_exception",
+      "error_as_enemy",
+      "fix_as_patch",
+      "system_as_machine",
+      "user_as_customer"
+    ]
+  },
+  "routes": [
+    {
+      "id": "home",
+      "url": "/index.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "technical"]
+    },
+    {
+      "id": "info",
+      "url": "/info.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "technical"]
+    },
+    {
+      "id": "bug-symphony",
+      "url": "/bug-symphony.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "technical", "philosophical"]
+    },
+    {
+      "id": "manifest-viewer",
+      "url": "/manifest-viewer.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "technical"]
+    },
+    {
+      "id": "selfheal-dashboard",
+      "url": "/docs/selfheal-dashboard.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic"]
+    },
+    {
+      "id": "audit-score",
+      "url": "/docs/audit-score.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "philosophical"]
+    },
+    {
+      "id": "monitoring-dashboard",
+      "url": "/docs/monitoring-dashboard.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "technical"]
+    },
+    {
+      "id": "change-log",
+      "url": "/docs/change-log.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "regulatory"]
+    },
+    {
+      "id": "mission-plan",
+      "url": "/docs/mission-plan.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "philosophical"]
+    },
+    {
+      "id": "tool-map",
+      "url": "/docs/tool-map.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "technical"]
+    },
+    {
+      "id": "ultrasound-dashboard",
+      "url": "/docs/ultrasound-dashboard.html",
+      "expect": ["200"],
+      "recoverable": true,
+      "tags": ["systemic", "technical"]
+    }
+  ],
+  "healing": {
+    "systemic": {
+      "module_unregistered": {
+        "via": "register_in_manifest",
+        "rule": "link_to_dashboard",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "recovery_unlinked": {
+        "via": "add_trigger",
+        "rule": "rule-recovery-bridge",
+        "priority": "critical",
+        "auto_fix": true
+      },
+      "audit_incomplete": {
+        "via": "enable_ucm",
+        "rule": "ucm-run",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "csp_disabled": {
+        "via": "inject_meta",
+        "rule": "csp_enforcer",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "asset_missing": {
+        "via": "redirect_or_mirror",
+        "rule": "assets_enforcer",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "restore_unknown": {
+        "via": "append_route",
+        "rule": "restore_engine",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "learning_empty": {
+        "via": "collect_console",
+        "rule": "learning_harvester",
+        "priority": "low",
+        "auto_fix": true
+      },
+      "selfheal_inactive": {
+        "via": "activate_selfheal",
+        "rule": "selfheal_activator",
+        "priority": "critical",
+        "auto_fix": true
+      },
+      "performance_degraded": {
+        "via": "optimize_performance",
+        "rule": "performance_booster",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "monitoring_offline": {
+        "via": "restart_monitoring",
+        "rule": "monitoring_restarter",
+        "priority": "medium",
+        "auto_fix": true
+      }
+    },
+    "technical": {
+      "pages_redirect_missing": {
+        "via": "404_html+map",
+        "rule": "404_autofix",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "firebase_drift": {
+        "via": "sync_redirects",
+        "rule": "fb_redirect_sync",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "sqlite_blocked": {
+        "via": "WAL_mode",
+        "rule": "sqlite_pragma",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "ci_interrupted": {
+        "via": "retry_matrix",
+        "rule": "actions_retry",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "manifest_load_fail": {
+        "via": "validate_schema",
+        "rule": "manifest_checker",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "qr_unlinked": {
+        "via": "add_nav_entry",
+        "rule": "ui_router",
+        "priority": "low",
+        "auto_fix": true
+      },
+      "license_view_empty": {
+        "via": "mock+defer",
+        "rule": "regulatory_mock",
+        "priority": "low",
+        "auto_fix": true
+      },
+      "service_worker_fail": {
+        "via": "reinstall_sw",
+        "rule": "sw_reinstaller",
+        "priority": "high",
+        "auto_fix": true
+      },
+      "build_timeout": {
+        "via": "extend_timeout",
+        "rule": "build_extender",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "deployment_failed": {
+        "via": "rollback_deploy",
+        "rule": "deploy_rollbacker",
+        "priority": "critical",
+        "auto_fix": true
+      },
+      "cdn_unreachable": {
+        "via": "fallback_cdn",
+        "rule": "cdn_fallbacker",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "database_corrupted": {
+        "via": "restore_backup",
+        "rule": "db_restorer",
+        "priority": "critical",
+        "auto_fix": true
+      }
+    },
+    "regulatory": {
+      "gdpr_export_missing": {
+        "via": "jsonl_zip_export",
+        "rule": "privacy_export",
+        "priority": "high",
+        "auto_fix": false
+      },
+      "rf_proof_missing": {
+        "via": "attach_spec",
+        "rule": "rf_validator",
+        "priority": "medium",
+        "auto_fix": false
+      },
+      "external_unmoderated": {
+        "via": "2fa+license_gate",
+        "rule": "access_guard",
+        "priority": "high",
+        "auto_fix": false
+      },
+      "rate_limits_undefined": {
+        "via": "throttle_free",
+        "rule": "rate_guard",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "privacy_policy_missing": {
+        "via": "generate_policy",
+        "rule": "policy_generator",
+        "priority": "high",
+        "auto_fix": false
+      },
+      "terms_of_service_outdated": {
+        "via": "update_terms",
+        "rule": "terms_updater",
+        "priority": "medium",
+        "auto_fix": false
+      },
+      "accessibility_non_compliant": {
+        "via": "fix_accessibility",
+        "rule": "a11y_fixer",
+        "priority": "medium",
+        "auto_fix": true
+      },
+      "security_headers_missing": {
+        "via": "add_security_headers",
+        "rule": "security_header_adder",
+        "priority": "high",
+        "auto_fix": true
+      }
+    },
+    "philosophical": {
+      "treat_as_defect": {
+        "via": "map_to_tone",
+        "rule": "composer_engine",
+        "priority": "low",
+        "auto_fix": true
+      },
+      "no_resonance": {
+        "via": "compose_answer",
+        "rule": "composer_engine",
+        "priority": "low",
+        "auto_fix": true
+      },
+      "ai_tool_only": {
+        "via": "elevate_conductor",
+        "rule": "governance",
+        "priority": "low",
+        "auto_fix": false
+      },
+      "recovery_exception": {
+        "via": "always_on",
+        "rule": "policy",
+        "priority": "low",
+        "auto_fix": false
+      },
+      "error_as_enemy": {
+        "via": "error_as_teacher",
+        "rule": "mindset_shifter",
+        "priority": "low",
+        "auto_fix": false
+      },
+      "fix_as_patch": {
+        "via": "fix_as_evolution",
+        "rule": "mindset_shifter",
+        "priority": "low",
+        "auto_fix": false
+      },
+      "system_as_machine": {
+        "via": "system_as_organism",
+        "rule": "mindset_shifter",
+        "priority": "low",
+        "auto_fix": false
+      },
+      "user_as_customer": {
+        "via": "user_as_partner",
+        "rule": "mindset_shifter",
+        "priority": "low",
+        "auto_fix": false
+      }
+    }
+  },
+  "audio_mapping": {
+    "systemic": {
+      "frequency": 261.6,
+      "type": "sine",
+      "duration": 0.5,
+      "emotion": "systematic"
+    },
+    "technical": {
+      "frequency": 329.6,
+      "type": "triangle",
+      "duration": 0.3,
+      "emotion": "precise"
+    },
+    "regulatory": {
+      "frequency": 392.0,
+      "type": "square",
+      "duration": 0.8,
+      "emotion": "authoritative"
+    },
+    "philosophical": {
+      "frequency": 523.3,
+      "type": "sawtooth",
+      "duration": 1.0,
+      "emotion": "contemplative"
+    }
+  },
+  "visual_mapping": {
+    "systemic": {
+      "color": "#667eea",
+      "shape": "circle",
+      "animation": "pulse"
+    },
+    "technical": {
+      "color": "#f093fb",
+      "shape": "square",
+      "animation": "rotate"
+    },
+    "regulatory": {
+      "color": "#f5576c",
+      "shape": "triangle",
+      "animation": "bounce"
+    },
+    "philosophical": {
+      "color": "#4facfe",
+      "shape": "star",
+      "animation": "twinkle"
+    }
+  },
+  "performance": {
+    "targets": {
+      "error_resolution_time": 30,
+      "auto_fix_success_rate": 95,
+      "manual_intervention_rate": 5,
+      "false_positive_rate": 2
+    },
+    "optimizations": {
+      "batch_processing": true,
+      "parallel_execution": true,
+      "cache_results": true,
+      "incremental_updates": true
+    }
+  }
+}

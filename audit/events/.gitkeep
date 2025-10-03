@@ -1,0 +1,8 @@
+# Audit Events Directory
+
+This directory contains individual event files (.json format).
+
+Events are immutable and form a blockchain-like chain.
+
+Format: `evt_<id>.json`
+

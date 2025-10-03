@@ -1,0 +1,76 @@
+{
+  "name": "C4FM System Fusion WebTrit-Swipe",
+  "frequency": 145500000,
+  "modulation": "c4fm",
+  "bandwidth": 12500,
+  "gain": 40,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "c4fm_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "C4FM System Fusion mit WebTrit-Swipe zwischen WIRES-X Nodes",
+  "power_limit": 5,
+  "antenna": "C4FM-Antenne",
+  "webtrit_swipe": {
+    "enabled": true,
+    "variants": [
+      {
+        "name": "WIRES-X Node 1",
+        "frequency": 145500000,
+        "channel": 1,
+        "type": "C4FM",
+        "node": "WIRES-X-001",
+        "room": "Local"
+      },
+      {
+        "name": "WIRES-X Node 2",
+        "frequency": 145500000,
+        "channel": 2,
+        "type": "C4FM",
+        "node": "WIRES-X-002",
+        "room": "Regional"
+      },
+      {
+        "name": "WIRES-X Node 3",
+        "frequency": 145500000,
+        "channel": 3,
+        "type": "C4FM",
+        "node": "WIRES-X-003",
+        "room": "National"
+      },
+      {
+        "name": "WIRES-X Node 4",
+        "frequency": 145500000,
+        "channel": 4,
+        "type": "C4FM",
+        "node": "WIRES-X-004",
+        "room": "International"
+      },
+      {
+        "name": "WIRES-X Node 9",
+        "frequency": 145500000,
+        "channel": 9,
+        "type": "C4FM",
+        "node": "WIRES-X-009",
+        "room": "Emergency"
+      }
+    ],
+    "swipe_gestures": {
+      "left": "previous_node",
+      "right": "next_node",
+      "up": "switch_to_international",
+      "down": "switch_to_local",
+      "double_tap": "emergency_node"
+    }
+  }
+}
+

@@ -1,0 +1,16 @@
+{
+  "target": "2025 PN7",
+  "frame": "heliocentric",
+  "method": "low-thrust+corrections",
+  "windows": [
+    { "start": "2025-10-15T00:00:00Z", "end": "2025-11-30T23:59:59Z", "notes": "resonant window" }
+  ],
+  "deltaV": { "injection": 320, "corrections": 45, "terminal": 8 },
+  "nav": {
+    "guidance": "CR3BP-guided arrival",
+    "tracking": [ "doppler", "optical" ],
+    "updatePeriodSec": 300
+  },
+  "constraints": { "sun-angle": "> 35deg", "power": "> 120W" },
+  "audit": { "id": "pn7-x1", "export": "audit-export.pdf" }
+}

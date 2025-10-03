@@ -1,0 +1,21 @@
+{
+  "metaGrowth": {
+    "enabled": true,
+    "scan": {
+      "roots": ["modules", "apps", "services"],
+      "include": ["**/*.ts", "**/*.tsx", "**/*.html"],
+      "exclude": ["**/*.spec.*", "**/node_modules/**", "**/dist/**"]
+    },
+    "blueprints": [
+      { "name": "module-basic", "from": "blueprints/module-basic", "where": "modules" },
+      { "name": "app-pwa", "from": "blueprints/app-pwa", "where": "apps" }
+    ],
+    "safety": {
+      "requireTests": true,
+      "requireDocs": true,
+      "branch": "mainzero",
+      "reviewers": ["DD5BE"],
+      "dryRun": false
+    }
+  }
+}

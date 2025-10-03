@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["module", "interfaces", "audit_flags", "ci_cd_hooks", "compliance"],
+  "properties": {
+    "module": { "type": "string" },
+    "version": { "type": "string" },
+    "interfaces": { "type": "array", "items": { "type": "string" } },
+    "audit_flags": { "type": "array", "items": { "type": "string" } },
+    "ci_cd_hooks": { "type": "array", "items": { "type": "string" } },
+    "compliance": {
+      "type": "object",
+      "properties": {
+        "RDI-NL": { "type": "boolean" },
+        "Referat_226": { "type": "boolean" },
+        "Bundesnetzagentur": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "ui": {
+      "type": "object",
+      "properties": {
+        "entry": { "type": "string" },
+        "hackathon_canvas": { "type": "string" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

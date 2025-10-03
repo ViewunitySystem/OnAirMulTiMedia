@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "oamtm-functions": "file:.."
+  }
+}

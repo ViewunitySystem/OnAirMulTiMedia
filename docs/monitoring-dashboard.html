@@ -1,0 +1,751 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>OAMTM – Tree Monitoring Dashboard</title>
+<style>
+  body { 
+    font-family: system-ui, Segoe UI, Roboto, Arial; 
+    max-width: 1400px; 
+    margin: 2rem auto; 
+    padding: 0 1rem; 
+    background-color: #1a1a2e; 
+    color: #e0e0e0; 
+    line-height: 1.6;
+  }
+  
+  h1 { 
+    margin: 0 0 1rem; 
+    color: #e94560; 
+    text-align: center;
+  }
+  
+  h2 { 
+    color: #0f3460; 
+    border-bottom: 1px solid #0f3460; 
+    padding-bottom: 0.5rem; 
+    margin-top: 2rem; 
+  }
+  
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1.5rem;
+  }
+  
+  .panel {
+    background-color: #0f3460;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+  
+  .full-width {
+    grid-column: 1 / -1;
+  }
+  
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .metric-item {
+    background-color: #e94560;
+    padding: 0.8rem;
+    border-radius: 8px;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  .metric-item.healthy {
+    background-color: #10b981;
+  }
+  
+  .metric-item.warning {
+    background-color: #f59e0b;
+  }
+  
+  .metric-item.critical {
+    background-color: #ef4444;
+  }
+  
+  .metric-item span {
+    display: block;
+    font-size: 0.8em;
+    opacity: 0.8;
+  }
+  
+  .status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+  }
+  
+  .status-healthy { background-color: #10b981; }
+  .status-warning { background-color: #f59e0b; }
+  .status-critical { background-color: #ef4444; }
+  
+  .logs-container {
+    background-color: #1a1a2e;
+    border-radius: 8px;
+    padding: 1rem;
+    height: 300px;
+    overflow-y: auto;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    font-size: 0.9em;
+    color: #aaffaa;
+    margin-top: 1.5rem;
+  }
+  
+  .log-entry {
+    margin-bottom: 0.3rem;
+    padding: 0.2rem 0;
+  }
+  
+  .log-entry.error { color: #ffaaaa; }
+  .log-entry.warning { color: #ffaa55; }
+  .log-entry.info { color: #aaaaff; }
+  
+  .controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .controls button {
+    background-color: #e94560;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+  }
+  
+  .controls button:hover {
+    background-color: #ba354c;
+  }
+  
+  .controls button:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    margin-top: 1rem;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1a1a2e;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  th, td {
+    padding: 0.8rem;
+    text-align: left;
+    border-bottom: 1px solid #0f3460;
+  }
+  
+  th {
+    background-color: #0f3460;
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  tr:hover {
+    background-color: #2a2a4e;
+  }
+  
+  .url-status-200 { color: #10b981; }
+  .url-status-404 { color: #ef4444; }
+  .url-status-500 { color: #f59e0b; }
+  
+  .learning-pattern {
+    background-color: #2a2a4e;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #e94560;
+  }
+  
+  .learning-pattern h4 {
+    margin: 0 0 0.5rem;
+    color: #e94560;
+  }
+  
+  .learning-pattern .pattern-info {
+    font-size: 0.9em;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+  }
+  
+  .learning-pattern .suggestions {
+    margin-top: 0.5rem;
+  }
+  
+  .learning-pattern .suggestions ul {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: #aaa;
+  }
+  
+  .error {
+    background-color: #ef4444;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+  
+  .success {
+    background-color: #10b981;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+
+<h1>🌳 Tree Monitoring Dashboard</h1>
+<p style="text-align: center; color: #aaa; margin-bottom: 2rem;">
+  Comprehensive monitoring system for entire tree with learning factor<br>
+  Helps understand and fix 404 and related similar bugs
+</p>
+
+<div class="dashboard-grid">
+  <div class="panel full-width">
+    <h2>📊 System Overview</h2>
+    <div class="metrics-grid">
+      <div class="metric-item" id="metricTotalTests">
+        <span>Total Tests</span>
+        <span id="totalTestsValue">0</span>
+      </div>
+      <div class="metric-item" id="metricErrorRate">
+        <span>Error Rate</span>
+        <span id="errorRateValue">0%</span>
+      </div>
+      <div class="metric-item" id="metricAvailability">
+        <span>Availability</span>
+        <span id="availabilityValue">0%</span>
+      </div>
+      <div class="metric-item" id="metricResponseTime">
+        <span>Avg Response</span>
+        <span id="responseTimeValue">0ms</span>
+      </div>
+      <div class="metric-item" id="metricHealthChecks">
+        <span>Health Checks</span>
+        <span id="healthChecksValue">0</span>
+      </div>
+      <div class="metric-item" id="metricLearningPatterns">
+        <span>Learning Patterns</span>
+        <span id="learningPatternsValue">0</span>
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button id="startMonitoringBtn">Start Monitoring</button>
+      <button id="stopMonitoringBtn" disabled>Stop Monitoring</button>
+      <button id="refreshDataBtn">Refresh Data</button>
+      <button id="exportReportBtn">Export Report</button>
+      <button id="viewGitHubActionsBtn">View GitHub Actions</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>🔗 URL Testing</h2>
+    <div id="urlTestingStatus" class="loading">Loading URL test data...</div>
+    <div class="table-container" id="urlTestTable" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Status</th>
+            <th>Response Time</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="urlTestTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>🏥 Health Checks</h2>
+    <div id="healthChecksStatus" class="loading">Loading health check data...</div>
+    <div class="table-container" id="healthCheckTable" style="display: none;">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Status</th>
+            <th>Message</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="healthCheckTableBody">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel full-width">
+    <h2>🧠 Learning Patterns</h2>
+    <div id="learningPatternsStatus" class="loading">Loading learning patterns...</div>
+    <div id="learningPatternsContainer" style="display: none;">
+    </div>
+  </div>
+
+  <div class="panel full-width">
+    <h2>📝 Live Logs</h2>
+    <div id="logs" class="logs-container">
+      <div class="log-entry info">[System] Tree Monitoring Dashboard initialized</div>
+      <div class="log-entry info">[System] Waiting for monitoring data...</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  class TreeMonitoringDashboard {
+    constructor() {
+      this.isMonitoring = false;
+      this.monitoringInterval = null;
+      this.baseUrl = this.detectBaseUrl();
+      this.initializeEventListeners();
+      this.loadInitialData();
+    }
+
+    detectBaseUrl() {
+      // Detect base URL from current location
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        return 'http://localhost:8080';
+      }
+      return 'https://viewunitysystem.github.io/OnAirMulTiMedia';
+    }
+
+    initializeEventListeners() {
+      document.getElementById('startMonitoringBtn').addEventListener('click', () => this.startMonitoring());
+      document.getElementById('stopMonitoringBtn').addEventListener('click', () => this.stopMonitoring());
+      document.getElementById('refreshDataBtn').addEventListener('click', () => this.refreshData());
+      document.getElementById('exportReportBtn').addEventListener('click', () => this.exportReport());
+      document.getElementById('viewGitHubActionsBtn').addEventListener('click', () => this.viewGitHubActions());
+    }
+
+    async loadInitialData() {
+      try {
+        await this.loadMonitoringData();
+        await this.loadUrlTestData();
+        await this.loadHealthCheckData();
+        await this.loadLearningPatterns();
+        this.log('info', 'Initial data loaded successfully');
+      } catch (error) {
+        this.log('error', `Failed to load initial data: ${error.message}`);
+      }
+    }
+
+    async loadMonitoringData() {
+      try {
+        // Try to load from monitoring directory
+        const response = await fetch(`${this.baseUrl}/monitoring/monitoring-report.json`);
+        if (response.ok) {
+          const data = await response.json();
+          this.updateSystemOverview(data);
+          return data;
+        }
+      } catch (error) {
+        // Fallback to sample data
+        this.updateSystemOverview(this.generateSampleData());
+      }
+    }
+
+    async loadUrlTestData() {
+      try {
+        const response = await fetch(`${this.baseUrl}/monitoring/url-test-results.json`);
+        if (response.ok) {
+          const data = await response.json();
+          this.updateUrlTestTable(data.tests || []);
+          return data;
+        }
+      } catch (error) {
+        // Fallback to sample data
+        this.updateUrlTestTable(this.generateSampleUrlTests());
+      }
+    }
+
+    async loadHealthCheckData() {
+      try {
+        const response = await fetch(`${this.baseUrl}/monitoring/health-report.json`);
+        if (response.ok) {
+          const data = await response.json();
+          this.updateHealthCheckTable(data.checks || []);
+          return data;
+        }
+      } catch (error) {
+        // Fallback to sample data
+        this.updateHealthCheckTable(this.generateSampleHealthChecks());
+      }
+    }
+
+    async loadLearningPatterns() {
+      try {
+        const response = await fetch(`${this.baseUrl}/monitoring/learning-patterns.json`);
+        if (response.ok) {
+          const data = await response.json();
+          this.updateLearningPatterns(data.patterns || []);
+          return data;
+        }
+      } catch (error) {
+        // Fallback to sample data
+        this.updateLearningPatterns(this.generateSampleLearningPatterns());
+      }
+    }
+
+    generateSampleData() {
+      return {
+        summary: {
+          totalTests: 45,
+          errorRate: 8.9,
+          availability: 91.1,
+          avgResponseTime: 1250,
+          healthSummary: {
+            healthy: 12,
+            warning: 3,
+            critical: 1
+          }
+        },
+        learningPatterns: [
+          {
+            pattern: 'file_modified:.html:docs',
+            frequency: 5,
+            confidence: 0.8,
+            lastSeen: new Date().toISOString(),
+            suggestions: ['Update documentation', 'Test affected functionality'],
+            fixes: ['Fix broken links', 'Update references']
+          }
+        ]
+      };
+    }
+
+    generateSampleUrlTests() {
+      return [
+        {
+          url: 'https://viewunitysystem.github.io/OnAirMulTiMedia/',
+          status: 200,
+          responseTime: 1250,
+          timestamp: new Date().toISOString()
+        },
+        {
+          url: 'https://viewunitysystem.github.io/OnAirMulTiMedia/docs/',
+          status: 404,
+          responseTime: 800,
+          timestamp: new Date().toISOString()
+        },
+        {
+          url: 'https://viewunitysystem.github.io/OnAirMulTiMedia/scripts/',
+          status: 200,
+          responseTime: 950,
+          timestamp: new Date().toISOString()
+        }
+      ];
+    }
+
+    generateSampleHealthChecks() {
+      return [
+        {
+          component: 'system',
+          status: 'healthy',
+          message: 'System health check passed',
+          timestamp: new Date().toISOString(),
+          learningFactor: 0.95
+        },
+        {
+          component: 'url-tester',
+          status: 'warning',
+          message: '404 error detected',
+          timestamp: new Date().toISOString(),
+          learningFactor: 0.75
+        },
+        {
+          component: 'tree-scanner',
+          status: 'healthy',
+          message: 'Tree scan completed successfully',
+          timestamp: new Date().toISOString(),
+          learningFactor: 0.90
+        }
+      ];
+    }
+
+    generateSampleLearningPatterns() {
+      return [
+        {
+          pattern: 'file_modified:.html:docs',
+          frequency: 5,
+          confidence: 0.8,
+          lastSeen: new Date().toISOString(),
+          suggestions: ['Update documentation', 'Test affected functionality'],
+          fixes: ['Fix broken links', 'Update references']
+        },
+        {
+          pattern: 'file_deleted:.js:scripts',
+          frequency: 2,
+          confidence: 0.6,
+          lastSeen: new Date().toISOString(),
+          suggestions: ['Check for broken imports', 'Update build configuration'],
+          fixes: ['Remove references', 'Update import statements']
+        }
+      ];
+    }
+
+    updateSystemOverview(data) {
+      const summary = data.summary || {};
+      
+      document.getElementById('totalTestsValue').textContent = summary.totalTests || 0;
+      document.getElementById('errorRateValue').textContent = `${summary.errorRate || 0}%`;
+      document.getElementById('availabilityValue').textContent = `${summary.availability || 0}%`;
+      document.getElementById('responseTimeValue').textContent = `${summary.avgResponseTime || 0}ms`;
+      
+      const healthSummary = summary.healthSummary || {};
+      document.getElementById('healthChecksValue').textContent = 
+        (healthSummary.healthy || 0) + (healthSummary.warning || 0) + (healthSummary.critical || 0);
+      
+      document.getElementById('learningPatternsValue').textContent = (data.learningPatterns || []).length;
+
+      // Update metric colors based on values
+      this.updateMetricColor('metricErrorRate', summary.errorRate, 5, 10);
+      this.updateMetricColor('metricAvailability', summary.availability, 95, 90);
+      this.updateMetricColor('metricResponseTime', summary.avgResponseTime, 1000, 2000);
+    }
+
+    updateMetricColor(metricId, value, goodThreshold, warningThreshold) {
+      const metric = document.getElementById(metricId);
+      metric.className = 'metric-item';
+      
+      if (value <= goodThreshold) {
+        metric.classList.add('healthy');
+      } else if (value <= warningThreshold) {
+        metric.classList.add('warning');
+      } else {
+        metric.classList.add('critical');
+      }
+    }
+
+    updateUrlTestTable(tests) {
+      const tableBody = document.getElementById('urlTestTableBody');
+      const statusDiv = document.getElementById('urlTestingStatus');
+      const tableDiv = document.getElementById('urlTestTable');
+      
+      if (tests.length === 0) {
+        statusDiv.innerHTML = '<div class="loading">No URL test data available</div>';
+        tableDiv.style.display = 'none';
+        return;
+      }
+
+      tableBody.innerHTML = '';
+      tests.slice(0, 20).forEach(test => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${test.url}</td>
+          <td class="url-status-${test.status}">${test.status}</td>
+          <td>${test.responseTime}ms</td>
+          <td>${new Date(test.timestamp).toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      statusDiv.style.display = 'none';
+      tableDiv.style.display = 'block';
+    }
+
+    updateHealthCheckTable(checks) {
+      const tableBody = document.getElementById('healthCheckTableBody');
+      const statusDiv = document.getElementById('healthChecksStatus');
+      const tableDiv = document.getElementById('healthCheckTable');
+      
+      if (checks.length === 0) {
+        statusDiv.innerHTML = '<div class="loading">No health check data available</div>';
+        tableDiv.style.display = 'none';
+        return;
+      }
+
+      tableBody.innerHTML = '';
+      checks.slice(0, 20).forEach(check => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${check.component}</td>
+          <td><span class="status-indicator status-${check.status}"></span>${check.status}</td>
+          <td>${check.message}</td>
+          <td>${new Date(check.timestamp).toLocaleString()}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+
+      statusDiv.style.display = 'none';
+      tableDiv.style.display = 'block';
+    }
+
+    updateLearningPatterns(patterns) {
+      const container = document.getElementById('learningPatternsContainer');
+      const statusDiv = document.getElementById('learningPatternsStatus');
+      
+      if (patterns.length === 0) {
+        statusDiv.innerHTML = '<div class="loading">No learning patterns available</div>';
+        container.style.display = 'none';
+        return;
+      }
+
+      container.innerHTML = '';
+      patterns.forEach(pattern => {
+        const patternDiv = document.createElement('div');
+        patternDiv.className = 'learning-pattern';
+        patternDiv.innerHTML = `
+          <h4>${pattern.pattern}</h4>
+          <div class="pattern-info">
+            Frequency: ${pattern.frequency} | Confidence: ${Math.round(pattern.confidence * 100)}% | 
+            Last Seen: ${new Date(pattern.lastSeen).toLocaleString()}
+          </div>
+          <div class="suggestions">
+            <strong>Suggestions:</strong>
+            <ul>
+              ${pattern.suggestions.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="suggestions">
+            <strong>Fixes:</strong>
+            <ul>
+              ${pattern.fixes.map(f => `<li>${f}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+        container.appendChild(patternDiv);
+      });
+
+      statusDiv.style.display = 'none';
+      container.style.display = 'block';
+    }
+
+    startMonitoring() {
+      if (this.isMonitoring) {
+        this.log('warning', 'Monitoring already running');
+        return;
+      }
+
+      this.isMonitoring = true;
+      document.getElementById('startMonitoringBtn').disabled = true;
+      document.getElementById('stopMonitoringBtn').disabled = false;
+
+      this.monitoringInterval = setInterval(() => {
+        this.refreshData();
+      }, 30000); // Refresh every 30 seconds
+
+      this.log('info', 'Monitoring started - data will refresh every 30 seconds');
+    }
+
+    stopMonitoring() {
+      if (!this.isMonitoring) {
+        this.log('warning', 'Monitoring not running');
+        return;
+      }
+
+      this.isMonitoring = false;
+      document.getElementById('startMonitoringBtn').disabled = false;
+      document.getElementById('stopMonitoringBtn').disabled = true;
+
+      if (this.monitoringInterval) {
+        clearInterval(this.monitoringInterval);
+        this.monitoringInterval = null;
+      }
+
+      this.log('info', 'Monitoring stopped');
+    }
+
+    async refreshData() {
+      this.log('info', 'Refreshing monitoring data...');
+      
+      try {
+        await this.loadMonitoringData();
+        await this.loadUrlTestData();
+        await this.loadHealthCheckData();
+        await this.loadLearningPatterns();
+        this.log('info', 'Data refresh completed');
+      } catch (error) {
+        this.log('error', `Data refresh failed: ${error.message}`);
+      }
+    }
+
+    exportReport() {
+      // Generate and download a comprehensive report
+      const reportData = {
+        timestamp: new Date().toISOString(),
+        dashboard: 'Tree Monitoring Dashboard',
+        url: window.location.href,
+        data: {
+          systemOverview: document.getElementById('totalTestsValue').textContent,
+          urlTests: document.getElementById('urlTestTableBody').innerHTML,
+          healthChecks: document.getElementById('healthCheckTableBody').innerHTML,
+          learningPatterns: document.getElementById('learningPatternsContainer').innerHTML
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tree-monitoring-report-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.log('info', 'Report exported successfully');
+    }
+
+    viewGitHubActions() {
+      window.open('https://github.com/ViewunitySystem/OnAirMulTiMedia/actions', '_blank');
+      this.log('info', 'Opened GitHub Actions in new tab');
+    }
+
+    log(level, message) {
+      const logsContainer = document.getElementById('logs');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${level}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      
+      logsContainer.insertBefore(entry, logsContainer.firstChild);
+      
+      // Keep only last 50 entries
+      while (logsContainer.children.length > 50) {
+        logsContainer.removeChild(logsContainer.lastChild);
+      }
+    }
+  }
+
+  // Initialize dashboard when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new TreeMonitoringDashboard();
+  });
+</script>

@@ -1,0 +1,32 @@
+{
+  "module": "CanvasSwipe",
+  "version": "1.0.0",
+  "description": "Interaktiver Swipe-Canvas; Gesten -> UI-State + Audit-Event.",
+  "interfaces": {
+    "inputs": [
+      { "name": "gesture", "type": "enum(left|right|up|down)", "required": true },
+      { "name": "payload", "type": "object", "required": false }
+    ],
+    "outputs": [
+      { "name": "state", "type": "JSON" },
+      { "name": "event", "type": "AUDIT" }
+    ],
+    "logs": [
+      { "event": "COMM_INIT", "level": "info", "description": "Canvas verbunden" },
+      { "event": "SIGNAL_TX", "level": "info", "description": "State aktualisiert" }
+    ]
+  },
+  "validation": {
+    "ci": true,
+    "tests": ["unit: gesture parser", "unit: state reducer", "int: socket broadcast"],
+    "hil_tests": ["Touchscreen-Swipe auf Referenzgerät"],
+    "recovery": ["reset state", "fallback gesture mapping"]
+  },
+  "regulatory": { "license_required": false, "references": [] },
+  "checklist": [
+    "Modul initialisiert korrekt",
+    "Signalpfad dokumentiert",
+    "Recovery bei Fehler getestet"
+  ]
+}
+

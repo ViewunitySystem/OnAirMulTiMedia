@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RF Loopback – Security Status</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self'; base-uri 'self'">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="top">
+    <h1>RF Loopback – Security Status</h1>
+    <nav>
+      <a href="./hackathon-canvas.html">Hackathon Canvas</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="grid">
+      <div class="card"><div class="label">Checksum</div><div id="checksum" class="value">–</div></div>
+      <div class="card"><div class="label">Mic Access</div><div id="mic" class="value">–</div></div>
+      <div class="card"><div class="label">Sample Rate</div><div id="rate" class="value">–</div></div>
+      <div class="card"><div class="label">Self‑Healing</div><div id="heal" class="value">–</div></div>
+    </section>
+
+    <section class="card">
+      <h2>Loopback Probe</h2>
+      <p>Startet ein kurzes Audio‑Loopback (Mic → Output). Browser fragt nach Erlaubnis.</p>
+      <button id="probe">Probe starten</button>
+      <div id="probeStatus" class="muted"></div>
+    </section>
+
+    <section class="card">
+      <h2>Audit</h2>
+      <button id="exportAudit">Audit Export (JSON)</button>
+      <button id="clearLog" class="ghost">Learning Log leeren</button>
+      <pre id="log" class="log"></pre>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

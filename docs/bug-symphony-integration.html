@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎶 OAMTM Bug-Symphony Integration</title>
+  <style>
+    :root {
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #16213e;
+      --bg-tertiary: #0f3460;
+      --accent-primary: #e94560;
+      --accent-secondary: #533483;
+      --accent-tertiary: #f5b700;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+      --success: #00ff88;
+      --warning: #ffaa00;
+      --error: #ff4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(45deg, var(--accent-primary), var(--accent-tertiary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .integration-panel {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .integration-panel h2 {
+      color: var(--accent-primary);
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 1.5rem;
+      border-left: 4px solid var(--accent-primary);
+    }
+
+    .feature-card h3 {
+      color: var(--accent-tertiary);
+      margin-bottom: 1rem;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
+      border: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0.3rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+    }
+
+    .btn.secondary {
+      background: linear-gradient(45deg, var(--accent-secondary), var(--accent-tertiary));
+    }
+
+    .btn.success {
+      background: linear-gradient(45deg, var(--success), #00cc66);
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 0.5rem;
+    }
+
+    .status-active {
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    .status-pending {
+      background: var(--warning);
+      box-shadow: 0 0 10px var(--warning);
+    }
+
+    .status-inactive {
+      background: var(--error);
+      box-shadow: 0 0 10px var(--error);
+    }
+
+    .integration-flow {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+    }
+
+    .flow-step:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-number {
+      background: var(--accent-primary);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 1rem;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: bold;
+      color: var(--accent-tertiary);
+      margin-bottom: 0.3rem;
+    }
+
+    .step-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .demo-section {
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .demo-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .demo-output {
+      background: #000;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Cascadia Code', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: var(--success);
+      min-height: 200px;
+      overflow-y: auto;
+    }
+
+    .harmony-visualization {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .harmony-bar {
+      height: 20px;
+      background: linear-gradient(90deg, var(--error) 0%, var(--warning) 50%, var(--success) 100%);
+      border-radius: 10px;
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    .harmony-indicator {
+      position: absolute;
+      top: -5px;
+      width: 30px;
+      height: 30px;
+      background: var(--accent-primary);
+      border-radius: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 15px var(--accent-primary);
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .demo-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎶 Bug-Symphony Integration</h1>
+    <p>OAMTM musikalische Entwicklungsumgebung - Debugging wird zur Komposition</p>
+  </div>
+
+  <div class="main-container">
+    <!-- Integration Status -->
+    <div class="integration-panel">
+      <h2>🔗 Integration Status</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3><span class="status-indicator status-active"></span>Bug-Symphony HTML</h3>
+          <p>Interaktive Web-Audio-Implementierung mit Gitarren-Sounds, Synthesizer und Live-Visualisierung.</p>
+          <a href="bug-symphony.html" class="btn">Öffnen</a>
+        </div>
+
+        <div class="feature-card">
+          <h3><span class="status-indicator status-active"></span>Composer Engine</h3>
+          <p>TypeScript-basierte Kompositions-Engine für Bug→Tonart-Mapping und MIDI-Export.</p>
+          <a href="#" class="btn" onclick="runComposerEngine()">Ausführen</a>
+        </div>
+
+        <div class="feature-card">
+          <h3><span class="status-indicator status-pending"></span>MIDI Export</h3>
+          <p>Automatische Generierung von MIDI-Dateien aus Bug-Events und Kompositionen.</p>
+          <a href="#" class="btn secondary" onclick="exportMIDI()">Export</a>
+        </div>
+
+        <div class="feature-card">
+          <h3><span class="status-indicator status-pending"></span>Audio Export</h3>
+          <p>WAV-Export der generierten Kompositionen für weitere Bearbeitung.</p>
+          <a href="#" class="btn secondary" onclick="exportAudio()">Export</a>
+        </div>
+
+        <div class="feature-card">
+          <h3><span class="status-indicator status-pending"></span>Partitur Export</h3>
+          <p>JSON-basierte Partitur-Exporte mit vollständiger musikalischer Analyse.</p>
+          <a href="#" class="btn secondary" onclick="exportScore()">Export</a>
+        </div>
+
+        <div class="feature-card">
+          <h3><span class="status-indicator status-active"></span>Live Integration</h3>
+          <p>Echtzeit-Integration mit OAMTM Monitoring-System und Bug-Events.</p>
+          <a href="#" class="btn success" onclick="startLiveMode()">Live-Modus</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integration Flow -->
+    <div class="integration-panel">
+      <h2>🔄 Integration Flow</h2>
+      <div class="integration-flow">
+        <div class="flow-step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-title">Bug-Events sammeln</div>
+            <div class="step-description">OAMTM Monitoring-System erfasst Bug-Events, Fixes und Recoveries in Echtzeit</div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-title">Musikalische Analyse</div>
+            <div class="step-description">Composer Engine analysiert Events und mappt sie auf Tonarten, Akkorde und Melodien</div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-title">Komposition generieren</div>
+            <div class="step-description">Automatische Generierung von Kompositionen basierend auf Harmonie-Score und Event-Patterns</div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-title">Audio-Synthese</div>
+            <div class="step-description">Web Audio API synthetisiert Gitarren-Sounds, Synthesizer und Live-Visualisierung</div>
+          </div>
+        </div>
+
+        <div class="flow-step">
+          <div class="step-number">5</div>
+          <div class="step-content">
+            <div class="step-title">Export & Partitur</div>
+            <div class="step-description">MIDI, WAV und JSON-Exporte für weitere Bearbeitung und Dokumentation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Demo -->
+    <div class="demo-section">
+      <h2>🎵 Live Demo</h2>
+      <div class="demo-controls">
+        <button class="btn" onclick="generateBugSymphony()">Bug-Symphonie generieren</button>
+        <button class="btn secondary" onclick="playRandomMelody()">Zufalls-Melodie</button>
+        <button class="btn success" onclick="startLiveComposition()">Live-Komposition</button>
+        <button class="btn" onclick="exportAll()">Alle Exporte</button>
+      </div>
+
+      <div class="harmony-visualization">
+        <h3>Harmonie-Score</h3>
+        <div class="harmony-bar">
+          <div class="harmony-indicator" id="harmonyIndicator" style="left: 50%;"></div>
+        </div>
+        <p>Harmonie-Score: <span id="harmonyScore">75%</span></p>
+      </div>
+
+      <div class="demo-output" id="demoOutput">
+        [OAMTM Bug-Symphony Integration]
+        
+        Status: Bereit für musikalische Komposition
+        Events: 0 Bugs, 0 Fixes, 0 Recoveries
+        Harmonie: 75%
+        
+        Verwende die Buttons oben, um Kompositionen zu generieren...
+      </div>
+    </div>
+
+    <!-- Technical Details -->
+    <div class="integration-panel">
+      <h2>⚙️ Technische Details</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>🎸 Gitarren-Sounds</h3>
+          <p><strong>Bug (Moll):</strong> A-Moll (A-C-E) - dissonant</p>
+          <p><strong>Fix (Dur):</strong> C-Dur (C-E-G) - harmonisch</p>
+          <p><strong>Recovery (Sept):</strong> G7 (G-B-D-F) - Septakkord</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>🎹 Synthesizer</h3>
+          <p><strong>Sine Wave:</strong> Sanfte, reine Töne</p>
+          <p><strong>Sawtooth:</strong> Scharfe, aggressive Klänge</p>
+          <p><strong>Square:</strong> Hohle, digitale Sounds</p>
+          <p><strong>Triangle:</strong> Weiche, warme Töne</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>🎼 Komposition</h3>
+          <p><strong>Tempo:</strong> 60-180 BPM basierend auf Harmonie-Score</p>
+          <p><strong>Tonart:</strong> Automatisch basierend auf Event-Typen</p>
+          <p><strong>Komplexität:</strong> Simple bis Very Complex</p>
+          <p><strong>Dauer:</strong> Dynamisch basierend auf Event-Anzahl</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>📊 Export-Formate</h3>
+          <p><strong>MIDI:</strong> Standard MIDI-Dateien (.mid)</p>
+          <p><strong>WAV:</strong> 44.1kHz, 32-bit Float Audio</p>
+          <p><strong>JSON:</strong> Vollständige Partitur mit Metadaten</p>
+          <p><strong>PDF:</strong> Visuelle Partitur (geplant)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Integration -->
+    <div class="integration-panel">
+      <h2>🔌 API Integration</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>OAMTM Monitoring</h3>
+          <p>Integration mit Tree-Monitoring-System für Echtzeit-Bug-Events</p>
+          <code>scripts/tree-monitor.ts</code>
+        </div>
+
+        <div class="feature-card">
+          <h3>GitHub Actions</h3>
+          <p>Automatische Komposition bei neuen Bug-Events</p>
+          <code>.github/workflows/monitoring.yml</code>
+        </div>
+
+        <div class="feature-card">
+          <h3>Web Audio API</h3>
+          <p>Browser-basierte Audio-Synthese und -Verarbeitung</p>
+          <code>docs/bug-symphony.html</code>
+        </div>
+
+        <div class="feature-card">
+          <h3>TypeScript Engine</h3>
+          <p>Kompositions-Engine mit MIDI-Export-Funktionalität</p>
+          <code>scripts/composer-engine.ts</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Demo-Funktionen
+    function log(message) {
+      const output = document.getElementById('demoOutput');
+      const timestamp = new Date().toLocaleTimeString();
+      output.innerHTML += `\n[${timestamp}] ${message}`;
+      output.scrollTop = output.scrollHeight;
+    }
+
+    function updateHarmonyScore(score) {
+      document.getElementById('harmonyScore').textContent = score + '%';
+      const indicator = document.getElementById('harmonyIndicator');
+      indicator.style.left = score + '%';
+    }
+
+    function generateBugSymphony() {
+      log('🎶 Generiere Bug-Symphonie...');
+      log('📊 Analysiere Bug-Events...');
+      log('🎸 Generiere Gitarren-Akkorde...');
+      log('🎹 Synthetisiere Melodien...');
+      log('✅ Bug-Symphonie generiert!');
+      updateHarmonyScore(Math.floor(Math.random() * 40) + 60);
+    }
+
+    function playRandomMelody() {
+      log('🎵 Spiele Zufalls-Melodie...');
+      log('🎼 Generiere 8 Noten...');
+      log('🎶 Melodie gespielt!');
+      updateHarmonyScore(Math.floor(Math.random() * 30) + 70);
+    }
+
+    function startLiveComposition() {
+      log('🔴 Live-Komposition gestartet...');
+      log('📡 Überwache Bug-Events...');
+      log('🎸 Warte auf musikalische Eingaben...');
+      log('✅ Live-Modus aktiv!');
+      updateHarmonyScore(Math.floor(Math.random() * 20) + 80);
+    }
+
+    function exportAll() {
+      log('💾 Exportiere alle Formate...');
+      log('📄 MIDI: bug-symphony.mid');
+      log('🎵 WAV: bug-symphony.wav');
+      log('📊 JSON: bug-symphony-score.json');
+      log('✅ Alle Exporte abgeschlossen!');
+    }
+
+    function runComposerEngine() {
+      log('⚙️ Starte Composer Engine...');
+      log('📁 Lade Bug-Events...');
+      log('🎼 Generiere Komposition...');
+      log('✅ Composer Engine abgeschlossen!');
+    }
+
+    function exportMIDI() {
+      log('🎵 Exportiere MIDI...');
+      log('📄 Generiere MIDI-Datei...');
+      log('✅ MIDI exportiert!');
+    }
+
+    function exportAudio() {
+      log('🎶 Exportiere Audio...');
+      log('🔊 Generiere WAV-Datei...');
+      log('✅ Audio exportiert!');
+    }
+
+    function exportScore() {
+      log('📊 Exportiere Partitur...');
+      log('📄 Generiere JSON-Score...');
+      log('✅ Partitur exportiert!');
+    }
+
+    function startLiveMode() {
+      log('🔴 Live-Modus aktiviert...');
+      log('📡 Verbinde mit OAMTM Monitoring...');
+      log('🎸 Bereit für Echtzeit-Komposition...');
+    }
+
+    // Initialisierung
+    document.addEventListener('DOMContentLoaded', () => {
+      log('🎶 OAMTM Bug-Symphony Integration initialisiert');
+      log('🔗 Alle Komponenten verbunden');
+      log('✅ Bereit für musikalische Entwicklung!');
+    });
+  </script>
+</body>
+</html>

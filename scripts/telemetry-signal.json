@@ -1,0 +1,237 @@
+{
+  "telemetrySignal": {
+    "version": "1.0.0",
+    "schema": "ultrasound-telemetry",
+    "description": "Standardisierte Austauschstruktur für Ultraschall-Telemetrie",
+    "timestamp": "2025-01-27T10:30:00.000Z",
+    "sessionId": "ultrasound_1737976200000_abc123def",
+    "deviceId": "device_Chrome_120.0_x789yz",
+    "signal": {
+      "id": "signal_1737976200000_xyz789abc",
+      "type": "distance_measurement",
+      "frequency": 20000,
+      "amplitude": -45.2,
+      "phase": 1.234,
+      "dopplerShift": 125.5,
+      "signalStrength": 0.847,
+      "confidence": 0.923
+    },
+    "measurement": {
+      "distance": 156.7,
+      "unit": "cm",
+      "accuracy": 2.3,
+      "direction": "approaching",
+      "velocity": 0.85,
+      "velocityUnit": "m/s"
+    },
+    "environment": {
+      "temperature": 22.5,
+      "humidity": 45.2,
+      "pressure": 1013.25,
+      "soundSpeed": 343.2,
+      "unit": "m/s"
+    },
+    "processing": {
+      "sampleRate": 44100,
+      "fftSize": 1024,
+      "frequencyBin": 465,
+      "processingTime": 12.5,
+      "algorithm": "doppler_fft",
+      "version": "1.0.0"
+    },
+    "metadata": {
+      "deviceInfo": {
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "platform": "Windows",
+        "audioContext": "supported",
+        "microphoneAccess": "granted",
+        "speakerAccess": "granted"
+      },
+      "calibration": {
+        "frequencyOffset": 0.0,
+        "amplitudeOffset": 0.0,
+        "phaseOffset": 0.0,
+        "calibratedAt": "2025-01-27T10:00:00.000Z"
+      },
+      "quality": {
+        "snr": 18.5,
+        "noiseFloor": -65.2,
+        "dynamicRange": 45.8,
+        "distortion": 0.02
+      }
+    },
+    "audit": {
+      "created": "2025-01-27T10:30:00.000Z",
+      "source": "ultrasound-localizer",
+      "version": "1.0.0",
+      "checksum": "sha256:abc123def456789...",
+      "signature": "ed25519:xyz789abc123def...",
+      "compliance": {
+        "gdpr": true,
+        "cept": true,
+        "etsi": true,
+        "auditTrail": true
+      }
+    }
+  },
+  "examples": {
+    "distanceMeasurement": {
+      "id": "signal_1737976200000_distance_001",
+      "type": "distance_measurement",
+      "frequency": 20000,
+      "amplitude": -42.1,
+      "dopplerShift": 89.3,
+      "signalStrength": 0.756,
+      "confidence": 0.891,
+      "distance": 234.5,
+      "unit": "cm",
+      "direction": "stationary"
+    },
+    "movementDetection": {
+      "id": "signal_1737976200000_movement_001",
+      "type": "movement_detection",
+      "frequency": 20000,
+      "amplitude": -38.7,
+      "dopplerShift": -156.2,
+      "signalStrength": 0.823,
+      "confidence": 0.934,
+      "velocity": 1.2,
+      "unit": "m/s",
+      "direction": "receding"
+    },
+    "signalAnalysis": {
+      "id": "signal_1737976200000_analysis_001",
+      "type": "signal_analysis",
+      "frequency": 20000,
+      "amplitude": -51.3,
+      "phase": 2.456,
+      "signalStrength": 0.634,
+      "confidence": 0.745,
+      "spectrum": {
+        "peaks": [
+          { "frequency": 19985.2, "amplitude": -51.3, "phase": 2.456 },
+          { "frequency": 20014.8, "amplitude": -58.7, "phase": 1.789 }
+        ],
+        "noiseFloor": -68.2,
+        "dynamicRange": 42.1
+      }
+    },
+    "errorReport": {
+      "id": "signal_1737976200000_error_001",
+      "type": "error_report",
+      "error": {
+        "code": "SIGNAL_TOO_WEAK",
+        "message": "Signal strength below threshold",
+        "threshold": 0.1,
+        "actual": 0.05,
+        "timestamp": "2025-01-27T10:30:00.000Z"
+      },
+      "recovery": {
+        "attempted": true,
+        "successful": false,
+        "nextAttempt": "2025-01-27T10:30:05.000Z"
+      }
+    }
+  },
+  "validation": {
+    "schema": {
+      "type": "object",
+      "required": ["telemetrySignal"],
+      "properties": {
+        "telemetrySignal": {
+          "type": "object",
+          "required": ["version", "schema", "timestamp", "sessionId", "deviceId", "signal"],
+          "properties": {
+            "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+            "schema": { "type": "string" },
+            "timestamp": { "type": "string", "format": "date-time" },
+            "sessionId": { "type": "string", "minLength": 10 },
+            "deviceId": { "type": "string", "minLength": 10 },
+            "signal": {
+              "type": "object",
+              "required": ["id", "type", "frequency", "amplitude"],
+              "properties": {
+                "id": { "type": "string" },
+                "type": { "enum": ["distance_measurement", "movement_detection", "signal_analysis", "error_report"] },
+                "frequency": { "type": "number", "minimum": 18000, "maximum": 22000 },
+                "amplitude": { "type": "number", "maximum": 0 },
+                "phase": { "type": "number", "minimum": 0, "maximum": 6.28 },
+                "dopplerShift": { "type": "number" },
+                "signalStrength": { "type": "number", "minimum": 0, "maximum": 1 },
+                "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "rules": [
+      "Frequency must be between 18kHz and 22kHz",
+      "Amplitude must be negative (dB)",
+      "Signal strength must be between 0 and 1",
+      "Confidence must be between 0 and 1",
+      "Timestamp must be ISO 8601 format",
+      "Session ID must be unique per session",
+      "Device ID must be unique per device"
+    ]
+  },
+  "integration": {
+    "oamtm": {
+      "modules": [
+        "AudioProcessingPipeline",
+        "SpectrumAnalyzer",
+        "Mod/Demod",
+        "SelfHealingEngine",
+        "AuditTrailEngine",
+        "LicenseSync"
+      ],
+      "endpoints": [
+        "/api/ultrasound/telemetry",
+        "/api/ultrasound/calibration",
+        "/api/ultrasound/audit"
+      ],
+      "events": [
+        "ultrasound.signal.received",
+        "ultrasound.distance.measured",
+        "ultrasound.movement.detected",
+        "ultrasound.error.occurred"
+      ]
+    },
+    "export": {
+      "formats": ["json", "csv", "xml", "pdf"],
+      "destinations": ["local", "cloud", "audit", "telemetry"],
+      "compression": ["gzip", "brotli", "lz4"],
+      "encryption": ["aes-256-gcm", "chacha20-poly1305"]
+    }
+  },
+  "compliance": {
+    "gdpr": {
+      "dataMinimization": true,
+      "purposeLimitation": true,
+      "storageLimitation": true,
+      "accuracy": true,
+      "security": true,
+      "accountability": true
+    },
+    "cept": {
+      "frequencyRange": "18-22 kHz",
+      "powerLimit": "0.1 W",
+      "bandwidth": "4 kHz",
+      "modulation": "ultrasonic",
+      "license": "not_required"
+    },
+    "etsi": {
+      "standard": "EN 300 328",
+      "compliance": "ultrasonic_exemption",
+      "testing": "not_required",
+      "certification": "not_required"
+    },
+    "audit": {
+      "trail": true,
+      "export": true,
+      "verification": true,
+      "compliance": true,
+      "reporting": true
+    }
+  }
+}

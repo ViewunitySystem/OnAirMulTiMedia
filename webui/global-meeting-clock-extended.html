@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Globale Meeting-Uhr Extended - Raymond Demitrio Dr. Tel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0b0f14 0%, #121923 50%, #1a1a2e 100%);
+            color: #e6f0ff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(160deg, rgba(112,240,255,.06), rgba(112,240,255,0)), #121923;
+            border: 1px solid rgba(112,240,255,.15);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .header h1 {
+            font-size: clamp(24px, 4vw, 32px);
+            margin-bottom: 10px;
+            color: #70f0ff;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            background: rgba(112,240,255,.06);
+            border: 1px solid rgba(112,240,255,.15);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .control-group h3 {
+            color: #70f0ff;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        select, input, button {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(112,240,255,.25);
+            background: #0c131c;
+            color: #e6f0ff;
+            font-size: 14px;
+        }
+        
+        button {
+            background: linear-gradient(180deg, rgba(112,240,255,.25), rgba(112,240,255,.1));
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        button:hover {
+            background: linear-gradient(180deg, rgba(112,240,255,.35), rgba(112,240,255,.2));
+        }
+        
+        .timezone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .timezone-card {
+            background: linear-gradient(160deg, rgba(112,240,255,.06), rgba(112,240,255,0)), #121923;
+            border: 1px solid rgba(112,240,255,.15);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timezone-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #70f0ff, #41d47a);
+        }
+        
+        .timezone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .timezone-name {
+            font-weight: bold;
+            color: #70f0ff;
+            font-size: 16px;
+        }
+        
+        .timezone-offset {
+            background: rgba(112,240,255,.2);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        
+        .clock-display {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .digital-clock {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #41d47a;
+            background: rgba(0,0,0,.3);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(112,240,255,.2);
+        }
+        
+        .analog-clock {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #70f0ff;
+            border-radius: 50%;
+            position: relative;
+            background: rgba(0,0,0,.3);
+        }
+        
+        .analog-clock .hand {
+            position: absolute;
+            background: #70f0ff;
+            transform-origin: bottom center;
+            border-radius: 2px;
+        }
+        
+        .analog-clock .hour-hand {
+            width: 4px;
+            height: 25px;
+            top: 15px;
+            left: 38px;
+        }
+        
+        .analog-clock .minute-hand {
+            width: 3px;
+            height: 35px;
+            top: 5px;
+            left: 38.5px;
+        }
+        
+        .analog-clock .second-hand {
+            width: 1px;
+            height: 35px;
+            top: 5px;
+            left: 39.5px;
+            background: #f6c945;
+        }
+        
+        .analog-clock .center {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #70f0ff;
+            border-radius: 50%;
+            top: 36px;
+            left: 36px;
+        }
+        
+        .timezone-info {
+            font-size: 12px;
+            color: #97a7bd;
+            margin-bottom: 10px;
+        }
+        
+        .market-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: rgba(0,0,0,.3);
+            border-radius: 6px;
+            font-size: 12px;
+        }
+        
+        .market-open {
+            color: #41d47a;
+            background: rgba(65,212,122,.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .market-closed {
+            color: #ff6b6b;
+            background: rgba(255,107,107,.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .odt-display {
+            background: rgba(246,201,69,.1);
+            border: 1px solid rgba(246,201,69,.3);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .odt-title {
+            color: #f6c945;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .odt-time {
+            font-family: monospace;
+            font-size: 14px;
+            color: #f6c945;
+        }
+        
+        .search-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .search-input {
+            width: 250px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(112,240,255,.25);
+            background: rgba(12,19,28,.9);
+            color: #e6f0ff;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(12,19,28,.95);
+            border: 1px solid rgba(112,240,255,.25);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .search-result {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(112,240,255,.1);
+        }
+        
+        .search-result:hover {
+            background: rgba(112,240,255,.1);
+        }
+        
+        .search-result:last-child {
+            border-bottom: none;
+        }
+        
+        .location-info {
+            font-size: 10px;
+            color: #97a7bd;
+        }
+        
+        .timezone-time {
+            font-family: monospace;
+            color: #70f0ff;
+        }
+        
+        @media (max-width: 768px) {
+            .timezone-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .clock-display {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .search-box {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Globale Meeting-Uhr Extended</h1>
+            <p>Raymond Demitrio Dr. Tel - Alle Zeitzonen • Börsen-Integration • Timecode ODT (2)</p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" class="search-input" id="locationSearch" placeholder="🔍 Stadt, Gemeinde, Dorf suchen...">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>🎯 Zeitzone hinzufügen</h3>
+                <select id="timezoneSelect">
+                    <option value="">Zeitzone auswählen...</option>
+                </select>
+                <button onclick="addTimezone()">Hinzufügen</button>
+            </div>
+            
+            <div class="control-group">
+                <h3>⏰ Anzeige-Format</h3>
+                <select id="displayFormat" onchange="updateDisplayFormat()">
+                    <option value="both">Digital + Analog</option>
+                    <option value="digital">Nur Digital</option>
+                    <option value="analog">Nur Analog</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <h3>📊 Börsen-Integration</h3>
+                <button onclick="toggleMarketData()">Marktdaten anzeigen</button>
+                <button onclick="toggleODT()">Timecode ODT (2)</button>
+            </div>
+        </div>
+
+        <div class="timezone-grid" id="timezoneGrid">
+            <!-- Zeitzonen werden hier dynamisch hinzugefügt -->
+        </div>
+    </div>
+
+    <script>
+        // Globale Meeting-Uhr Extended System
+        class GlobalMeetingClock {
+            constructor() {
+                this.timezones = new Map();
+                this.allTimezones = [];
+                this.marketData = true;
+                this.odtDisplay = true;
+                this.displayFormat = 'both';
+                this.searchResults = [];
+                
+                this.init();
+            }
+            
+            init() {
+                this.loadAllTimezones();
+                this.populateTimezoneSelect();
+                this.addDefaultTimezones();
+                this.setupLocationSearch();
+                this.startClockUpdates();
+                this.loadMarketData();
+            }
+            
+            loadAllTimezones() {
+                // Alle verfügbaren Zeitzonen (Intl.supportedValuesOf('timeZone'))
+                this.allTimezones = [
+                    // Europa
+                    'Europe/Berlin', 'Europe/London', 'Europe/Paris', 'Europe/Rome', 'Europe/Madrid',
+                    'Europe/Amsterdam', 'Europe/Brussels', 'Europe/Vienna', 'Europe/Zurich', 'Europe/Stockholm',
+                    'Europe/Oslo', 'Europe/Copenhagen', 'Europe/Helsinki', 'Europe/Warsaw', 'Europe/Prague',
+                    'Europe/Budapest', 'Europe/Bucharest', 'Europe/Sofia', 'Europe/Athens', 'Europe/Istanbul',
+                    'Europe/Moscow', 'Europe/Kiev', 'Europe/Minsk', 'Europe/Riga', 'Europe/Tallinn',
+                    'Europe/Vilnius', 'Europe/Dublin', 'Europe/Lisbon', 'Europe/Luxembourg', 'Europe/Malta',
+                    
+                    // Amerika
+                    'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
+                    'America/Toronto', 'America/Vancouver', 'America/Montreal', 'America/Winnipeg',
+                    'America/Halifax', 'America/St_Johns', 'America/Mexico_City', 'America/Bogota',
+                    'America/Caracas', 'America/Lima', 'America/Santiago', 'America/Buenos_Aires',
+                    'America/Sao_Paulo', 'America/Rio_de_Janeiro', 'America/Manaus', 'America/Panama',
+                    'America/Guatemala', 'America/Tegucigalpa', 'America/San_Jose', 'America/Havana',
+                    
+                    // Asien
+                    'Asia/Tokyo', 'Asia/Shanghai', 'Asia/Beijing', 'Asia/Hong_Kong', 'Asia/Singapore',
+                    'Asia/Seoul', 'Asia/Taipei', 'Asia/Bangkok', 'Asia/Jakarta', 'Asia/Manila',
+                    'Asia/Kuala_Lumpur', 'Asia/Ho_Chi_Minh', 'Asia/Dhaka', 'Asia/Kolkata', 'Asia/Karachi',
+                    'Asia/Dubai', 'Asia/Tehran', 'Asia/Baghdad', 'Asia/Riyadh', 'Asia/Jerusalem',
+                    'Asia/Baku', 'Asia/Yerevan', 'Asia/Tbilisi', 'Asia/Almaty', 'Asia/Tashkent',
+                    'Asia/Dushanbe', 'Asia/Bishkek', 'Asia/Ulaanbaatar', 'Asia/Vladivostok', 'Asia/Yakutsk',
+                    
+                    // Afrika
+                    'Africa/Cairo', 'Africa/Johannesburg', 'Africa/Casablanca', 'Africa/Lagos',
+                    'Africa/Nairobi', 'Africa/Addis_Ababa', 'Africa/Tripoli', 'Africa/Tunis',
+                    'Africa/Algiers', 'Africa/Dakar', 'Africa/Accra', 'Africa/Luanda',
+                    'Africa/Kinshasa', 'Africa/Khartoum', 'Africa/Maputo', 'Africa/Lusaka',
+                    
+                    // Ozeanien
+                    'Australia/Sydney', 'Australia/Melbourne', 'Australia/Perth', 'Australia/Adelaide',
+                    'Australia/Brisbane', 'Australia/Darwin', 'Australia/Hobart', 'Pacific/Auckland',
+                    'Pacific/Fiji', 'Pacific/Tahiti', 'Pacific/Honolulu', 'Pacific/Guam',
+                    'Pacific/Saipan', 'Pacific/Palau', 'Pacific/Port_Moresby', 'Pacific/Noumea',
+                    
+                    // UTC und GMT
+                    'UTC', 'GMT', 'GMT+1', 'GMT+2', 'GMT+3', 'GMT+4', 'GMT+5', 'GMT+6',
+                    'GMT+7', 'GMT+8', 'GMT+9', 'GMT+10', 'GMT+11', 'GMT+12',
+                    'GMT-1', 'GMT-2', 'GMT-3', 'GMT-4', 'GMT-5', 'GMT-6',
+                    'GMT-7', 'GMT-8', 'GMT-9', 'GMT-10', 'GMT-11', 'GMT-12'
+                ];
+            }
+            
+            populateTimezoneSelect() {
+                const select = document.getElementById('timezoneSelect');
+                
+                // Gruppierung nach Regionen
+                const regions = {
+                    'Europa': this.allTimezones.filter(tz => tz.startsWith('Europe/')),
+                    'Amerika': this.allTimezones.filter(tz => tz.startsWith('America/')),
+                    'Asien': this.allTimezones.filter(tz => tz.startsWith('Asia/')),
+                    'Afrika': this.allTimezones.filter(tz => tz.startsWith('Africa/')),
+                    'Ozeanien': this.allTimezones.filter(tz => tz.startsWith('Australia/') || tz.startsWith('Pacific/')),
+                    'UTC/GMT': this.allTimezones.filter(tz => tz.startsWith('UTC') || tz.startsWith('GMT'))
+                };
+                
+                Object.entries(regions).forEach(([region, timezones]) => {
+                    const optgroup = document.createElement('optgroup');
+                    optgroup.label = region;
+                    
+                    timezones.forEach(timezone => {
+                        const option = document.createElement('option');
+                        option.value = timezone;
+                        option.textContent = this.formatTimezoneName(timezone);
+                        optgroup.appendChild(option);
+                    });
+                    
+                    select.appendChild(optgroup);
+                });
+            }
+            
+            formatTimezoneName(timezone) {
+                return timezone.replace(/_/g, ' ').replace(/\//g, ' - ');
+            }
+            
+            addDefaultTimezones() {
+                const defaultTimezones = [
+                    'UTC', 'Europe/Berlin', 'America/New_York', 'Asia/Tokyo',
+                    'Australia/Sydney', 'Europe/London', 'America/Los_Angeles', 'Asia/Shanghai'
+                ];
+                
+                defaultTimezones.forEach(timezone => {
+                    this.addTimezone(timezone);
+                });
+            }
+            
+            addTimezone(timezone) {
+                if (this.timezones.has(timezone)) return;
+                
+                const timezoneData = {
+                    id: timezone,
+                    name: this.formatTimezoneName(timezone),
+                    offset: this.getTimezoneOffset(timezone),
+                    cities: this.getCitiesForTimezone(timezone)
+                };
+                
+                this.timezones.set(timezone, timezoneData);
+                this.renderTimezone(timezoneData);
+            }
+            
+            getTimezoneOffset(timezone) {
+                try {
+                    const now = new Date();
+                    const utc = new Date(now.getTime() + (now.getTimezoneOffset() * 60000));
+                    const local = new Date(utc.toLocaleString("en-US", {timeZone: timezone}));
+                    const offset = (local.getTime() - utc.getTime()) / (1000 * 60 * 60);
+                    return offset;
+                } catch (error) {
+                    return 0;
+                }
+            }
+            
+            getCitiesForTimezone(timezone) {
+                const cityMap = {
+                    'UTC': ['London (GMT)', 'Dublin', 'Lisbon'],
+                    'Europe/Berlin': ['Berlin', 'Frankfurt', 'München', 'Hamburg', 'Köln'],
+                    'America/New_York': ['New York', 'Washington', 'Miami', 'Atlanta', 'Boston'],
+                    'Asia/Tokyo': ['Tokyo', 'Osaka', 'Kyoto', 'Yokohama', 'Nagoya'],
+                    'Australia/Sydney': ['Sydney', 'Melbourne', 'Canberra', 'Newcastle', 'Wollongong'],
+                    'Europe/London': ['London', 'Birmingham', 'Manchester', 'Liverpool', 'Leeds'],
+                    'America/Los_Angeles': ['Los Angeles', 'San Francisco', 'San Diego', 'Las Vegas', 'Seattle'],
+                    'Asia/Shanghai': ['Shanghai', 'Beijing', 'Guangzhou', 'Shenzhen', 'Hangzhou']
+                };
+                
+                return cityMap[timezone] || [timezone.split('/')[1] || timezone];
+            }
+            
+            renderTimezone(timezoneData) {
+                const grid = document.getElementById('timezoneGrid');
+                const card = document.createElement('div');
+                card.className = 'timezone-card';
+                card.id = `timezone-${timezoneData.id}`;
+                
+                const offsetText = timezoneData.offset >= 0 ? 
+                    `UTC+${timezoneData.offset}` : `UTC${timezoneData.offset}`;
+                
+                card.innerHTML = `
+                    <div class="timezone-header">
+                        <div class="timezone-name">${timezoneData.name}</div>
+                        <div class="timezone-offset">${offsetText}</div>
+                    </div>
+                    
+                    <div class="clock-display">
+                        <div class="digital-clock" id="digital-${timezoneData.id}">00:00:00</div>
+                        <div class="analog-clock" id="analog-${timezoneData.id}" style="display: ${this.displayFormat === 'digital' ? 'none' : 'block'}">
+                            <div class="hand hour-hand"></div>
+                            <div class="hand minute-hand"></div>
+                            <div class="hand second-hand"></div>
+                            <div class="center"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="timezone-info">
+                        Städte: ${timezoneData.cities.join(', ')}
+                    </div>
+                    
+                    <div class="market-status" id="market-${timezoneData.id}">
+                        <span>Markt:</span>
+                        <span class="market-closed">Geschlossen</span>
+                    </div>
+                    
+                    <div class="odt-display" id="odt-${timezoneData.id}" style="display: ${this.odtDisplay ? 'block' : 'none'}">
+                        <div class="odt-title">Timecode ODT (2)</div>
+                        <div class="odt-time" id="odt-time-${timezoneData.id}">00:00:00:00</div>
+                    </div>
+                    
+                    <button onclick="globalClock.removeTimezone('${timezoneData.id}')" style="margin-top: 10px; width: 100%; font-size: 12px;">
+                        ❌ Entfernen
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            }
+            
+            updateClocks() {
+                this.timezones.forEach((timezoneData, timezoneId) => {
+                    this.updateDigitalClock(timezoneId);
+                    this.updateAnalogClock(timezoneId);
+                    this.updateMarketStatus(timezoneId);
+                    this.updateODTTime(timezoneId);
+                });
+            }
+            
+            updateDigitalClock(timezoneId) {
+                const digitalElement = document.getElementById(`digital-${timezoneId}`);
+                if (!digitalElement) return;
+                
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('de-DE', {
+                    timeZone: timezoneId,
+                    hour12: false,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                digitalElement.textContent = timeString;
+            }
+            
+            updateAnalogClock(timezoneId) {
+                const analogElement = document.getElementById(`analog-${timezoneId}`);
+                if (!analogElement || this.displayFormat === 'digital') return;
+                
+                const now = new Date();
+                const localTime = new Date(now.toLocaleString("en-US", {timeZone: timezoneId}));
+                
+                const hours = localTime.getHours();
+                const minutes = localTime.getMinutes();
+                const seconds = localTime.getSeconds();
+                
+                const hourHand = analogElement.querySelector('.hour-hand');
+                const minuteHand = analogElement.querySelector('.minute-hand');
+                const secondHand = analogElement.querySelector('.second-hand');
+                
+                const hourAngle = (hours % 12) * 30 + minutes * 0.5;
+                const minuteAngle = minutes * 6;
+                const secondAngle = seconds * 6;
+                
+                hourHand.style.transform = `rotate(${hourAngle}deg)`;
+                minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
+                secondHand.style.transform = `rotate(${secondAngle}deg)`;
+            }
+            
+            updateMarketStatus(timezoneId) {
+                const marketElement = document.getElementById(`market-${timezoneId}`);
+                if (!marketElement) return;
+                
+                const now = new Date();
+                const localTime = new Date(now.toLocaleString("en-US", {timeZone: timezoneId}));
+                const dayOfWeek = localTime.getDay();
+                const hour = localTime.getHours();
+                
+                // Einfache Marktzeiten (könnte erweitert werden)
+                const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                const isMarketHours = hour >= 9 && hour < 17;
+                const isOpen = !isWeekend && isMarketHours;
+                
+                const statusElement = marketElement.querySelector('span:last-child');
+                statusElement.className = isOpen ? 'market-open' : 'market-closed';
+                statusElement.textContent = isOpen ? 'Geöffnet' : 'Geschlossen';
+            }
+            
+            updateODTTime(timezoneId) {
+                const odtElement = document.getElementById(`odt-time-${timezoneId}`);
+                if (!odtElement) return;
+                
+                const now = new Date();
+                const localTime = new Date(now.toLocaleString("en-US", {timeZone: timezoneId}));
+                
+                const hours = localTime.getHours().toString().padStart(2, '0');
+                const minutes = localTime.getMinutes().toString().padStart(2, '0');
+                const seconds = localTime.getSeconds().toString().padStart(2, '0');
+                const milliseconds = Math.floor(localTime.getMilliseconds() / 10).toString().padStart(2, '0');
+                
+                odtElement.textContent = `${hours}:${minutes}:${seconds}:${milliseconds}`;
+            }
+            
+            setupLocationSearch() {
+                const searchInput = document.getElementById('locationSearch');
+                const searchResults = document.getElementById('searchResults');
+                
+                searchInput.addEventListener('input', (e) => {
+                    const query = e.target.value.toLowerCase();
+                    if (query.length < 2) {
+                        searchResults.style.display = 'none';
+                        return;
+                    }
+                    
+                    this.searchLocations(query);
+                    this.displaySearchResults();
+                });
+                
+                searchInput.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        searchResults.style.display = 'none';
+                    }, 200);
+                });
+            }
+            
+            searchLocations(query) {
+                this.searchResults = [];
+                
+                this.allTimezones.forEach(timezone => {
+                    const cities = this.getCitiesForTimezone(timezone);
+                    const timezoneName = this.formatTimezoneName(timezone);
+                    
+                    cities.forEach(city => {
+                        if (city.toLowerCase().includes(query) || timezoneName.toLowerCase().includes(query)) {
+                            this.searchResults.push({
+                                timezone: timezone,
+                                city: city,
+                                timezoneName: timezoneName
+                            });
+                        }
+                    });
+                });
+                
+                this.searchResults = this.searchResults.slice(0, 10); // Limit to 10 results
+            }
+            
+            displaySearchResults() {
+                const searchResults = document.getElementById('searchResults');
+                searchResults.innerHTML = '';
+                
+                if (this.searchResults.length === 0) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+                
+                this.searchResults.forEach(result => {
+                    const resultElement = document.createElement('div');
+                    resultElement.className = 'search-result';
+                    resultElement.innerHTML = `
+                        <div class="timezone-time">${result.city}</div>
+                        <div class="location-info">${result.timezoneName}</div>
+                    `;
+                    
+                    resultElement.addEventListener('click', () => {
+                        this.addTimezone(result.timezone);
+                        document.getElementById('locationSearch').value = '';
+                        searchResults.style.display = 'none';
+                    });
+                    
+                    searchResults.appendChild(resultElement);
+                });
+                
+                searchResults.style.display = 'block';
+            }
+            
+            startClockUpdates() {
+                setInterval(() => {
+                    this.updateClocks();
+                }, 1000);
+                
+                // Initial update
+                this.updateClocks();
+            }
+            
+            loadMarketData() {
+                // Hier könnten echte Marktdaten geladen werden
+                console.log('Marktdaten geladen');
+            }
+            
+            removeTimezone(timezoneId) {
+                this.timezones.delete(timezoneId);
+                const card = document.getElementById(`timezone-${timezoneId}`);
+                if (card) {
+                    card.remove();
+                }
+            }
+        }
+
+        // Global functions
+        let globalClock;
+
+        function addTimezone() {
+            const select = document.getElementById('timezoneSelect');
+            const selectedTimezone = select.value;
+            if (selectedTimezone) {
+                globalClock.addTimezone(selectedTimezone);
+                select.value = '';
+            }
+        }
+
+        function updateDisplayFormat() {
+            const select = document.getElementById('displayFormat');
+            globalClock.displayFormat = select.value;
+            
+            // Update all analog clocks visibility
+            document.querySelectorAll('.analog-clock').forEach(clock => {
+                clock.style.display = select.value === 'digital' ? 'none' : 'block';
+            });
+        }
+
+        function toggleMarketData() {
+            globalClock.marketData = !globalClock.marketData;
+            document.querySelectorAll('.market-status').forEach(element => {
+                element.style.display = globalClock.marketData ? 'flex' : 'none';
+            });
+        }
+
+        function toggleODT() {
+            globalClock.odtDisplay = !globalClock.odtDisplay;
+            document.querySelectorAll('.odt-display').forEach(element => {
+                element.style.display = globalClock.odtDisplay ? 'block' : 'none';
+            });
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            globalClock = new GlobalMeetingClock();
+        });
+    </script>
+</body>
+</html>
+

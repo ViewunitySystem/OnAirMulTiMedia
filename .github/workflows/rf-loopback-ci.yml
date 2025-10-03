@@ -1,0 +1,47 @@
+name: RF Loopback CI
+on:
+  push:
+    paths:
+      - 'modules/rf/loopback-node/**'
+      - 'scripts/ci/**'
+      - 'tests/**'
+  pull_request:
+    paths:
+      - 'modules/rf/loopback-node/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with: { node-version: 20 }
+
+      - name: Install Playwright
+        run: |
+          npm i -D @playwright/test
+          npx playwright install --with-deps
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+
+      - name: Python deps
+        run: pip install jsonschema
+
+      - name: Pre-Cert Check
+        run: bash scripts/ci/pre-cert-check.sh
+
+      - name: UI Smoke (static serve)
+        run: |
+          npx http-server -p 8080 -c-1 . &
+          npx wait-on http://localhost:8080
+          BASE=http://localhost:8080/modules/rf/loopback-node/ui/ npx playwright test tests/loopback-ui.spec.ts --reporter=line
+
+      - name: Upload Audit Preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-preview
+          path: modules/rf/loopback-node/data/audit-export.preview.json

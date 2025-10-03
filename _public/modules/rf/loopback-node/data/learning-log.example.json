@@ -1,0 +1,5 @@
+[
+  { "ts": "2025-10-03T10:00:00Z", "event": "init" },
+  { "ts": "2025-10-03T10:02:00Z", "event": "checksum_verified" },
+  { "ts": "2025-10-03T10:04:00Z", "event": "probe_ok" }
+]

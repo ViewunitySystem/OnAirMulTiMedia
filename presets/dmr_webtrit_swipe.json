@@ -1,0 +1,100 @@
+{
+  "name": "DMR WebTrit-Swipe",
+  "frequency": 145500000,
+  "modulation": "dmr",
+  "bandwidth": 12500,
+  "gain": 45,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "dmr_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "DMR (Digital Mobile Radio) mit WebTrit-Swipe zwischen Talkgroups",
+  "power_limit": 5,
+  "antenna": "DMR-Antenne",
+  "webtrit_swipe": {
+    "enabled": true,
+    "variants": [
+      {
+        "name": "DMR Talkgroup 1",
+        "frequency": 145500000,
+        "channel": 1,
+        "type": "DMR",
+        "talkgroup": 1,
+        "color_code": 1
+      },
+      {
+        "name": "DMR Talkgroup 2",
+        "frequency": 145500000,
+        "channel": 2,
+        "type": "DMR",
+        "talkgroup": 2,
+        "color_code": 1
+      },
+      {
+        "name": "DMR Talkgroup 9",
+        "frequency": 145500000,
+        "channel": 9,
+        "type": "DMR",
+        "talkgroup": 9,
+        "color_code": 1
+      },
+      {
+        "name": "DMR Talkgroup 91",
+        "frequency": 145500000,
+        "channel": 91,
+        "type": "DMR",
+        "talkgroup": 91,
+        "color_code": 1
+      },
+      {
+        "name": "DMR Talkgroup 92",
+        "frequency": 145500000,
+        "channel": 92,
+        "type": "DMR",
+        "talkgroup": 92,
+        "color_code": 1
+      },
+      {
+        "name": "DMR Talkgroup 93",
+        "frequency": 145500000,
+        "channel": 93,
+        "type": "DMR",
+        "talkgroup": 93,
+        "color_code": 1
+      },
+      {
+        "name": "DMR Talkgroup 310",
+        "frequency": 145500000,
+        "channel": 310,
+        "type": "DMR",
+        "talkgroup": 310,
+        "color_code": 1
+      },
+      {
+        "name": "DMR Talkgroup 3100",
+        "frequency": 145500000,
+        "channel": 3100,
+        "type": "DMR",
+        "talkgroup": 3100,
+        "color_code": 1
+      }
+    ],
+    "swipe_gestures": {
+      "left": "previous_talkgroup",
+      "right": "next_talkgroup",
+      "up": "increase_color_code",
+      "down": "decrease_color_code",
+      "double_tap": "emergency_talkgroup"
+    }
+  }
+}
+

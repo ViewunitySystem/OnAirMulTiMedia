@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2025-01-03T02:52:00.000Z",
+  "rules": [
+    {
+      "source": "/home",
+      "destination": "/",
+      "type": 301,
+      "status": "active"
+    },
+    {
+      "source": "/main",
+      "destination": "/info.html",
+      "type": 301,
+      "status": "active"
+    },
+    {
+      "source": "/changelog",
+      "destination": "/docs/change-log.html",
+      "type": 301,
+      "status": "active"
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "active": 3,
+    "inactive": 0
+  }
+}

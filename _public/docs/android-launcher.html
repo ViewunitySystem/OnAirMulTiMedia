@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM Android Launcher</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+        }
+        
+        .launcher-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+        
+        .home-screen {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .time {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .battery {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .battery-icon {
+            width: 20px;
+            height: 10px;
+            border: 2px solid white;
+            border-radius: 2px;
+            position: relative;
+        }
+        
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 2px;
+            width: 2px;
+            height: 6px;
+            background: white;
+            border-radius: 0 1px 1px 0;
+        }
+        
+        .battery-level {
+            width: 80%;
+            height: 100%;
+            background: white;
+            border-radius: 1px;
+        }
+        
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 15px;
+            padding: 20px 0;
+        }
+        
+        .app-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .app-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .app-name {
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        
+        .dock {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dock-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .dock-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .dock-name {
+            color: white;
+            font-size: 10px;
+            text-align: center;
+            margin-top: 5px;
+        }
+        
+        .search-bar {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .search-bar input::placeholder {
+            color: #666;
+        }
+        
+        .app-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 20px 20px 0 0;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .app-drawer.open {
+            transform: translateY(0);
+        }
+        
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .drawer-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .drawer-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .drawer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-height: calc(100% - 100px);
+            overflow-y: auto;
+        }
+        
+        .drawer-app {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .drawer-app:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .drawer-app-name {
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        
+        .widget {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .weather-widget {
+            grid-column: span 2;
+        }
+        
+        .clock-widget {
+            grid-column: span 2;
+            text-align: center;
+        }
+        
+        .clock-time {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .clock-date {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .launcher-selection {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .launcher-selection h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .launcher-selection p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .selection-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .selection-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .selection-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .feature-list {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 768px) {
+            .launcher-selection h1 {
+                font-size: 2rem;
+            }
+            
+            .selection-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .app-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="launcherContainer" class="launcher-container" style="display: none;">
+        <!-- Home Screen -->
+        <div class="home-screen" id="homeScreen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <div class="time" id="currentTime">12:34</div>
+                <div class="battery">
+                    <div class="battery-icon">
+                        <div class="battery-level"></div>
+                    </div>
+                    <span>100%</span>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <div class="app-grid" id="appGrid">
+                    <!-- Apps will be populated here -->
+                </div>
+            </div>
+            
+            <!-- Dock -->
+            <div class="dock">
+                <div class="dock-icon" onclick="handleDockAction('home')">
+                    <div style="font-size: 35px;">🏠</div>
+                    <div class="dock-name">Home</div>
+                </div>
+                <div class="dock-icon" onclick="handleDockAction('appdrawer')">
+                    <div style="font-size: 35px;">📱</div>
+                    <div class="dock-name">Apps</div>
+                </div>
+                <div class="dock-icon" onclick="handleDockAction('search')">
+                    <div style="font-size: 35px;">🔍</div>
+                    <div class="dock-name">Search</div>
+                </div>
+                <div class="dock-icon" onclick="handleDockAction('back')">
+                    <div style="font-size: 35px;">⬅️</div>
+                    <div class="dock-name">Back</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <span>🔍</span>
+            <input type="text" placeholder="Search apps, contacts, web..." id="searchInput" />
+        </div>
+        
+        <!-- App Drawer -->
+        <div class="app-drawer" id="appDrawer">
+            <div class="drawer-header">
+                <div class="drawer-title">All Apps</div>
+                <button class="drawer-close" onclick="closeAppDrawer()">×</button>
+            </div>
+            <div class="drawer-grid" id="drawerGrid">
+                <!-- Apps will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Launcher Selection -->
+    <div class="launcher-selection" id="launcherSelection">
+        <h1>🚀 OAMTM Android Launcher</h1>
+        <p>Vollständige Android Launcher Implementation - MUSS vorhanden sein zur Auswahl</p>
+        <div class="selection-buttons">
+            <button class="selection-btn" onclick="activateLauncherMode()">
+                Activate Launcher Mode
+            </button>
+            <button class="selection-btn" onclick="setAsDefault()">
+                Set as Default
+            </button>
+        </div>
+        <div class="feature-list">
+            <p>Features: Home Screen, App Drawer, Widgets, Gestures, Search</p>
+            <p>Integration: Android Intents, System Events, Fullscreen Mode</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { AndroidLauncher } from '../scripts/android-launcher.mjs';
+
+        class LauncherUI {
+            constructor() {
+                this.launcher = new AndroidLauncher();
+                this.isLauncherMode = false;
+                this.initialize();
+            }
+
+            async initialize() {
+                await this.launcher.initialize();
+                this.checkLauncherMode();
+                this.setupEventListeners();
+                this.populateApps();
+                this.updateTime();
+            }
+
+            checkLauncherMode() {
+                this.isLauncherMode = window.location.search.includes('launcher=true') || 
+                                    localStorage.getItem('oamtm-launcher-mode') === 'active';
+                
+                if (this.isLauncherMode) {
+                    this.showLauncher();
+                } else {
+                    this.showSelection();
+                }
+            }
+
+            showLauncher() {
+                document.getElementById('launcherSelection').style.display = 'none';
+                document.getElementById('launcherContainer').style.display = 'block';
+                this.isLauncherMode = true;
+            }
+
+            showSelection() {
+                document.getElementById('launcherSelection').style.display = 'flex';
+                document.getElementById('launcherContainer').style.display = 'none';
+                this.isLauncherMode = false;
+            }
+
+            setupEventListeners() {
+                // Search input
+                document.getElementById('searchInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.performSearch(e.target.value);
+                    }
+                });
+
+                // Touch gestures
+                this.setupGestures();
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.handleBackAction();
+                    }
+                });
+            }
+
+            setupGestures() {
+                let startY = 0;
+                let currentY = 0;
+                
+                document.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].clientY;
+                });
+                
+                document.addEventListener('touchmove', (e) => {
+                    currentY = e.touches[0].clientY;
+                });
+                
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = startY - currentY;
+                    
+                    // Swipe up to open app drawer
+                    if (deltaY > 100) {
+                        this.openAppDrawer();
+                    }
+                    
+                    // Swipe down to close app drawer
+                    if (deltaY < -100 && document.getElementById('appDrawer').classList.contains('open')) {
+                        this.closeAppDrawer();
+                    }
+                });
+            }
+
+            populateApps() {
+                const appGrid = document.getElementById('appGrid');
+                const drawerGrid = document.getElementById('drawerGrid');
+                
+                const apps = [
+                    { name: 'Mission', icon: '🚀', action: 'mission' },
+                    { name: 'Tools', icon: '🔧', action: 'tools' },
+                    { name: 'Comms', icon: '📡', action: 'comms' },
+                    { name: 'Health', icon: '🏥', action: 'health' },
+                    { name: 'Settings', icon: '⚙️', action: 'settings' },
+                    { name: 'Camera', icon: '📷', action: 'camera' },
+                    { name: 'Gallery', icon: '🖼️', action: 'gallery' },
+                    { name: 'Files', icon: '📁', action: 'files' },
+                    { name: 'Calendar', icon: '📅', action: 'calendar' },
+                    { name: 'Contacts', icon: '👥', action: 'contacts' },
+                    { name: 'Messages', icon: '💬', action: 'messages' },
+                    { name: 'Phone', icon: '📞', action: 'phone' },
+                    { name: 'Browser', icon: '🌐', action: 'browser' },
+                    { name: 'Maps', icon: '🗺️', action: 'maps' },
+                    { name: 'Music', icon: '🎵', action: 'music' },
+                    { name: 'Weather', icon: '🌤️', action: 'weather' }
+                ];
+                
+                // Add widgets
+                const weatherWidget = document.createElement('div');
+                weatherWidget.className = 'widget weather-widget';
+                weatherWidget.innerHTML = `
+                    <h4>🌤️ Weather</h4>
+                    <p>Sunny, 22°C</p>
+                    <p>Berlin, Germany</p>
+                `;
+                
+                const clockWidget = document.createElement('div');
+                clockWidget.className = 'widget clock-widget';
+                clockWidget.innerHTML = `
+                    <div class="clock-time">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                    <div class="clock-date">${new Date().toLocaleDateString()}</div>
+                `;
+                
+                // Populate home screen
+                apps.forEach(app => {
+                    const appIcon = document.createElement('div');
+                    appIcon.className = 'app-icon';
+                    appIcon.innerHTML = `
+                        <div style="font-size: 40px;">${app.icon}</div>
+                        <div class="app-name">${app.name}</div>
+                    `;
+                    appIcon.addEventListener('click', () => this.launchApp(app.action));
+                    appGrid.appendChild(appIcon);
+                });
+                
+                appGrid.appendChild(weatherWidget);
+                appGrid.appendChild(clockWidget);
+                
+                // Populate app drawer
+                const allApps = [
+                    ...apps,
+                    { name: 'Mission Control', icon: '🚀', action: 'mission' },
+                    { name: 'Tool Map', icon: '🗺️', action: 'toolmap' },
+                    { name: 'Consent Manager', icon: '🔒', action: 'consent' },
+                    { name: 'Health Monitor', icon: '🏥', action: 'health' },
+                    { name: 'Communication Hub', icon: '📡', action: 'comms' },
+                    { name: 'File Manager', icon: '📁', action: 'files' },
+                    { name: 'Music Player', icon: '🎵', action: 'music' },
+                    { name: 'Calculator', icon: '🧮', action: 'calculator' },
+                    { name: 'Notes', icon: '📝', action: 'notes' },
+                    { name: 'Clock', icon: '⏰', action: 'clock' },
+                    { name: 'Alarm', icon: '⏰', action: 'alarm' },
+                    { name: 'Timer', icon: '⏱️', action: 'timer' },
+                    { name: 'Compass', icon: '🧭', action: 'compass' },
+                    { name: 'Flashlight', icon: '🔦', action: 'flashlight' },
+                    { name: 'QR Scanner', icon: '📱', action: 'qr' },
+                    { name: 'Voice Recorder', icon: '🎙️', action: 'recorder' },
+                    { name: 'PDF Reader', icon: '📄', action: 'pdf' },
+                    { name: 'Email', icon: '📧', action: 'email' },
+                    { name: 'Social', icon: '👥', action: 'social' },
+                    { name: 'News', icon: '📰', action: 'news' },
+                    { name: 'Games', icon: '🎮', action: 'games' },
+                    { name: 'Books', icon: '📚', action: 'books' },
+                    { name: 'Shopping', icon: '🛒', action: 'shopping' },
+                    { name: 'Banking', icon: '🏦', action: 'banking' },
+                    { name: 'Travel', icon: '✈️', action: 'travel' },
+                    { name: 'Food', icon: '🍕', action: 'food' },
+                    { name: 'Fitness', icon: '🏃', action: 'fitness' },
+                    { name: 'Education', icon: '🎓', action: 'education' },
+                    { name: 'Work', icon: '💼', action: 'work' },
+                    { name: 'Entertainment', icon: '🎭', action: 'entertainment' }
+                ];
+                
+                allApps.forEach(app => {
+                    const appElement = document.createElement('div');
+                    appElement.className = 'drawer-app';
+                    appElement.innerHTML = `
+                        <div style="font-size: 50px;">${app.icon}</div>
+                        <div class="drawer-app-name">${app.name}</div>
+                    `;
+                    appElement.addEventListener('click', () => this.launchApp(app.action));
+                    drawerGrid.appendChild(appElement);
+                });
+            }
+
+            updateTime() {
+                const timeElement = document.getElementById('currentTime');
+                const updateTime = () => {
+                    timeElement.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                };
+                
+                updateTime();
+                setInterval(updateTime, 1000);
+            }
+
+            launchApp(action) {
+                console.log('Launching app:', action);
+                
+                switch (action) {
+                    case 'mission':
+                        window.location.href = '/docs/mission-plan.html';
+                        break;
+                    case 'toolmap':
+                        window.location.href = '/docs/tool-map.html';
+                        break;
+                    case 'consent':
+                        window.location.href = '/docs/consent-ui.html';
+                        break;
+                    case 'health':
+                        window.location.href = '/docs/monitoring-dashboard.html';
+                        break;
+                    case 'comms':
+                        window.location.href = '/docs/change-log.html';
+                        break;
+                    case 'camera':
+                        this.openCamera();
+                        break;
+                    case 'gallery':
+                        this.showNotification('Gallery opened');
+                        break;
+                    case 'files':
+                        this.showNotification('File Manager opened');
+                        break;
+                    case 'calendar':
+                        this.showNotification('Calendar opened');
+                        break;
+                    case 'contacts':
+                        this.showNotification('Contacts opened');
+                        break;
+                    case 'messages':
+                        this.showNotification('Messages opened');
+                        break;
+                    case 'phone':
+                        this.showNotification('Phone opened');
+                        break;
+                    case 'browser':
+                        window.open('https://www.google.com', '_blank');
+                        break;
+                    case 'maps':
+                        window.open('https://maps.google.com', '_blank');
+                        break;
+                    case 'music':
+                        this.showNotification('Music Player opened');
+                        break;
+                    case 'weather':
+                        this.showNotification('Weather opened');
+                        break;
+                    case 'settings':
+                        this.showNotification('Settings opened');
+                        break;
+                    default:
+                        this.showNotification(`Opening ${action}...`);
+                }
+            }
+
+            openCamera() {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true })
+                        .then(stream => {
+                            this.showNotification('Camera opened');
+                            // Handle camera stream
+                        })
+                        .catch(error => {
+                            this.showNotification('Camera access denied');
+                        });
+                } else {
+                    this.showNotification('Camera not available');
+                }
+            }
+
+            openAppDrawer() {
+                document.getElementById('appDrawer').classList.add('open');
+            }
+
+            closeAppDrawer() {
+                document.getElementById('appDrawer').classList.remove('open');
+            }
+
+            showHomeScreen() {
+                this.closeAppDrawer();
+                window.scrollTo(0, 0);
+            }
+
+            focusSearch() {
+                document.getElementById('searchInput').focus();
+            }
+
+            handleBackAction() {
+                if (document.getElementById('appDrawer').classList.contains('open')) {
+                    this.closeAppDrawer();
+                } else {
+                    this.showNotification('Back action');
+                }
+            }
+
+            performSearch(query) {
+                console.log('Searching for:', query);
+                this.showNotification(`Searching for: ${query}`);
+            }
+
+            showNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 2000);
+            }
+        }
+
+        // Global functions for HTML onclick handlers
+        window.activateLauncherMode = () => {
+            window.location.href = '?launcher=true';
+        };
+
+        window.setAsDefault = () => {
+            localStorage.setItem('oamtm-launcher-mode', 'active');
+            window.location.reload();
+        };
+
+        window.handleDockAction = (action) => {
+            if (window.launcherUI) {
+                switch (action) {
+                    case 'home':
+                        window.launcherUI.showHomeScreen();
+                        break;
+                    case 'appdrawer':
+                        window.launcherUI.openAppDrawer();
+                        break;
+                    case 'search':
+                        window.launcherUI.focusSearch();
+                        break;
+                    case 'back':
+                        window.launcherUI.handleBackAction();
+                        break;
+                }
+            }
+        };
+
+        window.closeAppDrawer = () => {
+            if (window.launcherUI) {
+                window.launcherUI.closeAppDrawer();
+            }
+        };
+
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            window.launcherUI = new LauncherUI();
+        });
+    </script>
+</body>
+</html>

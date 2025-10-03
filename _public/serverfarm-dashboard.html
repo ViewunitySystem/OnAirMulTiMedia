@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Serverfarm Dashboard - OnAirMulTiMedia</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; base-uri 'self'">
+  <link rel="stylesheet" href="./assets/landing.css" />
+  <style>
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .metric-card { background: #111827; border: 1px solid #1f2a52; border-radius: 12px; padding: 16px; text-align: center; }
+    .metric-value { font-size: 2rem; font-weight: bold; color: #10b981; }
+    .metric-label { font-size: 0.9rem; opacity: 0.8; margin-top: 8px; }
+    .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+    .status-online { background: #10b981; }
+    .status-offline { background: #ef4444; }
+    .status-warning { background: #f59e0b; }
+    .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .app-card { background: #1f2a52; border-radius: 8px; padding: 12px; text-align: center; }
+    .app-card a { color: #93c5fd; text-decoration: none; }
+    .app-card a:hover { color: #bfdbfe; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>🏭 Serverfarm Dashboard</h1>
+    <nav>
+      <a href="./index.html">Home</a>
+      <a href="./backup/backup-ui.html">Backup System</a>
+      <a href="./modules/rf/loopback-node/ui/security-status.html">RF Module</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <!-- System Metrics -->
+    <section class="panel">
+      <h2>System Status</h2>
+      <div class="dashboard-grid">
+        <div class="metric-card">
+          <div class="metric-value" id="uptime">--</div>
+          <div class="metric-label">Uptime</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="appsCount">--</div>
+          <div class="metric-label">Apps Online</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="modulesCount">--</div>
+          <div class="metric-label">Module Loaded</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="lastDeploy">--</div>
+          <div class="metric-label">Letztes Deploy</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Infrastructure Status -->
+    <section class="panel">
+      <h2>Infrastructure Status</h2>
+      <div id="infrastructureStatus">
+        <div class="dashboard-grid">
+          <div class="metric-card">
+            <div class="status-indicator status-online"></div>
+            <strong>Cloudflare Pages</strong>
+            <div class="metric-label">Primary CDN</div>
+          </div>
+          <div class="metric-card">
+            <div class="status-indicator status-online"></div>
+            <strong>Firebase Hosting</strong>
+            <div class="metric-label">Backup System</div>
+          </div>
+          <div class="metric-card">
+            <div class="status-indicator status-online"></div>
+            <strong>GitHub Pages</strong>
+            <div class="metric-label">Development</div>
+          </div>
+          <div class="metric-card">
+            <div class="status-indicator status-warning"></div>
+            <strong>Backup Mirror</strong>
+            <div class="metric-label">Real-time Sync</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Available Apps -->
+    <section class="panel">
+      <h2>Available Apps</h2>
+      <div class="apps-grid">
+        <div class="app-card">
+          <a href="./index.html">
+            <h3>🏠 Main App</h3>
+            <p>Hauptanwendung</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./info.html">
+            <h3>📊 Info Dashboard</h3>
+            <p>System Information</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./blueprints.html">
+            <h3>📋 Blueprints</h3>
+            <p>Module Blueprints</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./regulatory.html">
+            <h3>🏛️ Regulatory</h3>
+            <p>Compliance Info</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./manifest.html">
+            <h3>📄 Manifest</h3>
+            <p>Open Core Manifest</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./overlay.html">
+            <h3>📺 Overlay</h3>
+            <p>Audit Overlay</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./client.html">
+            <h3>🧪 Test Client</h3>
+            <p>Development Tools</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./backup/backup-ui.html">
+            <h3>🔄 Backup System</h3>
+            <p>Backup & Restore</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- RF Modules -->
+    <section class="panel">
+      <h2>RF Modules</h2>
+      <div class="apps-grid">
+        <div class="app-card">
+          <a href="./modules/rf/loopback-node/ui/security-status.html">
+            <h3>🔄 Loopback-Node</h3>
+            <p>RF Loopback Module</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./modules/rf/loopback-node/ui/hackathon-canvas.html">
+            <h3>🎨 Hackathon Canvas</h3>
+            <p>Development Canvas</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Information -->
+    <section class="panel">
+      <h2>System Information</h2>
+      <div style="background: #0a0f1a; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+        <div><strong>Build:</strong> <span id="buildInfo">Loading...</span></div>
+        <div><strong>Last Deploy:</strong> <span id="deployInfo">Loading...</span></div>
+        <div><strong>Environment:</strong> Production</div>
+        <div><strong>CDN:</strong> Cloudflare Pages</div>
+        <div><strong>Backup:</strong> Firebase Hosting</div>
+        <div><strong>Version Control:</strong> GitHub</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Dashboard Controller
+    class ServerfarmDashboard {
+      constructor() {
+        this.startTime = Date.now();
+        this.init();
+      }
+
+      async init() {
+        console.log('🏭 Serverfarm Dashboard initialisiert');
+        await this.loadSystemInfo();
+        await this.updateMetrics();
+        this.startAutoUpdate();
+      }
+
+      async loadSystemInfo() {
+        try {
+          // Lade Build-Info
+          const buildResponse = await fetch('./backup/build-info.json');
+          if (buildResponse.ok) {
+            const buildInfo = await buildResponse.json();
+            document.getElementById('buildInfo').textContent = buildInfo.build || 'Unknown';
+            document.getElementById('deployInfo').textContent = new Date(buildInfo.timestamp).toLocaleString();
+          }
+        } catch (error) {
+          console.warn('Build info nicht verfügbar:', error);
+          document.getElementById('buildInfo').textContent = 'Unknown';
+          document.getElementById('deployInfo').textContent = 'Unknown';
+        }
+      }
+
+      async updateMetrics() {
+        // Uptime
+        const uptime = Date.now() - this.startTime;
+        const uptimeMinutes = Math.floor(uptime / 60000);
+        document.getElementById('uptime').textContent = `${uptimeMinutes}m`;
+
+        // Apps Count (statisch für jetzt)
+        document.getElementById('appsCount').textContent = '8';
+
+        // Modules Count
+        document.getElementById('modulesCount').textContent = '1';
+
+        // Last Deploy
+        const lastDeploy = document.getElementById('deployInfo').textContent;
+        document.getElementById('lastDeploy').textContent = lastDeploy !== 'Unknown' ? 'Live' : 'Unknown';
+      }
+
+      startAutoUpdate() {
+        // Update alle 30 Sekunden
+        setInterval(() => {
+          this.updateMetrics();
+        }, 30000);
+      }
+
+      async checkAppHealth(appUrl) {
+        try {
+          const response = await fetch(appUrl, { method: 'HEAD', mode: 'no-cors' });
+          return 'online';
+        } catch (error) {
+          return 'offline';
+        }
+      }
+    }
+
+    // Auto-Start Dashboard
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        window.serverfarmDashboard = new ServerfarmDashboard();
+      });
+    } else {
+      window.serverfarmDashboard = new ServerfarmDashboard();
+    }
+  </script>
+</body>
+</html>

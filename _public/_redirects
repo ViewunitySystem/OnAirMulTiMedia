@@ -1,0 +1,26 @@
+# Cloudflare Pages Redirects für Serverfarm
+
+# Hauptseiten
+/ /index.html 200
+/info /info.html 200
+/blueprints /blueprints.html 200
+/regulatory /regulatory.html 200
+/manifest /manifest.html 200
+/overlay /overlay.html 200
+/client /client.html 200
+/audit /audit-export.html 200
+
+# Module Redirects
+/modules/rf/loopback-node /modules/rf/loopback-node/ui/security-status.html 200
+
+# API Endpoints (für zukünftige Erweiterungen)
+/api/* /api/:splat 200
+
+# Backup System
+/backup/* /backup/:splat 200
+
+# Logs (nur für Admin)
+/logs/* /logs/:splat 200
+
+# Fallback für alle anderen Routen
+/* /index.html 404

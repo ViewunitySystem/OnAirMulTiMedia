@@ -1,0 +1,38 @@
+{
+  "module": "GlobalMeetingClock",
+  "version": "1.0.0",
+  "description": "Erzeugt und verteilt global synchronisierte Meeting-Codes (QR, Link) mit Zeitzonen- und Sprachunterstützung.",
+  "interfaces": {
+    "inputs": [
+      { "name": "timezone", "type": "IANA string", "required": true, "example": "Europe/Amsterdam" },
+      { "name": "lang", "type": "BCP-47", "required": false, "example": "de" }
+    ],
+    "outputs": [
+      { "name": "qr", "type": "PNG data URL" },
+      { "name": "url", "type": "HTTPS" }
+    ],
+    "logs": [
+      { "event": "COMM_INIT", "level": "info", "description": "Kommunikation initialisiert" },
+      { "event": "LICENSE_CHECK", "level": "info", "description": "Lizenzprüfung erfolgreich" },
+      { "event": "SIGNAL_TX", "level": "info", "description": "Meeting-Link ausgesendet" },
+      { "event": "RECOVERY_TRIGGER", "level": "warn", "description": "Recovery-Pfad aktiviert" }
+    ]
+  },
+  "validation": {
+    "ci": true,
+    "tests": ["unit: URL-Format", "unit: QR-Generierung", "int: Timezone mapping"],
+    "hil_tests": ["Display-Scan mit Smartphone"],
+    "recovery": ["Fallback-Link bei QR-Fehler"]
+  },
+  "regulatory": {
+    "license_required": false,
+    "references": [ { "jurisdiction": "EU", "section": "Allg. Verbraucher- & Datenschutzrecht" } ]
+  },
+  "checklist": [
+    "Modul initialisiert korrekt",
+    "Lizenzprüfung erfolgt lokal",
+    "Signalpfad dokumentiert",
+    "Recovery bei Fehler getestet"
+  ]
+}
+
