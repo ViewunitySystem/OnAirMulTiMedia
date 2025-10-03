@@ -19,8 +19,18 @@ GITHUB_REPO = "ViewunitySystem/OnAirMulTiMedia"
 command = "npm run build"
 cwd = "api"
 
-# KV Storage (optional for caching)
+# KV Storage für Matrix.org-Style Serverfarm
 [[kv_namespaces]]
-binding = "CACHE"
-id = "your-kv-namespace-id"
-preview_id = "your-preview-kv-namespace-id"
+binding = "PUBLIC_ROOMS"
+id = "oamtm-public-rooms"
+preview_id = "oamtm-public-rooms-preview"
+
+[[kv_namespaces]]
+binding = "MEDIA_CONTENT"
+id = "oamtm-media-content"
+preview_id = "oamtm-media-content-preview"
+
+[[kv_namespaces]]
+binding = "USER_SESSIONS"
+id = "oamtm-user-sessions"
+preview_id = "oamtm-user-sessions-preview"

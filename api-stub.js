@@ -333,6 +333,106 @@
         case '/api/contributors':
           return await fetchContributors();
 
+        // Matrix.org-Style Serverfarm Endpunkte
+        case '/api/rooms':
+          return {
+            success: true,
+            rooms: [
+              {
+                id: 'info-global',
+                name: '🌍 Global Information',
+                description: 'Weltweite Nachrichten, Politik, Wirtschaft',
+                category: 'info',
+                memberCount: 0,
+                public: true,
+                topics: ['news', 'politics', 'economy', 'world']
+              },
+              {
+                id: 'sports-world',
+                name: '⚽ Sports World',
+                description: 'Alle Sportarten, Ergebnisse, Highlights',
+                category: 'sports',
+                memberCount: 0,
+                public: true,
+                topics: ['football', 'basketball', 'tennis', 'olympics']
+              },
+              {
+                id: 'tech-innovation',
+                name: '🚀 Technology & Innovation',
+                description: 'Neueste Tech-Trends, AI, Programmierung',
+                category: 'technology',
+                memberCount: 0,
+                public: true,
+                topics: ['ai', 'programming', 'gadgets', 'innovation']
+              },
+              {
+                id: 'science-discovery',
+                name: '🔬 Science & Discovery',
+                description: 'Wissenschaft, Forschung, Entdeckungen',
+                category: 'science',
+                memberCount: 0,
+                public: true,
+                topics: ['physics', 'biology', 'space', 'research']
+              },
+              {
+                id: 'nature-earth',
+                name: '🌱 Nature & Earth',
+                description: 'Umwelt, Klima, Natur, Nachhaltigkeit',
+                category: 'nature',
+                memberCount: 0,
+                public: true,
+                topics: ['climate', 'environment', 'sustainability', 'nature']
+              },
+              {
+                id: 'culture-arts',
+                name: '🎨 Culture & Arts',
+                description: 'Kunst, Musik, Literatur, Kultur',
+                category: 'culture',
+                memberCount: 0,
+                public: true,
+                topics: ['art', 'music', 'literature', 'culture']
+              }
+            ],
+            total: 6,
+            publicAccess: true,
+            message: 'Öffentliche Räume - Kein Account erforderlich',
+            timestamp: new Date().toISOString()
+          };
+
+        case '/api/media/categories':
+          return {
+            success: true,
+            categories: [
+              { id: 'info', name: 'Information', icon: '🌍', count: 150 },
+              { id: 'sports', name: 'Sports', icon: '⚽', count: 89 },
+              { id: 'technology', name: 'Technology', icon: '🚀', count: 203 },
+              { id: 'science', name: 'Science', icon: '🔬', count: 67 },
+              { id: 'nature', name: 'Nature', icon: '🌱', count: 45 },
+              { id: 'culture', name: 'Culture', icon: '🎨', count: 78 }
+            ],
+            total: 632,
+            publicAccess: true,
+            timestamp: new Date().toISOString()
+          };
+
+        // Dynamische Raum-Endpunkte
+        default:
+          if (path.startsWith('/api/rooms/')) {
+            const roomId = path.split('/')[3];
+            return getRoomContent(roomId);
+          }
+          
+          if (path.startsWith('/api/media/')) {
+            const mediaId = path.split('/')[3];
+            return getMediaItem(mediaId);
+          }
+          
+          if (path === '/api/media/search') {
+            const query = url.searchParams.get('q') || '';
+            const category = url.searchParams.get('category') || 'all';
+            return searchMediaContent(query, category);
+          }
+
         default:
           return {
             success: false,
@@ -502,6 +602,129 @@
     getCurrentConfig: () => currentConfig
   };
 
+  // Matrix.org-Style Hilfsfunktionen
+  function getRoomContent(roomId) {
+    const roomContent = {
+      'info-global': {
+        id: 'info-global',
+        name: '🌍 Global Information',
+        messages: [
+          {
+            id: 'msg-1',
+            sender: 'NewsBot',
+            timestamp: new Date().toISOString(),
+            content: 'Breaking: Neue Entwicklungen in der internationalen Politik',
+            type: 'text',
+            public: true
+          },
+          {
+            id: 'msg-2',
+            sender: 'EconomyBot',
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            content: 'Wirtschaftsbericht: Aktuelle Marktentwicklungen',
+            type: 'text',
+            public: true
+          }
+        ],
+        media: [
+          {
+            id: 'media-1',
+            title: 'Weltnachrichten Update',
+            type: 'video',
+            url: 'https://example.com/news-update.mp4',
+            duration: '5:30',
+            public: true
+          }
+        ]
+      },
+      'sports-world': {
+        id: 'sports-world',
+        name: '⚽ Sports World',
+        messages: [
+          {
+            id: 'msg-3',
+            sender: 'SportsBot',
+            timestamp: new Date().toISOString(),
+            content: 'Live: Champions League Ergebnisse',
+            type: 'text',
+            public: true
+          }
+        ],
+        media: [
+          {
+            id: 'media-2',
+            title: 'Top 10 Goals der Woche',
+            type: 'video',
+            url: 'https://example.com/goals.mp4',
+            duration: '3:45',
+            public: true
+          }
+        ]
+      }
+    };
+
+    const content = roomContent[roomId] || {
+      id: roomId,
+      name: 'Unknown Room',
+      messages: [],
+      media: [],
+      error: 'Raum nicht gefunden'
+    };
+
+    return {
+      success: true,
+      room: content,
+      publicAccess: true,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  function getMediaItem(mediaId) {
+    return {
+      success: true,
+      media: {
+        id: mediaId,
+        title: 'Media Item',
+        description: 'Beschreibung des Medien-Inhalts',
+        type: 'video',
+        url: `https://example.com/media/${mediaId}.mp4`,
+        duration: '5:30',
+        category: 'info',
+        public: true,
+        downloadUrl: `https://example.com/download/${mediaId}.mp4`,
+        streamUrl: `https://example.com/stream/${mediaId}.m3u8`
+      },
+      publicAccess: true,
+      message: 'Öffentlicher Zugang - Download und Stream verfügbar',
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  function searchMediaContent(query, category) {
+    return {
+      success: true,
+      query,
+      category,
+      results: [
+        {
+          id: 'media-search-1',
+          title: `Suchergebnis für "${query}"`,
+          category: category,
+          type: 'video',
+          url: 'https://example.com/search-result.mp4',
+          duration: '2:15',
+          description: `Relevanter Inhalt zu ${query} in Kategorie ${category}`,
+          public: true,
+          downloadUrl: `https://example.com/download/${query}.mp4`
+        }
+      ],
+      total: 1,
+      publicAccess: true,
+      message: 'Öffentliche Medien - Download möglich ohne Account',
+      timestamp: new Date().toISOString()
+    };
+  }
+
   console.log('[API] VOLLSTÄNDIGE API-IMPLEMENTATION geladen ✅');
   console.log('[API] Verfügbare Endpunkte:');
   console.log('  - /api/presets (GET)');
@@ -515,5 +738,10 @@
   console.log('  - /api/community/details (GET)');
   console.log('  - /api/github/stats (GET)');
   console.log('  - /api/contributors (GET)');
-  
+  console.log('  - /api/rooms (GET) - Matrix.org-Style Räume');
+  console.log('  - /api/rooms/{id} (GET) - Raum-Inhalte');
+  console.log('  - /api/media/categories (GET) - Medien-Kategorien');
+  console.log('  - /api/media/search (GET) - Medien-Suche');
+  console.log('  - /api/media/{id} (GET) - Medien-Item');
+
 })();

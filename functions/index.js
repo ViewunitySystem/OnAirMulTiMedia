@@ -1,6 +1,6 @@
 /**
- * OAMTM Firebase Functions für Cloud SQL
- * Bietet API-Endpoints für die enhanced-audit.db
+ * OAMTM Firebase Functions für Cloud SQL + Matrix.org-Style Serverfarm
+ * Bietet API-Endpoints für die enhanced-audit.db und öffentliche Medien-Inhalte
  */
 
 /* eslint-disable @typescript-eslint/no-var-requires */
@@ -422,6 +422,279 @@ exports.healthCheck = functions.https.onRequest(async (req, res) => {
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
       database: 'disconnected',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Matrix.org-Style Serverfarm Endpunkte
+ */
+
+/**
+ * Öffentliche Räume abrufen (ohne Account)
+ */
+exports.getPublicRooms = functions.https.onRequest(async (req, res) => {
+  setCorsHeaders(res);
+  
+  try {
+    const rooms = [
+      {
+        id: 'firebase-info-global',
+        name: '🌍 Firebase Global Information',
+        description: 'Weltweite Nachrichten über Firebase Serverfarm',
+        category: 'info',
+        memberCount: 0,
+        public: true,
+        topics: ['firebase', 'news', 'cloud', 'serverfarm']
+      },
+      {
+        id: 'firebase-tech-innovation',
+        name: '🚀 Firebase Tech Innovation',
+        description: 'Neueste Firebase Features und Cloud-Technologien',
+        category: 'technology',
+        memberCount: 0,
+        public: true,
+        topics: ['firebase', 'cloud', 'serverless', 'innovation']
+      },
+      {
+        id: 'firebase-science-data',
+        name: '🔬 Firebase Science & Data',
+        description: 'Wissenschaftliche Daten und Analysen',
+        category: 'science',
+        memberCount: 0,
+        public: true,
+        topics: ['data', 'analytics', 'research', 'science']
+      }
+    ];
+
+    res.json({
+      success: true,
+      rooms,
+      total: rooms.length,
+      publicAccess: true,
+      message: 'Firebase Serverfarm - Öffentliche Räume ohne Account',
+      serverfarm: 'firebase'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Raum-Inhalte abrufen
+ */
+exports.getRoomContent = functions.https.onRequest(async (req, res) => {
+  setCorsHeaders(res);
+  
+  try {
+    const roomId = req.query.roomId;
+    
+    if (!roomId) {
+      return res.status(400).json({
+        success: false,
+        error: 'roomId ist erforderlich'
+      });
+    }
+
+    const roomContent = {
+      'firebase-info-global': {
+        id: 'firebase-info-global',
+        name: '🌍 Firebase Global Information',
+        messages: [
+          {
+            id: 'firebase-msg-1',
+            sender: 'FirebaseBot',
+            timestamp: new Date().toISOString(),
+            content: 'Firebase Serverfarm läuft stabil - Alle Services online',
+            type: 'text',
+            public: true
+          },
+          {
+            id: 'firebase-msg-2',
+            sender: 'CloudBot',
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            content: 'Cloud SQL Performance: Optimal - 99.9% Uptime',
+            type: 'text',
+            public: true
+          }
+        ],
+        media: [
+          {
+            id: 'firebase-media-1',
+            title: 'Firebase Serverfarm Status Report',
+            type: 'video',
+            url: 'https://firebase.example.com/status-report.mp4',
+            duration: '4:20',
+            public: true
+          }
+        ]
+      },
+      'firebase-tech-innovation': {
+        id: 'firebase-tech-innovation',
+        name: '🚀 Firebase Tech Innovation',
+        messages: [
+          {
+            id: 'firebase-msg-3',
+            sender: 'TechBot',
+            timestamp: new Date().toISOString(),
+            content: 'Neue Firebase Functions verfügbar - Matrix.org-Style Integration',
+            type: 'text',
+            public: true
+          }
+        ],
+        media: [
+          {
+            id: 'firebase-media-2',
+            title: 'Firebase Tech Demo',
+            type: 'video',
+            url: 'https://firebase.example.com/tech-demo.mp4',
+            duration: '6:15',
+            public: true
+          }
+        ]
+      }
+    };
+
+    const content = roomContent[roomId] || {
+      id: roomId,
+      name: 'Unknown Room',
+      messages: [],
+      media: [],
+      error: 'Raum nicht gefunden'
+    };
+
+    res.json({
+      success: true,
+      room: content,
+      publicAccess: true,
+      serverfarm: 'firebase'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Medien-Inhalte suchen
+ */
+exports.searchMediaContent = functions.https.onRequest(async (req, res) => {
+  setCorsHeaders(res);
+  
+  try {
+    const query = req.query.q || '';
+    const category = req.query.category || 'all';
+    
+    const mediaResults = [
+      {
+        id: 'firebase-search-1',
+        title: `Firebase Suchergebnis für "${query}"`,
+        category: category,
+        type: 'video',
+        url: 'https://firebase.example.com/search-result.mp4',
+        duration: '3:30',
+        description: `Firebase-relevanter Inhalt zu ${query} in Kategorie ${category}`,
+        public: true,
+        downloadUrl: `https://firebase.example.com/download/${query}.mp4`,
+        serverfarm: 'firebase'
+      }
+    ];
+
+    res.json({
+      success: true,
+      query,
+      category,
+      results: mediaResults,
+      total: mediaResults.length,
+      publicAccess: true,
+      message: 'Firebase Serverfarm - Öffentliche Medien ohne Account',
+      serverfarm: 'firebase'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Medien-Kategorien abrufen
+ */
+exports.getMediaCategories = functions.https.onRequest(async (req, res) => {
+  setCorsHeaders(res);
+  
+  try {
+    const categories = [
+      { id: 'firebase-info', name: 'Firebase Information', icon: '🌍', count: 75 },
+      { id: 'firebase-tech', name: 'Firebase Technology', icon: '🚀', count: 120 },
+      { id: 'firebase-science', name: 'Firebase Science', icon: '🔬', count: 45 },
+      { id: 'firebase-cloud', name: 'Cloud Computing', icon: '☁️', count: 89 },
+      { id: 'firebase-data', name: 'Data Analytics', icon: '📊', count: 67 },
+      { id: 'firebase-serverless', name: 'Serverless', icon: '⚡', count: 34 }
+    ];
+
+    res.json({
+      success: true,
+      categories,
+      total: categories.reduce((sum, cat) => sum + cat.count, 0),
+      publicAccess: true,
+      serverfarm: 'firebase'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Medien-Item abrufen
+ */
+exports.getMediaItem = functions.https.onRequest(async (req, res) => {
+  setCorsHeaders(res);
+  
+  try {
+    const mediaId = req.query.mediaId;
+    
+    if (!mediaId) {
+      return res.status(400).json({
+        success: false,
+        error: 'mediaId ist erforderlich'
+      });
+    }
+
+    const mediaItem = {
+      id: mediaId,
+      title: 'Firebase Media Item',
+      description: 'Beschreibung des Firebase Medien-Inhalts',
+      type: 'video',
+      url: `https://firebase.example.com/media/${mediaId}.mp4`,
+      duration: '5:30',
+      category: 'firebase-info',
+      public: true,
+      downloadUrl: `https://firebase.example.com/download/${mediaId}.mp4`,
+      streamUrl: `https://firebase.example.com/stream/${mediaId}.m3u8`,
+      serverfarm: 'firebase'
+    };
+
+    res.json({
+      success: true,
+      media: mediaItem,
+      publicAccess: true,
+      message: 'Firebase Serverfarm - Öffentlicher Zugang verfügbar',
+      serverfarm: 'firebase'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
       error: error.message
     });
   }

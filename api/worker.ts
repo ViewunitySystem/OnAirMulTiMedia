@@ -2,6 +2,10 @@ export interface Env {
   GITHUB_TOKEN: string;         // Fine‑grained PAT (Repo:Content + Pull Requests)
   GITHUB_REPO: string;          // e.g. "ViewunitySystem/OnAirMulTiMedia"
   OPENAI_API_KEY?: string;      // optional – via serverseitigem Proxy
+  // Matrix.org-Style Serverfarm
+  PUBLIC_ROOMS: KVNamespace;    // Öffentliche Räume ohne Account
+  MEDIA_CONTENT: KVNamespace;   // Medien-Inhalte (Info, Sports, Technik, Science, etc.)
+  USER_SESSIONS: KVNamespace;   // User-Sessions für erweiterte Features
 }
 
 import { Octokit } from 'octokit';
@@ -21,6 +25,31 @@ export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
     if (req.method === 'OPTIONS') return new Response(null,{headers:cors()});
+
+    // Matrix.org-Style Serverfarm Endpunkte
+    if (url.pathname === '/rooms' && req.method === 'GET') {
+      return await getPublicRooms(env);
+    }
+
+    if (url.pathname.startsWith('/rooms/') && req.method === 'GET') {
+      const roomId = url.pathname.split('/')[2];
+      return await getRoomContent(env, roomId);
+    }
+
+    if (url.pathname === '/media/search' && req.method === 'GET') {
+      const query = url.searchParams.get('q') || '';
+      const category = url.searchParams.get('category') || 'all';
+      return await searchMediaContent(env, query, category);
+    }
+
+    if (url.pathname === '/media/categories' && req.method === 'GET') {
+      return await getMediaCategories(env);
+    }
+
+    if (url.pathname.startsWith('/media/') && req.method === 'GET') {
+      const mediaId = url.pathname.split('/')[2];
+      return await getMediaItem(env, mediaId);
+    }
 
     if (url.pathname === '/ai/draft' && req.method === 'POST') {
       const b = await req.json();
@@ -220,6 +249,238 @@ if (typeof module !== 'undefined' && module.exports) {
 
 console.log('Feature: ${title}');
 // TODO: Implementiere deine Logik hier`;
+}
+
+// Matrix.org-Style Serverfarm Funktionen
+async function getPublicRooms(env: Env): Promise<Response> {
+  try {
+    // Öffentliche Räume ohne Account-Zugang
+    const rooms = [
+      {
+        id: 'info-global',
+        name: '🌍 Global Information',
+        description: 'Weltweite Nachrichten, Politik, Wirtschaft',
+        category: 'info',
+        memberCount: 0,
+        public: true,
+        topics: ['news', 'politics', 'economy', 'world']
+      },
+      {
+        id: 'sports-world',
+        name: '⚽ Sports World',
+        description: 'Alle Sportarten, Ergebnisse, Highlights',
+        category: 'sports',
+        memberCount: 0,
+        public: true,
+        topics: ['football', 'basketball', 'tennis', 'olympics']
+      },
+      {
+        id: 'tech-innovation',
+        name: '🚀 Technology & Innovation',
+        description: 'Neueste Tech-Trends, AI, Programmierung',
+        category: 'technology',
+        memberCount: 0,
+        public: true,
+        topics: ['ai', 'programming', 'gadgets', 'innovation']
+      },
+      {
+        id: 'science-discovery',
+        name: '🔬 Science & Discovery',
+        description: 'Wissenschaft, Forschung, Entdeckungen',
+        category: 'science',
+        memberCount: 0,
+        public: true,
+        topics: ['physics', 'biology', 'space', 'research']
+      },
+      {
+        id: 'nature-earth',
+        name: '🌱 Nature & Earth',
+        description: 'Umwelt, Klima, Natur, Nachhaltigkeit',
+        category: 'nature',
+        memberCount: 0,
+        public: true,
+        topics: ['climate', 'environment', 'sustainability', 'nature']
+      },
+      {
+        id: 'culture-arts',
+        name: '🎨 Culture & Arts',
+        description: 'Kunst, Musik, Literatur, Kultur',
+        category: 'culture',
+        memberCount: 0,
+        public: true,
+        topics: ['art', 'music', 'literature', 'culture']
+      }
+    ];
+
+    return json({ 
+      success: true, 
+      rooms,
+      total: rooms.length,
+      publicAccess: true,
+      message: 'Öffentliche Räume - Kein Account erforderlich'
+    });
+  } catch (error) {
+    return json({ success: false, error: error.message }, 500);
+  }
+}
+
+async function getRoomContent(env: Env, roomId: string): Promise<Response> {
+  try {
+    // Simuliere Raum-Inhalte basierend auf Raum-ID
+    const roomContent = {
+      'info-global': {
+        id: 'info-global',
+        name: '🌍 Global Information',
+        messages: [
+          {
+            id: 'msg-1',
+            sender: 'NewsBot',
+            timestamp: new Date().toISOString(),
+            content: 'Breaking: Neue Entwicklungen in der internationalen Politik',
+            type: 'text',
+            public: true
+          },
+          {
+            id: 'msg-2',
+            sender: 'EconomyBot',
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            content: 'Wirtschaftsbericht: Aktuelle Marktentwicklungen',
+            type: 'text',
+            public: true
+          }
+        ],
+        media: [
+          {
+            id: 'media-1',
+            title: 'Weltnachrichten Update',
+            type: 'video',
+            url: 'https://example.com/news-update.mp4',
+            duration: '5:30',
+            public: true
+          }
+        ]
+      },
+      'sports-world': {
+        id: 'sports-world',
+        name: '⚽ Sports World',
+        messages: [
+          {
+            id: 'msg-3',
+            sender: 'SportsBot',
+            timestamp: new Date().toISOString(),
+            content: 'Live: Champions League Ergebnisse',
+            type: 'text',
+            public: true
+          }
+        ],
+        media: [
+          {
+            id: 'media-2',
+            title: 'Top 10 Goals der Woche',
+            type: 'video',
+            url: 'https://example.com/goals.mp4',
+            duration: '3:45',
+            public: true
+          }
+        ]
+      }
+    };
+
+    const content = roomContent[roomId] || {
+      id: roomId,
+      name: 'Unknown Room',
+      messages: [],
+      media: [],
+      error: 'Raum nicht gefunden'
+    };
+
+    return json({ 
+      success: true, 
+      room: content,
+      publicAccess: true
+    });
+  } catch (error) {
+    return json({ success: false, error: error.message }, 500);
+  }
+}
+
+async function searchMediaContent(env: Env, query: string, category: string): Promise<Response> {
+  try {
+    // Simuliere Medien-Suche
+    const mediaResults = [
+      {
+        id: 'media-search-1',
+        title: `Suchergebnis für "${query}"`,
+        category: category,
+        type: 'video',
+        url: 'https://example.com/search-result.mp4',
+        duration: '2:15',
+        description: `Relevanter Inhalt zu ${query} in Kategorie ${category}`,
+        public: true,
+        downloadUrl: `https://example.com/download/${query}.mp4`
+      }
+    ];
+
+    return json({ 
+      success: true, 
+      query,
+      category,
+      results: mediaResults,
+      total: mediaResults.length,
+      publicAccess: true,
+      message: 'Öffentliche Medien - Download möglich ohne Account'
+    });
+  } catch (error) {
+    return json({ success: false, error: error.message }, 500);
+  }
+}
+
+async function getMediaCategories(env: Env): Promise<Response> {
+  try {
+    const categories = [
+      { id: 'info', name: 'Information', icon: '🌍', count: 150 },
+      { id: 'sports', name: 'Sports', icon: '⚽', count: 89 },
+      { id: 'technology', name: 'Technology', icon: '🚀', count: 203 },
+      { id: 'science', name: 'Science', icon: '🔬', count: 67 },
+      { id: 'nature', name: 'Nature', icon: '🌱', count: 45 },
+      { id: 'culture', name: 'Culture', icon: '🎨', count: 78 }
+    ];
+
+    return json({ 
+      success: true, 
+      categories,
+      total: categories.reduce((sum, cat) => sum + cat.count, 0),
+      publicAccess: true
+    });
+  } catch (error) {
+    return json({ success: false, error: error.message }, 500);
+  }
+}
+
+async function getMediaItem(env: Env, mediaId: string): Promise<Response> {
+  try {
+    const mediaItem = {
+      id: mediaId,
+      title: 'Media Item',
+      description: 'Beschreibung des Medien-Inhalts',
+      type: 'video',
+      url: `https://example.com/media/${mediaId}.mp4`,
+      duration: '5:30',
+      category: 'info',
+      public: true,
+      downloadUrl: `https://example.com/download/${mediaId}.mp4`,
+      streamUrl: `https://example.com/stream/${mediaId}.m3u8`
+    };
+
+    return json({ 
+      success: true, 
+      media: mediaItem,
+      publicAccess: true,
+      message: 'Öffentlicher Zugang - Download und Stream verfügbar'
+    });
+  } catch (error) {
+    return json({ success: false, error: error.message }, 500);
+  }
 }
 
 function json(d:any, status=200){return new Response(JSON.stringify(d),{status,headers:{'content-type':'application/json',...cors()}})}

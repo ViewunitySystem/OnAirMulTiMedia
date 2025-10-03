@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🏠 OnAirMulTiMedia Serverfarm - Matrix.org Style</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <style>
+    :root { 
+      --matrix-green: #00ff41;
+      --matrix-dark: #0d1117;
+      --matrix-gray: #161b22;
+      --matrix-border: #30363d;
+      --matrix-text: #f0f6fc;
+      --matrix-muted: #8b949e;
+    }
+    
+    * { box-sizing: border-box; }
+    body { 
+      font-family: 'Courier New', monospace; 
+      background: var(--matrix-dark); 
+      color: var(--matrix-text); 
+      margin: 0; 
+      overflow-x: hidden;
+    }
+    
+    /* Matrix.org-Style Header */
+    .header {
+      background: var(--matrix-gray);
+      border-bottom: 2px solid var(--matrix-green);
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--matrix-green);
+      text-shadow: 0 0 10px var(--matrix-green);
+    }
+    
+    .public-badge {
+      background: var(--matrix-green);
+      color: var(--matrix-dark);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    /* Matrix.org-Style Layout */
+    .container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: calc(100vh - 80px);
+    }
+    
+    .sidebar {
+      background: var(--matrix-gray);
+      border-right: 1px solid var(--matrix-border);
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .main-content {
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    /* Room List */
+    .room-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .room-item {
+      padding: 12px;
+      margin: 8px 0;
+      background: var(--matrix-dark);
+      border: 1px solid var(--matrix-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .room-item:hover {
+      border-color: var(--matrix-green);
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    }
+    
+    .room-item.active {
+      border-color: var(--matrix-green);
+      background: rgba(0, 255, 65, 0.1);
+    }
+    
+    .room-name {
+      font-weight: bold;
+      color: var(--matrix-green);
+      margin-bottom: 4px;
+    }
+    
+    .room-description {
+      font-size: 12px;
+      color: var(--matrix-muted);
+      margin-bottom: 8px;
+    }
+    
+    .room-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    
+    .topic-tag {
+      background: var(--matrix-border);
+      color: var(--matrix-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+    }
+    
+    /* Search */
+    .search-container {
+      margin-bottom: 20px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 12px;
+      background: var(--matrix-dark);
+      border: 1px solid var(--matrix-border);
+      border-radius: 8px;
+      color: var(--matrix-text);
+      font-family: inherit;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--matrix-green);
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    }
+    
+    /* Room Content */
+    .room-header {
+      background: var(--matrix-gray);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid var(--matrix-border);
+    }
+    
+    .room-title {
+      font-size: 24px;
+      color: var(--matrix-green);
+      margin: 0 0 8px 0;
+    }
+    
+    .room-info {
+      color: var(--matrix-muted);
+      font-size: 14px;
+    }
+    
+    /* Messages */
+    .messages-container {
+      background: var(--matrix-gray);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--matrix-border);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .message {
+      margin-bottom: 16px;
+      padding: 12px;
+      background: var(--matrix-dark);
+      border-radius: 8px;
+      border-left: 3px solid var(--matrix-green);
+    }
+    
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    
+    .message-sender {
+      font-weight: bold;
+      color: var(--matrix-green);
+    }
+    
+    .message-time {
+      color: var(--matrix-muted);
+      font-size: 12px;
+    }
+    
+    .message-content {
+      color: var(--matrix-text);
+      line-height: 1.4;
+    }
+    
+    /* Media Grid */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+    
+    .media-item {
+      background: var(--matrix-gray);
+      border: 1px solid var(--matrix-border);
+      border-radius: 8px;
+      padding: 16px;
+      transition: all 0.3s ease;
+    }
+    
+    .media-item:hover {
+      border-color: var(--matrix-green);
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    }
+    
+    .media-title {
+      font-weight: bold;
+      color: var(--matrix-green);
+      margin-bottom: 8px;
+    }
+    
+    .media-info {
+      color: var(--matrix-muted);
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .media-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+      background: var(--matrix-green);
+      color: var(--matrix-dark);
+    }
+    
+    .btn-primary:hover {
+      background: #00cc33;
+    }
+    
+    .btn-secondary {
+      background: var(--matrix-border);
+      color: var(--matrix-text);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--matrix-muted);
+    }
+    
+    /* Categories */
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .category-item {
+      background: var(--matrix-gray);
+      border: 1px solid var(--matrix-border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .category-item:hover {
+      border-color: var(--matrix-green);
+      box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+    }
+    
+    .category-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .category-name {
+      font-weight: bold;
+      color: var(--matrix-green);
+      margin-bottom: 4px;
+    }
+    
+    .category-count {
+      color: var(--matrix-muted);
+      font-size: 12px;
+    }
+    
+    /* Loading */
+    .loading {
+      text-align: center;
+      color: var(--matrix-muted);
+      padding: 40px;
+    }
+    
+    .spinner {
+      border: 2px solid var(--matrix-border);
+      border-top: 2px solid var(--matrix-green);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">🏠 OnAirMulTiMedia Serverfarm</div>
+    <div class="public-badge">ÖFFENTLICH - KEIN ACCOUNT ERFORDERLICH</div>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <div class="search-container">
+        <input type="text" class="search-input" placeholder="🔍 Räume durchsuchen..." id="searchInput">
+      </div>
+      
+      <h3 style="color: var(--matrix-green); margin-bottom: 16px;">📁 Öffentliche Räume</h3>
+      <ul class="room-list" id="roomList">
+        <li class="loading">
+          <div class="spinner"></div>
+          Räume werden geladen...
+        </li>
+      </ul>
+      
+      <h3 style="color: var(--matrix-green); margin: 20px 0 16px 0;">📂 Kategorien</h3>
+      <div class="categories" id="categories">
+        <div class="loading">
+          <div class="spinner"></div>
+          Kategorien werden geladen...
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div id="welcomeScreen">
+        <div class="room-header">
+          <h1 class="room-title">🌍 Willkommen in der OnAirMulTiMedia Serverfarm</h1>
+          <div class="room-info">
+            Matrix.org-Style öffentlicher Zugang • Kein Account erforderlich • Download möglich
+          </div>
+        </div>
+        
+        <div class="categories" id="welcomeCategories">
+          <!-- Kategorien werden hier geladen -->
+        </div>
+        
+        <div style="background: var(--matrix-gray); padding: 20px; border-radius: 8px; border: 1px solid var(--matrix-border);">
+          <h3 style="color: var(--matrix-green); margin-bottom: 16px;">🎯 Verfügbare Bereiche:</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div style="padding: 12px; background: var(--matrix-dark); border-radius: 8px; border: 1px solid var(--matrix-border);">
+              <strong style="color: var(--matrix-green);">🌍 Information</strong><br>
+              <small style="color: var(--matrix-muted);">Nachrichten, Politik, Wirtschaft</small>
+            </div>
+            <div style="padding: 12px; background: var(--matrix-dark); border-radius: 8px; border: 1px solid var(--matrix-border);">
+              <strong style="color: var(--matrix-green);">⚽ Sports</strong><br>
+              <small style="color: var(--matrix-muted);">Alle Sportarten, Ergebnisse</small>
+            </div>
+            <div style="padding: 12px; background: var(--matrix-dark); border-radius: 8px; border: 1px solid var(--matrix-border);">
+              <strong style="color: var(--matrix-green);">🚀 Technology</strong><br>
+              <small style="color: var(--matrix-muted);">Tech-Trends, AI, Programmierung</small>
+            </div>
+            <div style="padding: 12px; background: var(--matrix-dark); border-radius: 8px; border: 1px solid var(--matrix-border);">
+              <strong style="color: var(--matrix-green);">🔬 Science</strong><br>
+              <small style="color: var(--matrix-muted);">Wissenschaft, Forschung</small>
+            </div>
+            <div style="padding: 12px; background: var(--matrix-dark); border-radius: 8px; border: 1px solid var(--matrix-border);">
+              <strong style="color: var(--matrix-green);">🌱 Nature</strong><br>
+              <small style="color: var(--matrix-muted);">Umwelt, Klima, Nachhaltigkeit</small>
+            </div>
+            <div style="padding: 12px; background: var(--matrix-dark); border-radius: 8px; border: 1px solid var(--matrix-border);">
+              <strong style="color: var(--matrix-green);">🎨 Culture</strong><br>
+              <small style="color: var(--matrix-muted);">Kunst, Musik, Literatur</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="roomContent" style="display: none;">
+        <!-- Raum-Inhalte werden hier geladen -->
+      </div>
+    </main>
+  </div>
+
+  <script>
+    class MatrixServerfarm {
+      constructor() {
+        this.currentRoom = null;
+        this.apiBase = '/api'; // Lokale API
+        this.init();
+      }
+
+      async init() {
+        console.log('🏠 Matrix Serverfarm initialisiert');
+        await this.loadRooms();
+        await this.loadCategories();
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          this.searchRooms(e.target.value);
+        });
+      }
+
+      async loadRooms() {
+        try {
+          const response = await fetch(`${this.apiBase}/rooms`);
+          const data = await response.json();
+          
+          if (data.success) {
+            this.renderRooms(data.rooms);
+          } else {
+            console.error('Fehler beim Laden der Räume:', data.error);
+          }
+        } catch (error) {
+          console.error('API-Fehler:', error);
+          this.showFallbackRooms();
+        }
+      }
+
+      async loadCategories() {
+        try {
+          const response = await fetch(`${this.apiBase}/media/categories`);
+          const data = await response.json();
+          
+          if (data.success) {
+            this.renderCategories(data.categories);
+          }
+        } catch (error) {
+          console.error('Fehler beim Laden der Kategorien:', error);
+        }
+      }
+
+      renderRooms(rooms) {
+        const roomList = document.getElementById('roomList');
+        roomList.innerHTML = '';
+
+        rooms.forEach(room => {
+          const li = document.createElement('li');
+          li.className = 'room-item';
+          li.innerHTML = `
+            <div class="room-name">${room.name}</div>
+            <div class="room-description">${room.description}</div>
+            <div class="room-topics">
+              ${room.topics.map(topic => `<span class="topic-tag">${topic}</span>`).join('')}
+            </div>
+          `;
+          
+          li.addEventListener('click', () => this.selectRoom(room));
+          roomList.appendChild(li);
+        });
+      }
+
+      renderCategories(categories) {
+        const categoriesContainer = document.getElementById('categories');
+        const welcomeCategories = document.getElementById('welcomeCategories');
+        
+        const categoriesHTML = categories.map(cat => `
+          <div class="category-item" onclick="matrixServerfarm.searchByCategory('${cat.id}')">
+            <div class="category-icon">${cat.icon}</div>
+            <div class="category-name">${cat.name}</div>
+            <div class="category-count">${cat.count} Inhalte</div>
+          </div>
+        `).join('');
+
+        categoriesContainer.innerHTML = categoriesHTML;
+        welcomeCategories.innerHTML = categoriesHTML;
+      }
+
+      async selectRoom(room) {
+        this.currentRoom = room;
+        
+        // Update UI
+        document.querySelectorAll('.room-item').forEach(item => item.classList.remove('active'));
+        event.target.closest('.room-item').classList.add('active');
+        
+        // Show room content
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('roomContent').style.display = 'block';
+        
+        await this.loadRoomContent(room.id);
+      }
+
+      async loadRoomContent(roomId) {
+        try {
+          const response = await fetch(`${this.apiBase}/rooms/${roomId}`);
+          const data = await response.json();
+          
+          if (data.success) {
+            this.renderRoomContent(data.room);
+          }
+        } catch (error) {
+          console.error('Fehler beim Laden des Raum-Inhalts:', error);
+        }
+      }
+
+      renderRoomContent(room) {
+        const roomContent = document.getElementById('roomContent');
+        
+        roomContent.innerHTML = `
+          <div class="room-header">
+            <h1 class="room-title">${room.name}</h1>
+            <div class="room-info">
+              Öffentlicher Raum • Kein Account erforderlich • Download verfügbar
+            </div>
+          </div>
+
+          <div class="messages-container">
+            <h3 style="color: var(--matrix-green); margin-bottom: 16px;">💬 Aktuelle Nachrichten</h3>
+            ${room.messages.map(msg => `
+              <div class="message">
+                <div class="message-header">
+                  <span class="message-sender">${msg.sender}</span>
+                  <span class="message-time">${new Date(msg.timestamp).toLocaleString('de-DE')}</span>
+                </div>
+                <div class="message-content">${msg.content}</div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="media-grid">
+            <h3 style="color: var(--matrix-green); margin-bottom: 16px; grid-column: 1 / -1;">📺 Verfügbare Medien</h3>
+            ${room.media.map(media => `
+              <div class="media-item">
+                <div class="media-title">${media.title}</div>
+                <div class="media-info">
+                  ${media.type.toUpperCase()} • ${media.duration}
+                </div>
+                <div class="media-actions">
+                  <button class="btn btn-primary" onclick="matrixServerfarm.downloadMedia('${media.id}')">
+                    📥 Download
+                  </button>
+                  <button class="btn btn-secondary" onclick="matrixServerfarm.streamMedia('${media.id}')">
+                    ▶️ Stream
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      async searchRooms(query) {
+        const rooms = document.querySelectorAll('.room-item');
+        rooms.forEach(room => {
+          const text = room.textContent.toLowerCase();
+          const matches = text.includes(query.toLowerCase());
+          room.style.display = matches ? 'block' : 'none';
+        });
+      }
+
+      async searchByCategory(category) {
+        try {
+          const response = await fetch(`${this.apiBase}/media/search?category=${category}`);
+          const data = await response.json();
+          
+          if (data.success) {
+            this.showSearchResults(data.results, category);
+          }
+        } catch (error) {
+          console.error('Fehler bei der Kategorie-Suche:', error);
+        }
+      }
+
+      showSearchResults(results, category) {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('roomContent').style.display = 'block';
+        
+        const roomContent = document.getElementById('roomContent');
+        roomContent.innerHTML = `
+          <div class="room-header">
+            <h1 class="room-title">🔍 Suchergebnisse: ${category}</h1>
+            <div class="room-info">
+              ${results.length} Ergebnisse gefunden • Öffentlicher Zugang
+            </div>
+          </div>
+
+          <div class="media-grid">
+            ${results.map(media => `
+              <div class="media-item">
+                <div class="media-title">${media.title}</div>
+                <div class="media-info">
+                  ${media.category} • ${media.type.toUpperCase()} • ${media.duration}
+                </div>
+                <div style="color: var(--matrix-muted); font-size: 12px; margin-bottom: 12px;">
+                  ${media.description}
+                </div>
+                <div class="media-actions">
+                  <button class="btn btn-primary" onclick="matrixServerfarm.downloadMedia('${media.id}')">
+                    📥 Download
+                  </button>
+                  <button class="btn btn-secondary" onclick="matrixServerfarm.streamMedia('${media.id}')">
+                    ▶️ Stream
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      async downloadMedia(mediaId) {
+        try {
+          const response = await fetch(`${this.apiBase}/media/${mediaId}`);
+          const data = await response.json();
+          
+          if (data.success) {
+            // Simuliere Download
+            const link = document.createElement('a');
+            link.href = data.media.downloadUrl;
+            link.download = `${data.media.title}.mp4`;
+            link.click();
+            
+            console.log('📥 Download gestartet:', data.media.title);
+          }
+        } catch (error) {
+          console.error('Fehler beim Download:', error);
+        }
+      }
+
+      async streamMedia(mediaId) {
+        try {
+          const response = await fetch(`${this.apiBase}/media/${mediaId}`);
+          const data = await response.json();
+          
+          if (data.success) {
+            // Öffne Stream in neuem Tab
+            window.open(data.media.streamUrl, '_blank');
+            console.log('▶️ Stream gestartet:', data.media.title);
+          }
+        } catch (error) {
+          console.error('Fehler beim Stream:', error);
+        }
+      }
+
+      showFallbackRooms() {
+        const roomList = document.getElementById('roomList');
+        roomList.innerHTML = `
+          <li class="room-item" onclick="matrixServerfarm.selectRoom({id: 'info-global', name: '🌍 Global Information', description: 'Weltweite Nachrichten, Politik, Wirtschaft', topics: ['news', 'politics', 'economy']})">
+            <div class="room-name">🌍 Global Information</div>
+            <div class="room-description">Weltweite Nachrichten, Politik, Wirtschaft</div>
+            <div class="room-topics">
+              <span class="topic-tag">news</span>
+              <span class="topic-tag">politics</span>
+              <span class="topic-tag">economy</span>
+            </div>
+          </li>
+          <li class="room-item" onclick="matrixServerfarm.selectRoom({id: 'sports-world', name: '⚽ Sports World', description: 'Alle Sportarten, Ergebnisse, Highlights', topics: ['football', 'basketball', 'tennis']})">
+            <div class="room-name">⚽ Sports World</div>
+            <div class="room-description">Alle Sportarten, Ergebnisse, Highlights</div>
+            <div class="room-topics">
+              <span class="topic-tag">football</span>
+              <span class="topic-tag">basketball</span>
+              <span class="topic-tag">tennis</span>
+            </div>
+          </li>
+        `;
+      }
+    }
+
+    // Initialize Matrix Serverfarm
+    const matrixServerfarm = new MatrixServerfarm();
+  </script>
+  
+  <!-- ECHTE API-IMPLEMENTATION -->
+  <script src="./api-stub.js"></script>
+</body>
+</html>
