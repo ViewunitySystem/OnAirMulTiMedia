@@ -1,0 +1,50 @@
+{
+  "port": 3737,
+  "project": "TEL Portal System - OnAirMulTiMedia",
+  "domains": {
+    "github_pages": "https://viewunitysystem.github.io/OnAirMulTiMedia",
+    "firebase_prod": "https://tel1nl.web.app",
+    "firebase_backup": "https://back-ee052.web.app",
+    "local_dev": "http://localhost:5173"
+  },
+  "processes": [
+    {
+      "name": "webui",
+      "cmd": "npm",
+      "args": ["run", "dev"],
+      "env": { "PORT": "5173", "VITE_UCM_ENDPOINT": "http://localhost:3737/OnAirMulTiMedia/log" }
+    },
+    {
+      "name": "selfheal",
+      "cmd": "node",
+      "args": ["scripts/selfheal.ts"],
+      "env": { "UCM_ENDPOINT": "http://localhost:3737/log" }
+    },
+    {
+      "name": "build",
+      "cmd": "npm",
+      "args": ["run", "build"],
+      "env": { "UCM_ENDPOINT": "http://localhost:3737/log" }
+    },
+    {
+      "name": "test",
+      "cmd": "npm",
+      "args": ["run", "test"],
+      "env": { "UCM_ENDPOINT": "http://localhost:3737/log" }
+    }
+  ],
+  "redaction_patterns": [
+    "api_key=***",
+    "token=***",
+    "secret=***",
+    "Werner8/Werner8/",
+    "FIREBASE_SA_***",
+    "Bearer ***"
+  ],
+  "retention_days": 30,
+  "rotation": {
+    "daily": true,
+    "max_files": 30,
+    "compress_old": true
+  }
+}

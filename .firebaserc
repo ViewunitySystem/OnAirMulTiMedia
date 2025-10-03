@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "prod": "tel1nl",
+    "backup": "back-ee052"
+  }
+}

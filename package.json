@@ -1,0 +1,113 @@
+{
+  "name": "onairmultimedia",
+  "version": "1.0.0",
+  "description": "OnAirMulTiMedia - Universal Multimedia Platform with Self-Healing Architecture",
+  "type": "module",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3000",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0 --port 4173",
+    "serve": "vite preview --host 0.0.0.0 --port 4173",
+    "lint": "eslint . --ext .js,.ts,.html --fix",
+    "lint:check": "eslint . --ext .js,.ts,.html",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix --force",
+    "security": "npm audit && npm run lint:check && npm run format:check",
+    "selfheal": "tsx scripts/selfheal.ts",
+    "firebase:emulators": "firebase emulators:start",
+    "firebase:deploy": "firebase deploy",
+    "firebase:deploy:prod": "firebase deploy --only hosting:onairmultimedia",
+    "firebase:deploy:staging": "firebase deploy --only hosting:onairmultimedia-staging",
+    "firebase:deploy:dev": "firebase deploy --only hosting:onairmultimedia-dev",
+    "clean": "rm -rf dist/ build/ node_modules/.cache/ .vite/",
+    "postinstall": "npm run security",
+    "precommit": "npm run lint && npm run format && npm run test",
+    "prepush": "npm run security && npm run test:e2e"
+  },
+  "keywords": [
+    "multimedia",
+    "self-healing",
+    "universal",
+    "platform",
+    "web",
+    "rust",
+    "typescript",
+    "firebase",
+    "github-pages"
+  ],
+  "author": {
+    "name": "DD5BE (Gently)",
+    "email": "gently@viewunitysystem.com",
+    "url": "https://github.com/ViewunitySystem"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia/issues"
+  },
+  "homepage": "https://viewunitysystem.github.io/OnAirMulTiMedia/",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vitejs/plugin-legacy": "^5.2.0",
+    "@vitest/ui": "^1.1.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-security": "^1.7.1",
+    "firebase-tools": "^13.0.0",
+    "husky": "^8.0.3",
+    "jsdom": "^27.0.0",
+    "lint-staged": "^15.2.0",
+    "playwright": "^1.40.0",
+    "prettier": "^3.1.1",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0"
+  },
+  "dependencies": {
+    "firebase": "^10.7.1"
+  },
+  "lint-staged": {
+    "*.{js,ts,html}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "npm run security"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "volta": {
+    "node": "20.10.0",
+    "npm": "10.2.4"
+  }
+}
