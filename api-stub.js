@@ -297,10 +297,10 @@
           break;
 
         case '/api/manifest/versions':
-          const manifests = JSON.parse(localStorage.getItem('manifests') || '[]');
+          const manifestsVersions = JSON.parse(localStorage.getItem('manifests') || '[]');
           return {
             success: true,
-            data: manifests.map(m => ({
+            data: manifestsVersions.map(m => ({
               version: m.version,
               created_at: m.created_at
             })),
@@ -309,8 +309,8 @@
 
         case '/api/manifest/version':
           const version = url.searchParams.get('version');
-          const manifests = JSON.parse(localStorage.getItem('manifests') || '[]');
-          const manifest = manifests.find(m => m.version === version);
+          const manifestsVersion = JSON.parse(localStorage.getItem('manifests') || '[]');
+          const manifest = manifestsVersion.find(m => m.version === version);
           
           if (manifest) {
             return {
