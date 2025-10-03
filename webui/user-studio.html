@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>User‑Studio – OAMTM</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com https://oamtm-api.example.workers.dev; base-uri 'self'">
+  <link rel="stylesheet" href="./studio.css" />
+</head>
+<body>
+  <header class="top">
+    <h1>OAMTM – User‑Studio</h1>
+    <nav>
+      <a href="./user-change-log.html">Änderungsprotokoll</a>
+      <a href="../docs/audit-manifest.html">Audit‑Manifest</a>
+      <a href="../">Zurück zur Hauptseite</a>
+    </nav>
+  </header>
+  <main class="wrap">
+    <section class="card">
+      <h2>Feature‑Wunsch</h2>
+      <label>Titel <input id="title" placeholder="z.B. QR‑Generator mit Farbwahl"/></label>
+      <label>Beschreibung <textarea id="desc" rows="4" placeholder="Was soll entstehen? (UI, Logik, Daten)"></textarea></label>
+      <label>Zielfläche
+        <select id="target">
+          <option value="modules/user/">Benutzer‑Module</option>
+          <option value="webui/components/">Web‑Komponenten</option>
+          <option value="apps/user/">Benutzer‑Apps</option>
+        </select>
+      </label>
+      <button id="aiDraft">AI‑Vorschlag erzeugen</button>
+    </section>
+
+    <section class="card">
+      <h2>Entwurf (bearbeitbar)</h2>
+      <textarea id="code" class="code" spellcheck="false" placeholder="// hier erscheint der AI‑Entwurf"></textarea>
+      <div class="row">
+        <button id="preview">Vorschau</button>
+        <button id="submit">Zur Prüfung einreichen</button>
+      </div>
+      <div id="status" class="muted"></div>
+      <iframe id="sandbox" title="Preview" sandbox="allow-scripts allow-same-origin" class="frame"></iframe>
+    </section>
+  </main>
+  <script type="module" src="./studio.js"></script>
+</body>
+</html>

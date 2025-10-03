@@ -1,0 +1,18 @@
+{
+  "ts": "2025-10-03T17:30:00Z",
+  "commit": "7a0d660",
+  "ci": { "trigger": "serverfarm-dashboard.html", "details": "CI/CD aktiviert" },
+  "hil": { "status": "Aktiv", "components": ["Loopback", "FileIQ", "IPLink", "User-Studio", "Audit-Manifest"] },
+  "modules": [
+    { "name": "Loopback", "status": "Aktiv", "audit": true, "cert": true },
+    { "name": "FileIQ", "status": "Aktiv", "audit": true, "cert": true },
+    { "name": "IPLink", "status": "Aktiv", "audit": true, "cert": true },
+    { "name": "User-Studio", "status": "Aktiv", "audit": true, "cert": true },
+    { "name": "Audit-Manifest", "status": "Aktiv", "audit": true, "cert": true }
+  ],
+  "regulatory": {
+    "de": ["Frequenzbereiche dokumentiert","CE/RED‑Konformität sichtbar","Audit‑Trail vorhanden","Neuro‑Interface experimentell"],
+    "nl": ["RDI‑NL kompatibel","Auditierbare Kommunikation dokumentiert","Zertifizierungsengine erreichbar"]
+  },
+  "harmony": ["Synchronisation aller Layer","UI↔Backend↔Audit↔Security harmonisiert","Selbstreflexion aktiv"]
+}

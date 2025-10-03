@@ -1,0 +1,83 @@
+name: Build – PWA + Android (+ iOS*) + Desktop
+on:
+  pull_request:
+    branches: [ main, gh-pages ]
+  push:
+    branches: [ main, gh-pages ]
+
+jobs:
+  pwa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci && npm run build
+      - name: Upload PWA
+        uses: actions/upload-artifact@v4
+        with: { name: pwa-dist, path: dist }
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: 'temurin', java-version: '17' }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci && npm run build && npm run cap:sync:android
+      - name: Build APK (Release)
+        working-directory: android
+        run: ./gradlew assembleRelease
+      - name: Sign APK (optional)
+        if: ${{ secrets.ANDROID_KEYSTORE }}
+        run: |
+          echo "$ANDROID_KEYSTORE" | base64 -d > release.keystore
+          $ANDROID_HOME/build-tools/*/apksigner sign \
+            --ks release.keystore \
+            --ks-pass pass:${{ secrets.KEYSTORE_PASSWORD }} \
+            --ks-key-alias ${{ secrets.KEY_ALIAS }} \
+            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+            app/build/outputs/apk/release/app-release-unsigned.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: android/app/build/outputs/apk/release/*.apk
+
+  ios:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with: { xcode-version: latest }
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci && npm run build && npm run cap:sync:ios
+      - name: Build IPA (requires certs)
+        run: |
+          echo "iOS build benötigt gültige Zertifikate & Profiles (Secrets). Überspringe, wenn nicht gesetzt."
+      - uses: actions/upload-artifact@v4
+        with: { name: ios-output, path: ios/**/Build/*, if-no-files-found: ignore }
+
+  desktop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci && npm run build:electron
+      - uses: actions/upload-artifact@v4
+        with: { name: electron-bundles, path: release/**, if-no-files-found: ignore }
+
+  release:
+    needs: [pwa, android, ios, desktop]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: ./artifacts }
+      - uses: softprops/action-gh-release@v2
+        with: { tag_name: v${{ github.run_number }}, files: artifacts/** }
+        env: { GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} }

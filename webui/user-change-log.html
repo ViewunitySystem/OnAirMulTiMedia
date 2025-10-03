@@ -1,0 +1,22 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>User‑Änderungen – OAMTM</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com">
+<link rel="stylesheet" href="./studio.css">
+<body class="wrap">
+  <h1>User‑Änderungen</h1>
+  <ul id="list"></ul>
+  <script type="module">
+  const repo='ViewunitySystem/OnAirMulTiMedia';
+  try {
+    const res=await fetch(`https://api.github.com/repos/${repo}/contents/audit/user`);
+    const items = await res.json();
+    const ul=document.getElementById('list');
+    for(const it of items){ 
+      const li=document.createElement('li'); 
+      li.innerHTML=`<strong>${it.name}</strong> - <a href="${it.html_url}" target="_blank">View</a>`; 
+      ul.appendChild(li); 
+    }
+  } catch (error) {
+    document.getElementById('list').innerHTML = '<li>Keine User-Änderungen gefunden oder API-Fehler</li>';
+  }
+  </script>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Audit‑Manifest – OnAirMulTiMedia</title>
+  <!-- CSP: lokal, strikt, API nur GitHub (für Commit/Meta optional) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests">
+  <link rel="stylesheet" href="./assets/audit.css" />
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <h1>🛡️ Audit‑Manifest</h1>
+      <div class="muted">OnAirMulTiMedia • Öffentliche Bestätigung des letzten Audit‑Runs</div>
+    </div>
+    <nav class="nav">
+      <a href="../">Start</a>
+      <a href="../info.html">Info</a>
+      <a href="../webui/user-studio.html">User‑Studio</a>
+      <a href="./audit-manifest.html" aria-current="page">Audit</a>
+    </nav>
+  </header>
+
+  <main class="wrap" id="app" hidden>
+    <section class="grid">
+      <div class="card">
+        <div class="label">CI/CD Trigger</div>
+        <div class="value" id="ciTrigger">–</div>
+        <div class="note" id="ciDetails">–</div>
+      </div>
+      <div class="card">
+        <div class="label">Hardware‑in‑the‑Loop</div>
+        <div class="value" id="hil">–</div>
+        <div class="note" id="hilDetails">–</div>
+      </div>
+      <div class="card">
+        <div class="label">Modul‑Scan</div>
+        <div class="value" id="modCount">–</div>
+        <div class="note" id="modSummary">–</div>
+      </div>
+      <div class="card">
+        <div class="label">Zeit / Commit</div>
+        <div class="value" id="ts">–</div>
+        <div class="note" id="commit">–</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📊 Modulstatus</h2>
+      <table class="tbl" id="modTable" aria-describedby="modSummary">
+        <thead><tr><th>Modul</th><th>Status</th><th>Auditierbar</th><th>Zertifiziert</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>🏛️ Regulatory Snapshot</h2>
+        <ul class="checks" id="regList"></ul>
+      </div>
+      <div class="card">
+        <h2>🧠 Systemharmonie</h2>
+        <ul class="checks" id="harmList"></ul>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>📤 Export & Nachweise</h2>
+      <div class="row">
+        <button id="btnJson">Export als JSON</button>
+        <button id="btnPdf">Als PDF drucken</button>
+        <a id="btnRaw" class="btn" href="./audit-run.json" target="_blank" rel="noopener">Rohdaten öffnen</a>
+      </div>
+      <p class="muted">PDF‑Export nutzt den Browser‑Druckdialog (Datei → Drucken → „Als PDF speichern").</p>
+    </section>
+  </main>
+
+  <template id="tplRow">
+    <tr>
+      <td class="col-name"></td>
+      <td class="col-status"></td>
+      <td class="col-audit"></td>
+      <td class="col-cert"></td>
+    </tr>
+  </template>
+
+  <section class="card warn" id="fallback" hidden>
+    <h2>ℹ️ Hinweis</h2>
+    <p>Keine <code>audit-run.json</code> gefunden – zeige den zuletzt bekannten Status (Fallback). Für einen echten Lauf den CI‑Job starten, der <code>docs/audit-run.json</code> schreibt.</p>
+  </section>
+
+  <script src="./assets/audit.js" type="module"></script>
+</body>
+</html>
