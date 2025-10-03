@@ -1,22 +1,185 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>User‑Änderungen – OAMTM</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com">
-<link rel="stylesheet" href="./studio.css">
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>User‑Änderungen – OAMTM</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com; base-uri 'self'">
+  <link rel="stylesheet" href="./studio.css" />
+</head>
 <body class="wrap">
   <h1>User‑Änderungen</h1>
+  <div class="muted" style="margin-bottom: 16px;">
+    📋 Lokale Demo-Daten (keine API-Abhängigkeiten)
+  </div>
   <ul id="list"></ul>
-  <script type="module">
-  const repo='ViewunitySystem/OnAirMulTiMedia';
-  try {
-    const res=await fetch(`https://api.github.com/repos/${repo}/contents/audit/user`);
-    const items = await res.json();
-    const ul=document.getElementById('list');
-    for(const it of items){ 
-      const li=document.createElement('li'); 
-      li.innerHTML=`<strong>${it.name}</strong> - <a href="${it.html_url}" target="_blank">View</a>`; 
-      ul.appendChild(li); 
+  
+  <script>
+    // User Change Log Manager mit lokalen Daten
+    class UserChangeLogManager {
+      constructor() {
+        this.init();
+      }
+
+      init() {
+        console.log('📋 User Change Log Manager initialisiert');
+        this.loadLocalChanges();
+      }
+
+      loadLocalChanges() {
+        const demoChanges = [
+          {
+            name: 'user-studio-enhancement-2025-10-03.json',
+            description: 'User Studio Enhancement - AI Draft Generation',
+            timestamp: '2025-10-03T10:00:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          },
+          {
+            name: 'audit-manifest-update-2025-10-03.json',
+            description: 'Audit Manifest Update - Real-time Data Integration',
+            timestamp: '2025-10-03T09:30:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          },
+          {
+            name: 'dashboard-optimization-2025-10-03.json',
+            description: 'Dashboard Optimization - Performance Improvements',
+            timestamp: '2025-10-03T09:00:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          },
+          {
+            name: 'mobile-setup-config-2025-10-02.json',
+            description: 'Mobile Setup Configuration - Capacitor Integration',
+            timestamp: '2025-10-02T16:00:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          },
+          {
+            name: 'desktop-electron-setup-2025-10-02.json',
+            description: 'Desktop Electron Setup - Cross-platform Support',
+            timestamp: '2025-10-02T15:30:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          },
+          {
+            name: 'api-dependency-fix-2025-10-02.json',
+            description: 'API Dependency Fix - Local Data Implementation',
+            timestamp: '2025-10-02T15:00:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          },
+          {
+            name: 'blueprints-module-system-2025-10-01.json',
+            description: 'Blueprints Module System - Interactive Checklists',
+            timestamp: '2025-10-01T14:00:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          },
+          {
+            name: 'manifest-version-management-2025-10-01.json',
+            description: 'Manifest Version Management - Admin Functions',
+            timestamp: '2025-10-01T13:30:00Z',
+            author: 'Demo User',
+            status: 'completed'
+          }
+        ];
+
+        const listElement = document.getElementById('list');
+        listElement.innerHTML = '';
+
+        demoChanges.forEach(change => {
+          const li = document.createElement('li');
+          li.style.marginBottom = '12px';
+          li.style.padding = '8px';
+          li.style.background = '#0b1020';
+          li.style.borderRadius = '6px';
+          li.style.border = '1px solid #1f2a52';
+          
+          const statusIcon = change.status === 'completed' ? '✅' : '⏳';
+          const statusColor = change.status === 'completed' ? '#10b981' : '#f59e0b';
+          
+          li.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <strong style="color: #93c5fd;">${change.name}</strong>
+                <div style="font-size: 0.9rem; margin-top: 4px; color: #e5e7eb;">
+                  ${change.description}
+                </div>
+                <div style="font-size: 0.8rem; margin-top: 4px; opacity: 0.7;">
+                  👤 ${change.author} • 📅 ${this.formatDate(change.timestamp)}
+                </div>
+              </div>
+              <div style="color: ${statusColor}; font-size: 1.2rem;">
+                ${statusIcon}
+              </div>
+            </div>
+          `;
+          
+          listElement.appendChild(li);
+        });
+
+        console.log(`✅ ${demoChanges.length} User-Änderungen geladen`);
+      }
+
+      formatDate(timestamp) {
+        try {
+          return new Date(timestamp).toLocaleString('de-DE');
+        } catch {
+          return 'Unbekannt';
+        }
+      }
+
+      // Public API für externe Updates
+      addChange(name, description, author = 'Demo User') {
+        const change = {
+          name: name,
+          description: description,
+          timestamp: new Date().toISOString(),
+          author: author,
+          status: 'pending'
+        };
+
+        const listElement = document.getElementById('list');
+        const li = document.createElement('li');
+        li.style.marginBottom = '12px';
+        li.style.padding = '8px';
+        li.style.background = '#0b1020';
+        li.style.borderRadius = '6px';
+        li.style.border = '1px solid #1f2a52';
+        
+        li.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="color: #93c5fd;">${change.name}</strong>
+              <div style="font-size: 0.9rem; margin-top: 4px; color: #e5e7eb;">
+                ${change.description}
+              </div>
+              <div style="font-size: 0.8rem; margin-top: 4px; opacity: 0.7;">
+                👤 ${change.author} • 📅 ${this.formatDate(change.timestamp)}
+              </div>
+            </div>
+            <div style="color: #f59e0b; font-size: 1.2rem;">
+              ⏳
+            </div>
+          </div>
+        `;
+        
+        listElement.insertBefore(li, listElement.firstChild);
+        
+        console.log(`✅ Neue User-Änderung hinzugefügt: ${name}`);
+      }
     }
-  } catch (error) {
-    document.getElementById('list').innerHTML = '<li>Keine User-Änderungen gefunden oder API-Fehler</li>';
-  }
+
+    // Auto-Start
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        window.userChangeLogManager = new UserChangeLogManager();
+      });
+    } else {
+      window.userChangeLogManager = new UserChangeLogManager();
+    }
   </script>
+</body>
+</html>
