@@ -26,6 +26,7 @@
     "changelog": "node scripts/changelog.mjs",
     "health-gates": "tsx scripts/health-gates.ts",
     "auto-pr": "tsx scripts/auto-pr.ts",
+    "monitoring": "tsx scripts/monitoring-dashboard.ts",
     "firebase:emulators": "firebase emulators:start",
     "firebase:deploy": "firebase deploy",
     "firebase:deploy:prod": "firebase deploy --only hosting:onairmultimedia",
