@@ -15,3 +15,63 @@ button:hover{background:#1a2540}
 .muted{opacity:.8;font-size:12px}
 .success{color:#10b981}
 .error{color:#ef4444}
+.info{color:#93c5fd}
+
+/* Validation Styles */
+input.valid, textarea.valid, select.valid {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+input.invalid, textarea.invalid, select.invalid {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.validation-message {
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.validation-message.success {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.validation-message.error {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Loading States */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Enhanced Status Messages */
+#status.success {
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+#status.error {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+#status.info {
+  color: #93c5fd;
+  background-color: rgba(147, 197, 253, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(147, 197, 253, 0.3);
+}

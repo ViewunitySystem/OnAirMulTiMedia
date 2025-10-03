@@ -1,0 +1,110 @@
+{
+  "appId": "com.onairmultimedia.oamtm.desktop",
+  "productName": "OAMTM Serverfarm",
+  "directories": {
+    "output": "release"
+  },
+  "files": [
+    "**/*",
+    "!node_modules/**/*",
+    "!android/**/*",
+    "!ios/**/*",
+    "!api/**/*",
+    "!.github/**/*",
+    "!*.md",
+    "!electron/**/*",
+    "electron/main.js",
+    "electron/preload.js"
+  ],
+  "extraResources": [
+    {
+      "from": "assets/",
+      "to": "assets/",
+      "filter": ["**/*"]
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "assets/icon.ico",
+    "publisherName": "OnAirMulTiMedia",
+    "requestedExecutionLevel": "asInvoker"
+  },
+  "mac": {
+    "target": [
+      {
+        "target": "dmg",
+        "arch": ["x64", "arm64"]
+      },
+      {
+        "target": "zip",
+        "arch": ["x64", "arm64"]
+      }
+    ],
+    "icon": "assets/icon.icns",
+    "category": "public.app-category.productivity",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist"
+  },
+  "linux": {
+    "target": [
+      {
+        "target": "AppImage",
+        "arch": ["x64"]
+      },
+      {
+        "target": "deb",
+        "arch": ["x64"]
+      },
+      {
+        "target": "rpm",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "assets/icon.png",
+    "category": "Office"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "OAMTM Serverfarm"
+  },
+  "dmg": {
+    "title": "OAMTM Serverfarm",
+    "background": "assets/dmg-background.png",
+    "window": {
+      "width": 540,
+      "height": 380
+    },
+    "contents": [
+      {
+        "x": 140,
+        "y": 200,
+        "type": "file"
+      },
+      {
+        "x": 400,
+        "y": 200,
+        "type": "link",
+        "path": "/Applications"
+      }
+    ]
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "ViewunitySystem",
+    "repo": "OnAirMulTiMedia"
+  }
+}

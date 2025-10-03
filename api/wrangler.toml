@@ -1,0 +1,26 @@
+name = "oamtm-submission-api"
+compatibility_date = "2025-10-03"
+
+# Environment Variables (set in Cloudflare Dashboard)
+[vars]
+GITHUB_REPO = "ViewunitySystem/OnAirMulTiMedia"
+
+# Secrets (set via wrangler secret put)
+# GITHUB_TOKEN = "your-fine-grained-pat"
+# OPENAI_API_KEY = "optional-openai-key"
+
+# Routes
+routes = [
+  { pattern = "oamtm-api.example.workers.dev/*", zone_name = "example.com" }
+]
+
+# Build Configuration
+[build]
+command = "npm run build"
+cwd = "api"
+
+# KV Storage (optional for caching)
+[[kv_namespaces]]
+binding = "CACHE"
+id = "your-kv-namespace-id"
+preview_id = "your-preview-kv-namespace-id"
