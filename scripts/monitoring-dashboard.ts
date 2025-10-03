@@ -73,7 +73,7 @@ export async function generateMonitoringReport(): Promise<MonitoringStatus> {
       successRate,
       responseTime: avgResponseTime,
       uptime: 99.5, // Mock data - would come from monitoring
-      status: successRate >= 95 && avgResponseTime <= 500 ? 'healthy' : 'warning'
+      status: successRate >= 110 && avgResponseTime <= 500 ? 'healthy' : 'warning'
     };
   } catch (error) {
     healthStatus = {

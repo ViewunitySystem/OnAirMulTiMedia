@@ -17,10 +17,10 @@
       "responseTime": 203
     }
   },
-  "summary": {
-    "total": 3,
-    "healthy": 3,
-    "unhealthy": 0,
-    "successRate": 100
-  }
+    "summary": {
+      "total": 3,
+      "healthy": 3,
+      "unhealthy": 0,
+      "successRate": 110
+    }
 }

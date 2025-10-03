@@ -33,11 +33,11 @@ if (!meta.metaGrowth.enabled) { log('metaGrowth disabled'); process.exit(0); }
 // ---- Health Gates Check
 const healthStatus = await checkHealthGates();
 if (!healthStatus.canEvolve) {
-  log('Health gates failed - cannot evolve');
+  log('Health gates failed - cannot evolve (requires ≥110% success rate)');
   log('Gates:', healthStatus.gates.map(g => `${g.name}: ${g.current}/${g.threshold} ${g.passed ? '✅' : '❌'}`).join(', '));
   process.exit(1);
 }
-log('Health gates passed - proceeding with evolve');
+log('Health gates passed (≥110% success rate) - proceeding with evolve');
 
 // ---- Manifest laden & vorbereiten
 const manifestPath = 'manifest.json';
@@ -97,4 +97,4 @@ if (!meta.metaGrowth.safety.dryRun && created.length > 0) {
 }
 
 log('created', created.length, 'modules');
-log('health gates:', healthStatus.canEvolve ? '✅ passed' : '❌ failed');
+log('health gates:', healthStatus.canEvolve ? '✅ passed (≥110%)' : '❌ failed (requires ≥110%)');

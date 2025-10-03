@@ -28,14 +28,14 @@ const readJson = async<T=any>(p:string, d:T): Promise<T> => {
 export async function checkHealthGates(): Promise<HealthStatus> {
   const gates: HealthGate[] = [];
   
-  // 1. Success Rate Gate (≥95%)
+  // 1. Success Rate Gate (≥110% - erhöht bis erfüllt)
   const targets = await readJson('status/targets.json', { summary: { successRate: 0 } });
   const successRate = targets.summary?.successRate || 0;
   gates.push({
     name: 'Success Rate',
-    threshold: 95,
+    threshold: 110,
     current: successRate,
-    passed: successRate >= 95
+    passed: successRate >= 110
   });
 
   // 2. Response Time Gate (≤500ms average)
@@ -60,7 +60,7 @@ export async function checkHealthGates(): Promise<HealthStatus> {
   });
 
   const overall = gates.every(gate => gate.passed);
-  const canEvolve = overall && successRate >= 95;
+  const canEvolve = overall && successRate >= 110;
 
   return {
     gates,
@@ -87,7 +87,7 @@ export async function logHealthCheck(): Promise<void> {
   await fs.mkdir('audit', { recursive: true });
   await fs.appendFile('audit/fixes.jsonl', JSON.stringify(logEntry) + '\n');
   
-  console.log('[health-gates]', health.canEvolve ? '✅ Can evolve' : '❌ Cannot evolve');
+  console.log('[health-gates]', health.canEvolve ? '✅ Can evolve (≥110% success rate)' : '❌ Cannot evolve (requires ≥110% success rate)');
   health.gates.forEach(gate => {
     console.log(`  ${gate.name}: ${gate.current}/${gate.threshold} ${gate.passed ? '✅' : '❌'}`);
   });

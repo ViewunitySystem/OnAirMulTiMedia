@@ -21,10 +21,10 @@ Das OAMTM Meta-Wachstumssystem implementiert **selbstverstärkendes Wachstum** d
 - **Event-getrieben**: Idempotent, ohne Endlosschleifen
 - **Blueprint-basiert**: Erstellt Module aus Templates
 - **Audit-Trail**: Vollständige Protokollierung aller Aktionen
-- **Health-Gates**: Evolve nur bei ≥95% Success-Rate
+- **Health-Gates**: Evolve nur bei ≥110% Success-Rate
 
 ### 4. Health-Gates (`scripts/health-gates.ts`)
-- **Success Rate**: ≥95% erforderlich
+- **Success Rate**: ≥110% erforderlich (erhöht bis erfüllt)
 - **Response Time**: ≤500ms Durchschnitt
 - **Uptime**: ≥99% Verfügbarkeit
 - **Automatische Prüfung**: Vor jedem Evolve-Prozess
@@ -76,7 +76,7 @@ npm run auto-pr
 - **Test**: Vollständige Simulation ohne Änderungen
 
 ### Health-Gates
-- **Success Rate**: ≥95% System-Gesundheit erforderlich
+- **Success Rate**: ≥110% System-Gesundheit erforderlich (erhöht bis erfüllt)
 - **Response Time**: ≤500ms Durchschnittsantwortzeit
 - **Uptime**: ≥99% Verfügbarkeit
 - **Blockade**: Evolve wird bei Fehlschlag gestoppt
