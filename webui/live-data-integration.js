@@ -113,7 +113,7 @@ class LiveDataIntegration {
       web: { status: 'online', url: window.location.origin },
       mobile: { status: 'ready', config: 'capacitor' },
       desktop: { status: 'ready', config: 'electron' },
-      api: { status: 'ready', url: 'https://oamtm-api.example.workers.dev' },
+      api: { status: 'ready', url: '/api/live-data' },
       lastCheck: new Date().toISOString()
     };
   }
@@ -198,7 +198,7 @@ class LiveDataIntegration {
           web: { status: 'online', url: window.location.origin },
           mobile: { status: 'ready', config: 'capacitor' },
           desktop: { status: 'ready', config: 'electron' },
-          api: { status: 'ready', url: 'https://oamtm-api.example.workers.dev' }
+          api: { status: 'ready', url: '/api' }
         };
       default:
         return {};

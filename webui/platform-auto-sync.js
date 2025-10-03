@@ -55,7 +55,7 @@ class PlatformAutoSync {
     this.platforms.set('api', {
       name: 'API Backend',
       type: 'api',
-      url: 'https://oamtm-api.example.workers.dev',
+      url: '/api/sync',
       capabilities: ['data-storage', 'user-submissions', 'audit-trail'],
       syncEnabled: true,
       lastSync: null,

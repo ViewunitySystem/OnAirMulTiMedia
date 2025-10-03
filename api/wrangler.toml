@@ -9,10 +9,10 @@ GITHUB_REPO = "ViewunitySystem/OnAirMulTiMedia"
 # GITHUB_TOKEN = "your-fine-grained-pat"
 # OPENAI_API_KEY = "optional-openai-key"
 
-# Routes
-routes = [
-  { pattern = "oamtm-api.example.workers.dev/*", zone_name = "example.com" }
-]
+# Routes (commented out for local development)
+# routes = [
+#   { pattern = "api.onairmultimedia.com/*", zone_name = "onairmultimedia.com" }
+# ]
 
 # Build Configuration
 [build]

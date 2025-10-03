@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OnAirMulTiMedia – Info & GitHub Monitoring</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
   <style>
     :root { color-scheme: dark; }
     body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
@@ -106,7 +107,7 @@
     </section>
   </main>
 
-  <script src="/webtrit-swipe.js"></script>
+  <script src="../webtrit-swipe.js"></script>
   <script>
     function fmt(ts){ try { return new Date(ts).toLocaleString(); } catch { return '–'; } }
     function esc(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.textContent; }

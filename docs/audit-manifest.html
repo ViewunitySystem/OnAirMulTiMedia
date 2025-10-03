@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Audit‑Manifest – OnAirMulTiMedia</title>
   <!-- CSP: lokal, strikt, API nur GitHub (für Commit/Meta optional) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://api.github.com; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob:; base-uri 'self'; upgrade-insecure-requests">
   <link rel="stylesheet" href="./assets/audit.css" />
   <link rel="icon" href="data:,">
 </head>

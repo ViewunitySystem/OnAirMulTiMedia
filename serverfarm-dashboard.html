@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>📊 OnAirMulTiMedia Live Dashboard</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; frame-src 'self' blob:; base-uri 'self'">
   <link rel="stylesheet" href="./assets/landing.css" />
   <style>
     :root { --primary: #93c5fd; --success: #10b981; --warning: #f59e0b; --error: #ef4444; --bg: #0b1020; --card: #111827; --border: #1f2a52; }
@@ -185,7 +185,7 @@
           web: { url: 'https://viewunitysystem.github.io/OnAirMulTiMedia/', status: 'unknown' },
           mobile: { url: 'capacitor://localhost', status: 'unknown' },
           desktop: { url: 'electron://localhost', status: 'unknown' },
-          api: { url: 'https://oamtm-api.example.workers.dev', status: 'unknown' }
+          api: { url: '/api', status: 'ready' }
         };
         this.init();
       }

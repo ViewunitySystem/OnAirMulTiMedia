@@ -78,7 +78,7 @@ describe('OnAirMulTiMedia Core Tests', () => {
     it('should have Content Security Policy', () => {
       const html = `
         <head>
-          <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self' wss://*; base-uri 'none'; frame-ancestors 'self'; upgrade-insecure-requests">
+          <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://*; frame-src 'self' blob:; base-uri 'none'; upgrade-insecure-requests">
         </head>
       `
       

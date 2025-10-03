@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bridge Test Client</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; background:#0f172a; color:#e5e7eb; }
     header { padding: 12px 16px; background:#111827; position: sticky; top:0; display:flex; gap:12px; align-items:center; }
@@ -98,7 +99,7 @@
     <iframe id="inlayFrame" class="inlay-iframe" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-read; clipboard-write" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 
-  <script src="/webtrit-swipe.js"></script>
+  <script src="../webtrit-swipe.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     let socket = null; let session_id = null; let user_id = null;

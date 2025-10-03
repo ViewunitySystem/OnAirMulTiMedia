@@ -36,7 +36,7 @@
     "allowNavigation": [
       "https://viewunitysystem.github.io",
       "https://api.github.com",
-      "https://oamtm-api.example.workers.dev"
+      "https://viewunitysystem.github.io/OnAirMulTiMedia"
     ]
   },
   "android": {
