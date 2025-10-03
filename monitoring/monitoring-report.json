@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-10-03T02:07:43.858Z",
+  "sessionId": "sample_session_123",
+  "summary": {
+    "totalTests": 2,
+    "errorRate": 50,
+    "availability": 50,
+    "avgResponseTime": 1025,
+    "healthSummary": {
+      "healthy": 1,
+      "warning": 1,
+      "critical": 0
+    }
+  },
+  "urlTests": [
+    {
+      "url": "https://viewunitysystem.github.io/OnAirMulTiMedia/",
+      "status": 200,
+      "responseTime": 1250,
+      "timestamp": "2025-10-03T02:07:43.858Z"
+    },
+    {
+      "url": "https://viewunitysystem.github.io/OnAirMulTiMedia/docs/",
+      "status": 404,
+      "responseTime": 800,
+      "timestamp": "2025-10-03T02:07:43.858Z"
+    }
+  ],
+  "healthChecks": [
+    {
+      "timestamp": "2025-10-03T02:07:43.858Z",
+      "status": "healthy",
+      "component": "system",
+      "message": "System health check passed",
+      "learningFactor": 0.95
+    },
+    {
+      "timestamp": "2025-10-03T02:07:43.858Z",
+      "status": "warning",
+      "component": "url-tester",
+      "message": "404 error detected",
+      "learningFactor": 0.75
+    }
+  ],
+  "learningPatterns": [
+    {
+      "pattern": "file_modified:.html:docs",
+      "frequency": 5,
+      "confidence": 0.8,
+      "lastSeen": "2025-10-03T02:07:43.858Z",
+      "suggestions": [
+        "Update documentation",
+        "Test affected functionality"
+      ],
+      "fixes": [
+        "Fix broken links",
+        "Update references"
+      ]
+    }
+  ],
+  "recommendations": [
+    "Fix 1 404 errors: https://viewunitysystem.github.io/OnAirMulTiMedia/docs/"
+  ]
+}

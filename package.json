@@ -33,6 +33,8 @@
     "capacitor-starter": "node scripts/capacitor-starter.mjs",
     "android-launcher": "node scripts/android-launcher.mjs",
     "ultrasound-localizer": "tsx scripts/ultrasound-localizer.ts",
+    "tree-monitor": "tsx scripts/tree-monitor.ts",
+    "monitoring-report": "tsx scripts/monitoring-report.ts",
     "firebase:emulators": "firebase emulators:start",
     "firebase:deploy": "firebase deploy",
     "firebase:deploy:prod": "firebase deploy --only hosting:onairmultimedia",
