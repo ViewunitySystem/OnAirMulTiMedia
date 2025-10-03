@@ -9,6 +9,16 @@
       "id": "app-pwa-mga54tta-7f0cc0a4",
       "blueprint": "app-pwa",
       "path": "apps/app-pwa-mga54tta-7f0cc0a4"
+    },
+    {
+      "id": "module-basic-mga5fanp-d0b8a199",
+      "blueprint": "module-basic",
+      "path": "modules/module-basic-mga5fanp-d0b8a199"
+    },
+    {
+      "id": "app-pwa-mga5fao4-7f0cc0a4",
+      "blueprint": "app-pwa",
+      "path": "apps/app-pwa-mga5fao4-7f0cc0a4"
     }
   ],
   "apps": [],
