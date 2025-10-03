@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "generatedAt": "2025-01-03T04:50:00.000Z",
+  "pages": [
+    {
+      "name": "home",
+      "url": "/index.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/css/style.css", "/js/app.js", "/manifest.json"]
+    },
+    {
+      "name": "info",
+      "url": "/info.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/audit/redirect-map.json"]
+    },
+    {
+      "name": "bug-symphony",
+      "url": "/bug-symphony.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/composer-engine.ts", "/midi-export.js"]
+    },
+    {
+      "name": "manifest-viewer",
+      "url": "/manifest-viewer.html",
+      "recoverable": true,
+      "rules": ["csp", "404"]
+    },
+    {
+      "name": "selfheal-dashboard",
+      "url": "/docs/selfheal-dashboard.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/audit/recovery-map.json", "/audit/fixes.jsonl"]
+    },
+    {
+      "name": "monitoring-dashboard",
+      "url": "/docs/monitoring-dashboard.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/monitoring/monitoring-report.json"]
+    },
+    {
+      "name": "change-log",
+      "url": "/docs/change-log.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/audit/change-log.json"]
+    },
+    {
+      "name": "mission-plan",
+      "url": "/docs/mission-plan.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/docs/mission/"]
+    },
+    {
+      "name": "tool-map",
+      "url": "/docs/tool-map.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/capabilities.json"]
+    },
+    {
+      "name": "ultrasound-dashboard",
+      "url": "/docs/ultrasound-dashboard.html",
+      "recoverable": true,
+      "rules": ["csp", "404", "assets"],
+      "deps": ["/ULTRASOUND-TELEMETRY-INTEGRATION.md"]
+    }
+  ],
+  "rules": {
+    "csp": {
+      "action": "inject-meta-or-headers",
+      "policy": "default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https: wss:; font-src 'self' data:; media-src 'self' data: blob:; object-src 'none'; frame-src 'none';"
+    },
+    "404": {
+      "action": "client-redirect-or-server-redirect",
+      "fallback": "/404.html"
+    },
+    "assets": {
+      "action": "swap-to-cdn-or-local-mirror",
+      "cdn": "https://cdn.jsdelivr.net/npm/",
+      "local": "/node_modules/"
+    }
+  },
+  "performance": {
+    "targets": {
+      "lcp": 1.8,
+      "inp": 200,
+      "cls": 0.1,
+      "fcp": 1.5,
+      "ttfb": 600
+    },
+    "optimizations": {
+      "criticalCSS": true,
+      "preload": ["/index.html", "/info.html", "/bug-symphony.html"],
+      "prefetch": ["/docs/selfheal-dashboard.html", "/audit/recovery-map.json"],
+      "serviceWorker": true,
+      "http2": true,
+      "brotli": true
+    }
+  },
+  "healing": {
+    "autoRecovery": true,
+    "maxRetries": 3,
+    "backoffMs": 1000,
+    "timeoutMs": 5000,
+    "healthCheckInterval": 30000
+  }
+}
