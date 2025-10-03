@@ -1,0 +1,19 @@
+{
+  "name": "@onairmultimedia/rf-validation",
+  "version": "1.0.0",
+  "description": "Regulatory Compliance Checker for RF Transmissions",
+  "main": "main.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": ["rf", "validation", "regulatory", "compliance", "amateur-radio"],
+  "author": "Raymond Demitrio Dr. Tel <gentlyoverdone@outlook.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
+

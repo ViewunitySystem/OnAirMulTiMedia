@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Multimedia Global Swipe - Raymond Demitrio Dr. Tel</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .swipe-container {
+            display: flex;
+            width: 600vw;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .swipe-section {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .radio-section { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .tv-section { background: linear-gradient(135deg, #00ff88 0%, #00d4aa 100%); color: #000; }
+        .galleries-section { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); }
+        .museums-section { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+        .science-section { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
+        .global-section { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            flex: 1;
+        }
+        
+        .media-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .media-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .media-card:hover::before {
+            left: 100%;
+        }
+        
+        .media-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .media-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .media-card p {
+            margin: 0;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00ff88, #00d4aa);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .swipe-indicators {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .indicator-dot.active {
+            background: #00ff88;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px #00ff88;
+        }
+        
+        .media-player {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .result.error {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+        
+        .result.success {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .stream-list {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .stream-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #00ff88;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .stream-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+        
+        .stream-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stream-info {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Multimedia Global Swipe</h1>
+            <p>Raymond Demitrio Dr. Tel - Weltweite Medien-Integration</p>
+            <p>Radio • TV • Galerien • Museen • Science • Global</p>
+        </div>
+
+        <div class="swipe-container" id="swipeContainer">
+            <!-- Radio Section -->
+            <div class="swipe-section radio-section">
+                <h2>📻 Global Radio</h2>
+                <div class="media-grid">
+                    <div class="media-card" onclick="playRadio('deutschlandfunk')">
+                        <h3>🇩🇪 Deutschlandfunk</h3>
+                        <p>Öffentlich-rechtlicher Rundfunk aus Deutschland</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playRadio('bbc')">
+                        <h3>🇬🇧 BBC Radio</h3>
+                        <p>British Broadcasting Corporation</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playRadio('npr')">
+                        <h3>🇺🇸 NPR</h3>
+                        <p>National Public Radio USA</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playRadio('radiofrance')">
+                        <h3>🇫🇷 Radio France</h3>
+                        <p>Öffentlicher Rundfunk Frankreich</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playRadio('rai')">
+                        <h3>🇮🇹 RAI Radio</h3>
+                        <p>Radiotelevisione Italiana</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playRadio('nhk')">
+                        <h3>🇯🇵 NHK Radio</h3>
+                        <p>Japan Broadcasting Corporation</p>
+                    </div>
+                </div>
+                
+                <div class="media-player">
+                    <h3>🎵 Radio Player</h3>
+                    <div class="player-controls">
+                        <button class="control-btn" onclick="playPause()">▶️</button>
+                        <button class="control-btn" onclick="stop()">⏹️</button>
+                        <button class="control-btn" onclick="volumeDown()">🔉</button>
+                        <button class="control-btn" onclick="volumeUp()">🔊</button>
+                    </div>
+                    <div id="currentStation">Kein Sender ausgewählt</div>
+                </div>
+                
+                <div id="radio-results"></div>
+            </div>
+
+            <!-- TV Section -->
+            <div class="swipe-section tv-section">
+                <h2>📺 Global TV</h2>
+                <div class="media-grid">
+                    <div class="media-card" onclick="playTV('ard')">
+                        <h3>🇩🇪 ARD</h3>
+                        <p>Arbeitsgemeinschaft der öffentlich-rechtlichen Rundfunkanstalten</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playTV('zdf')">
+                        <h3>🇩🇪 ZDF</h3>
+                        <p>Zweites Deutsches Fernsehen</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playTV('bbc')">
+                        <h3>🇬🇧 BBC</h3>
+                        <p>British Broadcasting Corporation TV</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playTV('cnn')">
+                        <h3>🇺🇸 CNN</h3>
+                        <p>Cable News Network</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playTV('france24')">
+                        <h3>🇫🇷 France 24</h3>
+                        <p>Internationale Nachrichten aus Frankreich</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="playTV('aljazeera')">
+                        <h3>🇶🇦 Al Jazeera</h3>
+                        <p>Internationale Nachrichten aus Katar</p>
+                    </div>
+                </div>
+                
+                <div class="media-player">
+                    <h3>📺 TV Player</h3>
+                    <div class="player-controls">
+                        <button class="control-btn" onclick="playPause()">▶️</button>
+                        <button class="control-btn" onclick="stop()">⏹️</button>
+                        <button class="control-btn" onclick="fullscreen()">⛶</button>
+                        <button class="control-btn" onclick="mute()">🔇</button>
+                    </div>
+                    <div id="currentTV">Kein Sender ausgewählt</div>
+                </div>
+                
+                <div id="tv-results"></div>
+            </div>
+
+            <!-- Galleries Section -->
+            <div class="swipe-section galleries-section">
+                <h2>🖼️ Galerien & Kunst</h2>
+                <div class="media-grid">
+                    <div class="media-card" onclick="openGallery('louvre')">
+                        <h3>🇫🇷 Louvre</h3>
+                        <p>Musée du Louvre - Paris</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGallery('met')">
+                        <h3>🇺🇸 Metropolitan Museum</h3>
+                        <p>Metropolitan Museum of Art - New York</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGallery('tate')">
+                        <h3>🇬🇧 Tate Modern</h3>
+                        <p>Tate Modern - London</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGallery('uffizi')">
+                        <h3>🇮🇹 Uffizi</h3>
+                        <p>Galleria degli Uffizi - Florenz</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGallery('prado')">
+                        <h3>🇪🇸 Prado</h3>
+                        <p>Museo Nacional del Prado - Madrid</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGallery('hermitage')">
+                        <h3>🇷🇺 Hermitage</h3>
+                        <p>State Hermitage Museum - St. Petersburg</p>
+                    </div>
+                </div>
+                
+                <div class="stream-list" id="galleryList">
+                    <h3>🎨 Verfügbare Galerien</h3>
+                    <!-- Gallery items will be populated here -->
+                </div>
+                
+                <div id="galleries-results"></div>
+            </div>
+
+            <!-- Museums Section -->
+            <div class="swipe-section museums-section">
+                <h2>🏛️ Museen & Science</h2>
+                <div class="media-grid">
+                    <div class="media-card" onclick="openMuseum('smithsonian')">
+                        <h3>🇺🇸 Smithsonian</h3>
+                        <p>Smithsonian Institution - Washington DC</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openMuseum('british')">
+                        <h3>🇬🇧 British Museum</h3>
+                        <p>British Museum - London</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openMuseum('natural')">
+                        <h3>🇺🇸 Natural History</h3>
+                        <p>Natural History Museum - London</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openMuseum('science')">
+                        <h3>🇩🇪 Deutsches Museum</h3>
+                        <p>Deutsches Museum - München</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openMuseum('space')">
+                        <h3>🇺🇸 NASA</h3>
+                        <p>NASA Space Center - Houston</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openMuseum('cern')">
+                        <h3>🇨🇭 CERN</h3>
+                        <p>European Organization for Nuclear Research</p>
+                    </div>
+                </div>
+                
+                <div class="stream-list" id="museumList">
+                    <h3>🔬 Verfügbare Museen</h3>
+                    <!-- Museum items will be populated here -->
+                </div>
+                
+                <div id="museums-results"></div>
+            </div>
+
+            <!-- Science Section -->
+            <div class="swipe-section science-section">
+                <h2>🔬 Wissenschaftliche Forschung</h2>
+                <div class="media-grid">
+                    <div class="media-card" onclick="openResearch('universities')">
+                        <h3>🎓 Universitäten</h3>
+                        <p>Weltweite Universitäts-APIs und Forschung</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openResearch('space')">
+                        <h3>🚀 Space Research</h3>
+                        <p>NASA, ESA, JAXA Space Research</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openResearch('ai')">
+                        <h3>🤖 AI Research</h3>
+                        <p>Künstliche Intelligenz und Machine Learning</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openResearch('quantum')">
+                        <h3>⚛️ Quantum Research</h3>
+                        <p>Quantenphysik und Quantencomputing</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openResearch('biotech')">
+                        <h3>🧬 Biotech</h3>
+                        <p>Biotechnologie und Genetik</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openResearch('climate')">
+                        <h3>🌍 Climate Research</h3>
+                        <p>Klimaforschung und Umweltwissenschaften</p>
+                    </div>
+                </div>
+                
+                <div class="stream-list" id="researchList">
+                    <h3>📊 Forschungsdaten</h3>
+                    <!-- Research items will be populated here -->
+                </div>
+                
+                <div id="science-results"></div>
+            </div>
+
+            <!-- Global Section -->
+            <div class="swipe-section global-section">
+                <h2>🌍 Global Integration</h2>
+                <div class="media-grid">
+                    <div class="media-card" onclick="openGlobal('satellite')">
+                        <h3>🛰️ Satellite Communication</h3>
+                        <p>Weltweite Satelliten-Kommunikation</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGlobal('undersea')">
+                        <h3>🌊 Undersea Cables</h3>
+                        <p>Untersee-Kabel und globale Verbindungen</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGlobal('starlink')">
+                        <h3>🛰️ Starlink</h3>
+                        <p>SpaceX Starlink Satelliten-Netzwerk</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGlobal('5g')">
+                        <h3>📡 5G Networks</h3>
+                        <p>5G Mobilfunk-Netzwerke weltweit</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGlobal('iot')">
+                        <h3>🌐 IoT Networks</h3>
+                        <p>Internet of Things globale Vernetzung</p>
+                    </div>
+                    
+                    <div class="media-card" onclick="openGlobal('blockchain')">
+                        <h3>⛓️ Blockchain</h3>
+                        <p>Blockchain und Kryptowährungen</p>
+                    </div>
+                </div>
+                
+                <div class="stream-list" id="globalList">
+                    <h3>🌍 Globale Systeme</h3>
+                    <!-- Global items will be populated here -->
+                </div>
+                
+                <div id="global-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swipe Indicators -->
+    <div class="swipe-indicators">
+        <div class="indicator-dot active" data-section="Radio" onclick="goToSlide(0)"></div>
+        <div class="indicator-dot" data-section="TV" onclick="goToSlide(1)"></div>
+        <div class="indicator-dot" data-section="Galleries" onclick="goToSlide(2)"></div>
+        <div class="indicator-dot" data-section="Museums" onclick="goToSlide(3)"></div>
+        <div class="indicator-dot" data-section="Science" onclick="goToSlide(4)"></div>
+        <div class="indicator-dot" data-section="Global" onclick="goToSlide(5)"></div>
+    </div>
+
+    <script>
+        // Multimedia Global System
+        class MultimediaGlobalSystem {
+            constructor() {
+                this.currentSlide = 0;
+                this.totalSlides = 6;
+                this.currentStation = null;
+                this.currentTV = null;
+                this.isPlaying = false;
+                
+                this.init();
+            }
+            
+            init() {
+                this.populateGalleries();
+                this.populateMuseums();
+                this.populateResearch();
+                this.populateGlobal();
+                this.setupSwipeNavigation();
+            }
+            
+            setupSwipeNavigation() {
+                let startX = 0;
+                let startY = 0;
+                let isScrolling = false;
+
+                document.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    isScrolling = false;
+                });
+
+                document.addEventListener('touchmove', (e) => {
+                    if (!isScrolling) {
+                        const deltaX = Math.abs(e.touches[0].clientX - startX);
+                        const deltaY = Math.abs(e.touches[0].clientY - startY);
+                        isScrolling = deltaY > deltaX;
+                    }
+                });
+
+                document.addEventListener('touchend', (e) => {
+                    if (!isScrolling) {
+                        const endX = e.changedTouches[0].clientX;
+                        const deltaX = endX - startX;
+                        
+                        if (Math.abs(deltaX) > 50) {
+                            if (deltaX > 0 && this.currentSlide > 0) {
+                                this.goToSlide(this.currentSlide - 1);
+                            } else if (deltaX < 0 && this.currentSlide < this.totalSlides - 1) {
+                                this.goToSlide(this.currentSlide + 1);
+                            }
+                        }
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowLeft' && this.currentSlide > 0) {
+                        this.goToSlide(this.currentSlide - 1);
+                    } else if (e.key === 'ArrowRight' && this.currentSlide < this.totalSlides - 1) {
+                        this.goToSlide(this.currentSlide + 1);
+                    }
+                });
+            }
+            
+            goToSlide(slideIndex) {
+                this.currentSlide = slideIndex;
+                const container = document.getElementById('swipeContainer');
+                container.style.transform = `translateX(-${slideIndex * 100}vw)`;
+                
+                document.querySelectorAll('.indicator-dot').forEach((dot, index) => {
+                    dot.classList.toggle('active', index === slideIndex);
+                });
+            }
+            
+            populateGalleries() {
+                const galleryList = document.getElementById('galleryList');
+                const galleries = [
+                    { name: 'Louvre - Mona Lisa', country: '🇫🇷 Frankreich', type: 'Kunst' },
+                    { name: 'Metropolitan - Van Gogh', country: '🇺🇸 USA', type: 'Kunst' },
+                    { name: 'Tate Modern - Contemporary', country: '🇬🇧 Großbritannien', type: 'Moderne Kunst' },
+                    { name: 'Uffizi - Renaissance', country: '🇮🇹 Italien', type: 'Renaissance' },
+                    { name: 'Prado - Goya', country: '🇪🇸 Spanien', type: 'Klassische Kunst' },
+                    { name: 'Hermitage - Rembrandt', country: '🇷🇺 Russland', type: 'Alte Meister' }
+                ];
+                
+                galleries.forEach(gallery => {
+                    const item = document.createElement('div');
+                    item.className = 'stream-item';
+                    item.innerHTML = `
+                        <div class="stream-title">${gallery.name}</div>
+                        <div class="stream-info">${gallery.country} • ${gallery.type}</div>
+                    `;
+                    item.onclick = () => this.openGallery(gallery.name.toLowerCase());
+                    galleryList.appendChild(item);
+                });
+            }
+            
+            populateMuseums() {
+                const museumList = document.getElementById('museumList');
+                const museums = [
+                    { name: 'Smithsonian - Natural History', country: '🇺🇸 USA', type: 'Naturwissenschaft' },
+                    { name: 'British Museum - Antiquities', country: '🇬🇧 Großbritannien', type: 'Archäologie' },
+                    { name: 'Natural History - Dinosaurs', country: '🇬🇧 Großbritannien', type: 'Paläontologie' },
+                    { name: 'Deutsches Museum - Technology', country: '🇩🇪 Deutschland', type: 'Technologie' },
+                    { name: 'NASA - Space Exploration', country: '🇺🇸 USA', type: 'Raumfahrt' },
+                    { name: 'CERN - Particle Physics', country: '🇨🇭 Schweiz', type: 'Physik' }
+                ];
+                
+                museums.forEach(museum => {
+                    const item = document.createElement('div');
+                    item.className = 'stream-item';
+                    item.innerHTML = `
+                        <div class="stream-title">${museum.name}</div>
+                        <div class="stream-info">${museum.country} • ${museum.type}</div>
+                    `;
+                    item.onclick = () => this.openMuseum(museum.name.toLowerCase());
+                    museumList.appendChild(item);
+                });
+            }
+            
+            populateResearch() {
+                const researchList = document.getElementById('researchList');
+                const research = [
+                    { name: 'MIT - AI Research', country: '🇺🇸 USA', type: 'Künstliche Intelligenz' },
+                    { name: 'CERN - Particle Physics', country: '🇨🇭 Schweiz', type: 'Teilchenphysik' },
+                    { name: 'Max Planck - Quantum', country: '🇩🇪 Deutschland', type: 'Quantenphysik' },
+                    { name: 'Oxford - Biotech', country: '🇬🇧 Großbritannien', type: 'Biotechnologie' },
+                    { name: 'Stanford - Climate', country: '🇺🇸 USA', type: 'Klimaforschung' },
+                    { name: 'ETH Zurich - Robotics', country: '🇨🇭 Schweiz', type: 'Robotik' }
+                ];
+                
+                research.forEach(research => {
+                    const item = document.createElement('div');
+                    item.className = 'stream-item';
+                    item.innerHTML = `
+                        <div class="stream-title">${research.name}</div>
+                        <div class="stream-info">${research.country} • ${research.type}</div>
+                    `;
+                    item.onclick = () => this.openResearch(research.name.toLowerCase());
+                    researchList.appendChild(item);
+                });
+            }
+            
+            populateGlobal() {
+                const globalList = document.getElementById('globalList');
+                const global = [
+                    { name: 'Starlink - Satellite Internet', country: '🌍 Global', type: 'Satelliten-Netzwerk' },
+                    { name: 'Google - Global Infrastructure', country: '🌍 Global', type: 'Cloud Computing' },
+                    { name: 'AWS - Global Cloud', country: '🌍 Global', type: 'Cloud Services' },
+                    { name: '5G Networks - Worldwide', country: '🌍 Global', type: 'Mobilfunk' },
+                    { name: 'IoT - Internet of Things', country: '🌍 Global', type: 'Vernetzung' },
+                    { name: 'Blockchain - Decentralized', country: '🌍 Global', type: 'Blockchain' }
+                ];
+                
+                global.forEach(global => {
+                    const item = document.createElement('div');
+                    item.className = 'stream-item';
+                    item.innerHTML = `
+                        <div class="stream-title">${global.name}</div>
+                        <div class="stream-info">${global.country} • ${global.type}</div>
+                    `;
+                    item.onclick = () => this.openGlobal(global.name.toLowerCase());
+                    globalList.appendChild(item);
+                });
+            }
+            
+            showResult(section, type, message) {
+                const resultsDiv = document.getElementById(section + '-results');
+                resultsDiv.innerHTML = `
+                    <div class="result ${type}">
+                        ${new Date().toLocaleString()}: ${message}
+                    </div>
+                `;
+            }
+            
+            // Radio Functions
+            playRadio(station) {
+                this.currentStation = station;
+                document.getElementById('currentStation').textContent = `Aktueller Sender: ${station.toUpperCase()}`;
+                this.showResult('radio', 'success', `Radio ${station} wird abgespielt...`);
+                this.isPlaying = true;
+            }
+            
+            // TV Functions
+            playTV(channel) {
+                this.currentTV = channel;
+                document.getElementById('currentTV').textContent = `Aktueller Sender: ${channel.toUpperCase()}`;
+                this.showResult('tv', 'success', `TV ${channel} wird abgespielt...`);
+                this.isPlaying = true;
+            }
+            
+            // Gallery Functions
+            openGallery(gallery) {
+                this.showResult('galleries', 'success', `Galerie ${gallery} wird geöffnet...`);
+            }
+            
+            // Museum Functions
+            openMuseum(museum) {
+                this.showResult('museums', 'success', `Museum ${museum} wird geöffnet...`);
+            }
+            
+            // Research Functions
+            openResearch(research) {
+                this.showResult('science', 'success', `Forschung ${research} wird geöffnet...`);
+            }
+            
+            // Global Functions
+            openGlobal(global) {
+                this.showResult('global', 'success', `Globales System ${global} wird geöffnet...`);
+            }
+        }
+
+        // Global functions
+        const multimediaSystem = new MultimediaGlobalSystem();
+
+        function goToSlide(slideIndex) {
+            multimediaSystem.goToSlide(slideIndex);
+        }
+
+        function playRadio(station) {
+            multimediaSystem.playRadio(station);
+        }
+
+        function playTV(channel) {
+            multimediaSystem.playTV(channel);
+        }
+
+        function openGallery(gallery) {
+            multimediaSystem.openGallery(gallery);
+        }
+
+        function openMuseum(museum) {
+            multimediaSystem.openMuseum(museum);
+        }
+
+        function openResearch(research) {
+            multimediaSystem.openResearch(research);
+        }
+
+        function openGlobal(global) {
+            multimediaSystem.openGlobal(global);
+        }
+
+        // Player Controls
+        function playPause() {
+            multimediaSystem.isPlaying = !multimediaSystem.isPlaying;
+            const btn = document.querySelector('.control-btn');
+            btn.textContent = multimediaSystem.isPlaying ? '⏸️' : '▶️';
+        }
+
+        function stop() {
+            multimediaSystem.isPlaying = false;
+            document.querySelector('.control-btn').textContent = '▶️';
+        }
+
+        function volumeUp() {
+            // Volume up logic
+        }
+
+        function volumeDown() {
+            // Volume down logic
+        }
+
+        function fullscreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
+        }
+
+        function mute() {
+            // Mute logic
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            // Auto-play first radio station
+            setTimeout(() => {
+                playRadio('deutschlandfunk');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
+

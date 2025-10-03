@@ -1,0 +1,54 @@
+{
+  "name": "oamtm-hackathon-bridge",
+  "version": "1.1.0",
+  "description": "Externer Bridge Node + Audit-Overlay für OnAirMulTiMedia Hackathon-Testhub",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js",
+    "ci:validate": "node scripts/validate-blueprints.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "better-sqlite3": "^9.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.2",
+    "nanoid": "^5.0.7",
+    "pdfkit": "^0.13.0",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.7.5",
+    "undici": "^6.19.8"
+  },
+  "keywords": [
+    "hackathon",
+    "bridge",
+    "socket.io",
+    "audit",
+    "webrtc",
+    "inlay",
+    "onairmultimedia",
+    "raymond-demitrio-dr-tel"
+  ],
+  "author": {
+    "name": "Raymond Demitrio Dr. Tel",
+    "email": "gentlyoverdone@outlook.com",
+    "url": "https://tel1.jouwweb.nl/servicesoftware",
+    "callsign": "DD5BE",
+    "github": "https://github.com/ViewunitySystem"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia.git",
+    "directory": "hackathon-bridge"
+  },
+  "bugs": {
+    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia/issues",
+    "email": "gentlyoverdone@outlook.com"
+  },
+  "homepage": "https://tel1.jouwweb.nl/servicesoftware"
+}

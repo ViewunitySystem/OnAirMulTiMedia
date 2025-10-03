@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HFRF Pixel-Perfect UI Generator - Audit Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a0a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: auto;
+        }
+        
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .demo-header h1 {
+            font-size: 2.5em;
+            margin: 0;
+            background: linear-gradient(45deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .demo-header p {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin: 10px 0;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .demo-btn.secondary {
+            background: linear-gradient(45deg, #ff6b35, #e55a2b);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .demo-btn.secondary:hover {
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .demo-btn.danger {
+            background: linear-gradient(45deg, #ff4444, #cc3333);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+        
+        .demo-btn.danger:hover {
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+        }
+        
+        .ui-container {
+            position: relative;
+            margin: 20px 0;
+            border: 2px solid #00ff88;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
+        }
+        
+        .audit-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            max-height: 400px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff88;
+            border-radius: 12px;
+            padding: 15px;
+            overflow-y: auto;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+        }
+        
+        .audit-panel h3 {
+            margin: 0 0 15px 0;
+            color: #00ff88;
+            font-size: 1.2em;
+        }
+        
+        .audit-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+            border-left: 3px solid #00ff88;
+        }
+        
+        .audit-item .timestamp {
+            color: #00aaff;
+            font-weight: bold;
+        }
+        
+        .audit-item .action {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .audit-item .details {
+            color: #ffffff;
+            opacity: 0.8;
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff88;
+            border-radius: 12px;
+            padding: 15px;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-bar h3 {
+            margin: 0 0 10px 0;
+            color: #00ff88;
+            font-size: 1.1em;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+        }
+        
+        .status-item .label {
+            color: #ffffff;
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+        
+        .status-item .value {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .spectrum-mock {
+            position: absolute;
+            top: 100px;
+            left: 50px;
+            width: 400px;
+            height: 200px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        
+        .frequency-display {
+            position: absolute;
+            top: 320px;
+            left: 50px;
+            width: 200px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff88;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .tx-control {
+            position: absolute;
+            top: 100px;
+            right: 50px;
+            width: 200px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .tx-button {
+            width: 120px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tx-button.standby {
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000;
+        }
+        
+        .tx-button.transmitting {
+            background: linear-gradient(45deg, #ff4444, #cc3333);
+            color: #fff;
+        }
+        
+        .tx-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tx-status {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        
+        .tx-status.standby {
+            color: #00ff88;
+        }
+        
+        .tx-status.transmitting {
+            color: #ff4444;
+        }
+        
+        .preset-grid {
+            position: absolute;
+            bottom: 100px;
+            left: 50px;
+            right: 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        
+        .preset-btn {
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, #00ff88, #00cc6a);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+        
+        .preset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .preset-btn.active {
+            background: linear-gradient(45deg, #ff6b35, #e55a2b);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+        
+        .canvas-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .canvas-overlay.active {
+            pointer-events: auto;
+        }
+        
+        .canvas-overlay.active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 255, 136, 0.1);
+            border: 2px dashed #00ff88;
+            border-radius: 16px;
+        }
+        
+        .canvas-overlay.active::after {
+            content: '🎨 Live Canvas Active - Draw to interact';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff88;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            border: 1px solid #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎨 HFRF Pixel-Perfect UI Generator</h1>
+            <p>Auditierbare Benutzeroberfläche für RF-Operationen</p>
+        </div>
+        
+        <div class="demo-controls">
+            <button class="demo-btn" onclick="createUILayout()">🏗️ Create UI Layout</button>
+            <button class="demo-btn secondary" onclick="toggleCanvas()">🖼️ Toggle Live Canvas</button>
+            <button class="demo-btn secondary" onclick="simulateTX()">📡 Simulate TX</button>
+            <button class="demo-btn secondary" onclick="updateSpectrum()">📊 Update Spectrum</button>
+            <button class="demo-btn danger" onclick="clearAuditLog()">🧹 Clear Audit Log</button>
+            <button class="demo-btn" onclick="exportAuditLog()">💾 Export Audit Log</button>
+        </div>
+        
+        <div class="ui-container" id="ui-container">
+            <!-- UI wird hier dynamisch erstellt -->
+        </div>
+        
+        <div class="canvas-overlay" id="canvas-overlay"></div>
+    </div>
+    
+    <!-- Audit Panel -->
+    <div class="audit-panel" id="audit-panel">
+        <h3>📝 Audit Log</h3>
+        <div id="audit-log-content">
+            <div class="audit-item">
+                <div class="timestamp">System Ready</div>
+                <div class="action">INIT</div>
+                <div class="details">Pixel-Perfect UI Generator initialized</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <h3>📊 System Status</h3>
+        <div class="status-grid">
+            <div class="status-item">
+                <span class="label">Frequency:</span>
+                <span class="value" id="status-freq">144.300 MHz</span>
+            </div>
+            <div class="status-item">
+                <span class="label">Mode:</span>
+                <span class="value" id="status-mode">SSB</span>
+            </div>
+            <div class="status-item">
+                <span class="label">TX Status:</span>
+                <span class="value" id="status-tx">STANDBY</span>
+            </div>
+            <div class="status-item">
+                <span class="label">Signal:</span>
+                <span class="value" id="status-signal">-65 dBm</span>
+            </div>
+            <div class="status-item">
+                <span class="label">SNR:</span>
+                <span class="value" id="status-snr">18 dB</span>
+            </div>
+            <div class="status-item">
+                <span class="label">Audit Events:</span>
+                <span class="value" id="status-events">1</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="pixel-perfect-ui-generator.js"></script>
+    <script>
+        // Demo State
+        let isTransmitting = false;
+        let currentFrequency = 144300000;
+        let currentMode = 'SSB';
+        let signalStrength = -65;
+        let snr = 18;
+        let auditEventCount = 1;
+        let canvasActive = false;
+        
+        // Initialize Demo
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🎨 HFRF Pixel-Perfect UI Demo initialized');
+            createUILayout();
+            updateStatusBar();
+        });
+        
+        // Create UI Layout
+        function createUILayout() {
+            const container = document.getElementById('ui-container');
+            container.innerHTML = '';
+            
+            // Create spectrum display
+            const spectrumDiv = document.createElement('div');
+            spectrumDiv.className = 'spectrum-mock';
+            spectrumDiv.innerHTML = '<canvas id="spectrum-canvas" width="400" height="200"></canvas>';
+            container.appendChild(spectrumDiv);
+            
+            // Create frequency display
+            const freqDiv = document.createElement('div');
+            freqDiv.className = 'frequency-display';
+            freqDiv.textContent = `${(currentFrequency / 1e6).toFixed(3)} MHz`;
+            container.appendChild(freqDiv);
+            
+            // Create TX control
+            const txDiv = document.createElement('div');
+            txDiv.className = 'tx-control';
+            txDiv.innerHTML = `
+                <button class="tx-button ${isTransmitting ? 'transmitting' : 'standby'}" onclick="toggleTX()">
+                    ${isTransmitting ? 'STOP TX' : 'START TX'}
+                </button>
+                <div class="tx-status ${isTransmitting ? 'transmitting' : 'standby'}">
+                    ${isTransmitting ? 'TRANSMITTING' : 'STANDBY'}
+                </div>
+            `;
+            container.appendChild(txDiv);
+            
+            // Create preset grid
+            const presetDiv = document.createElement('div');
+            presetDiv.className = 'preset-grid';
+            const presets = [
+                { name: '2m SSB', freq: 144300000, mode: 'SSB' },
+                { name: '70cm FM', freq: 433500000, mode: 'FM' },
+                { name: '6m SSB', freq: 50100000, mode: 'SSB' },
+                { name: '10m SSB', freq: 28300000, mode: 'SSB' },
+                { name: '20m SSB', freq: 14200000, mode: 'SSB' },
+                { name: '40m SSB', freq: 7200000, mode: 'SSB' }
+            ];
+            
+            presets.forEach(preset => {
+                const btn = document.createElement('button');
+                btn.className = 'preset-btn';
+                btn.textContent = `${preset.name} (${(preset.freq / 1e6).toFixed(2)} MHz)`;
+                btn.onclick = () => selectPreset(preset);
+                presetDiv.appendChild(btn);
+            });
+            
+            container.appendChild(presetDiv);
+            
+            // Initialize spectrum canvas
+            initSpectrumCanvas();
+            
+            // Log UI creation
+            addAuditEvent('ui_layout_created', 'UI Layout created with all components');
+        }
+        
+        // Initialize Spectrum Canvas
+        function initSpectrumCanvas() {
+            const canvas = document.getElementById('spectrum-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 200;
+            
+            // Draw initial spectrum
+            drawSpectrum(ctx, canvas.width, canvas.height);
+        }
+        
+        // Draw Spectrum
+        function drawSpectrum(ctx, width, height) {
+            ctx.clearRect(0, 0, width, height);
+            
+            // Background
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Grid
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 10; i++) {
+                const x = (i / 10) * width;
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            
+            // Spectrum trace (mock data)
+            ctx.strokeStyle = '#00ff88';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < width; i++) {
+                const x = i;
+                const noise = Math.random() * 20 - 10;
+                const signal = Math.sin(i * 0.02) * 30 + noise;
+                const y = height - ((signal + 100) / 100) * height;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Frequency markers
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            const centerFreq = currentFrequency / 1e6;
+            const bandwidth = 2.4;
+            const startFreq = centerFreq - bandwidth / 2;
+            
+            for (let i = 0; i <= 5; i++) {
+                const freq = startFreq + (i * bandwidth / 5);
+                const x = (i / 5) * width;
+                ctx.fillText(`${freq.toFixed(1)} MHz`, x, height - 5);
+            }
+        }
+        
+        // Toggle TX
+        function toggleTX() {
+            isTransmitting = !isTransmitting;
+            
+            // Update UI
+            const txButton = document.querySelector('.tx-button');
+            const txStatus = document.querySelector('.tx-status');
+            
+            if (isTransmitting) {
+                txButton.className = 'tx-button transmitting';
+                txButton.textContent = 'STOP TX';
+                txStatus.className = 'tx-status transmitting';
+                txStatus.textContent = 'TRANSMITTING';
+                addAuditEvent('tx_start', 'Transmission started');
+            } else {
+                txButton.className = 'tx-button standby';
+                txButton.textContent = 'START TX';
+                txStatus.className = 'tx-status standby';
+                txStatus.textContent = 'STANDBY';
+                addAuditEvent('tx_stop', 'Transmission stopped');
+            }
+            
+            updateStatusBar();
+        }
+        
+        // Select Preset
+        function selectPreset(preset) {
+            currentFrequency = preset.freq;
+            currentMode = preset.mode;
+            
+            // Update frequency display
+            const freqDisplay = document.querySelector('.frequency-display');
+            freqDisplay.textContent = `${(currentFrequency / 1e6).toFixed(3)} MHz`;
+            
+            // Update spectrum
+            updateSpectrum();
+            
+            // Log preset selection
+            addAuditEvent('preset_selected', `Preset: ${preset.name} (${(preset.freq / 1e6).toFixed(2)} MHz, ${preset.mode})`);
+            
+            updateStatusBar();
+        }
+        
+        // Toggle Canvas
+        function toggleCanvas() {
+            canvasActive = !canvasActive;
+            const overlay = document.getElementById('canvas-overlay');
+            
+            if (canvasActive) {
+                overlay.classList.add('active');
+                addAuditEvent('canvas_activated', 'Live Canvas activated');
+            } else {
+                overlay.classList.remove('active');
+                addAuditEvent('canvas_deactivated', 'Live Canvas deactivated');
+            }
+        }
+        
+        // Simulate TX
+        function simulateTX() {
+            if (!isTransmitting) {
+                toggleTX();
+                setTimeout(() => {
+                    if (isTransmitting) {
+                        toggleTX();
+                    }
+                }, 3000);
+            }
+        }
+        
+        // Update Spectrum
+        function updateSpectrum() {
+            const canvas = document.getElementById('spectrum-canvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            drawSpectrum(ctx, canvas.width, canvas.height);
+            
+            addAuditEvent('spectrum_updated', `Spectrum updated for ${(currentFrequency / 1e6).toFixed(3)} MHz`);
+        }
+        
+        // Add Audit Event
+        function addAuditEvent(action, details) {
+            const auditContent = document.getElementById('audit-log-content');
+            const auditItem = document.createElement('div');
+            auditItem.className = 'audit-item';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            auditItem.innerHTML = `
+                <div class="timestamp">${timestamp}</div>
+                <div class="action">${action.toUpperCase()}</div>
+                <div class="details">${details}</div>
+            `;
+            
+            auditContent.insertBefore(auditItem, auditContent.firstChild);
+            
+            // Keep only last 20 items
+            while (auditContent.children.length > 20) {
+                auditContent.removeChild(auditContent.lastChild);
+            }
+            
+            auditEventCount++;
+            updateStatusBar();
+        }
+        
+        // Clear Audit Log
+        function clearAuditLog() {
+            const auditContent = document.getElementById('audit-log-content');
+            auditContent.innerHTML = `
+                <div class="audit-item">
+                    <div class="timestamp">${new Date().toLocaleTimeString()}</div>
+                    <div class="action">AUDIT_CLEARED</div>
+                    <div class="details">Audit log cleared by user</div>
+                </div>
+            `;
+            auditEventCount = 1;
+            updateStatusBar();
+        }
+        
+        // Export Audit Log
+        function exportAuditLog() {
+            const auditItems = document.querySelectorAll('.audit-item');
+            const logData = {
+                timestamp: new Date().toISOString(),
+                total_events: auditItems.length,
+                events: Array.from(auditItems).map(item => ({
+                    timestamp: item.querySelector('.timestamp').textContent,
+                    action: item.querySelector('.action').textContent,
+                    details: item.querySelector('.details').textContent
+                }))
+            };
+            
+            const blob = new Blob([JSON.stringify(logData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `hfrf-audit-log-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            addAuditEvent('audit_exported', 'Audit log exported to JSON file');
+        }
+        
+        // Update Status Bar
+        function updateStatusBar() {
+            document.getElementById('status-freq').textContent = `${(currentFrequency / 1e6).toFixed(3)} MHz`;
+            document.getElementById('status-mode').textContent = currentMode;
+            document.getElementById('status-tx').textContent = isTransmitting ? 'TRANSMITTING' : 'STANDBY';
+            document.getElementById('status-signal').textContent = `${signalStrength} dBm`;
+            document.getElementById('status-snr').textContent = `${snr} dB`;
+            document.getElementById('status-events').textContent = auditEventCount;
+        }
+        
+        // Auto-update spectrum every 2 seconds
+        setInterval(() => {
+            if (document.getElementById('spectrum-canvas')) {
+                updateSpectrum();
+            }
+        }, 2000);
+        
+        // Auto-update signal strength
+        setInterval(() => {
+            signalStrength = -65 + Math.random() * 20 - 10;
+            snr = 18 + Math.random() * 10 - 5;
+            updateStatusBar();
+        }, 1000);
+    </script>
+</body>
+</html>

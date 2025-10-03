@@ -1,0 +1,24 @@
+{
+  "name": "CB-Funk Kanal 19",
+  "frequency": 27185000,
+  "modulation": "fm",
+  "bandwidth": 10000,
+  "gain": 35,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "fm_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "CB-Funk Kanal 19 (27.185 MHz) - Hauptverkehrskanal",
+  "power_limit": 4,
+  "antenna": "CB-Antenne"
+}
+

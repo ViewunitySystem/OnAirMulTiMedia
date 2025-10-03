@@ -1,0 +1,53 @@
+{
+  "name": "CB-Funk EU Standard",
+  "frequency": 27185000,
+  "modulation": "fm",
+  "bandwidth": 10000,
+  "gain": 35,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "fm_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  },
+  "description": "CB-Funk EU Standard (27.185 MHz) - WebTrit-Swipe aktiviert",
+  "power_limit": 4,
+  "antenna": "CB-Antenne",
+  "webtrit_swipe": {
+    "enabled": true,
+    "variants": [
+      {
+        "name": "EU Standard",
+        "frequency": 27185000,
+        "channels": 40,
+        "range": "26.965-27.405 MHz"
+      },
+      {
+        "name": "EU Extended",
+        "frequency": 27555000,
+        "channels": 40,
+        "range": "27.415-27.995 MHz"
+      },
+      {
+        "name": "UK CB",
+        "frequency": 27650000,
+        "channels": 40,
+        "range": "27.60125-27.99125 MHz"
+      }
+    ],
+    "swipe_gestures": {
+      "left": "previous_variant",
+      "right": "next_variant",
+      "up": "increase_power",
+      "down": "decrease_power"
+    }
+  }
+}
+

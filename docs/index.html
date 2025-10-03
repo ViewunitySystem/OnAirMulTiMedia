@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnAirMulTiMedia - Universal SDR Platform</title>
+  <style>
+    :root {
+      --bg-dark: #0b1020;
+      --bg-card: #111827;
+      --text-primary: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    
+    header {
+      background: var(--bg-card);
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 2px solid var(--accent);
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .tagline {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+    
+    nav {
+      background: var(--bg-card);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    nav a {
+      color: var(--text-primary);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+    }
+    
+    nav a:hover {
+      background: var(--accent);
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+      border-radius: 1rem;
+      margin-bottom: 3rem;
+    }
+    
+    .hero h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: white;
+      color: var(--accent-hover);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .card {
+      background: var(--bg-card);
+      padding: 2rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .card h3 {
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    
+    .status {
+      background: var(--bg-card);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+    }
+    
+    .status-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--success);
+    }
+    
+    .status-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    footer {
+      background: var(--bg-card);
+      padding: 2rem;
+      text-align: center;
+      margin-top: 4rem;
+      border-top: 2px solid var(--accent);
+    }
+    
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .hero h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📡 OnAirMulTiMedia</h1>
+    <p class="tagline">Universal SDR Platform with Audit-Trail & Regulatory Compliance</p>
+  </header>
+  
+  <nav>
+    <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia">GitHub</a>
+    <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/blob/mainzero/README.md">Documentation</a>
+    <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/blob/mainzero/MANIFEST.md">Manifest</a>
+    <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/blob/mainzero/REGULATORY.md">Regulatory</a>
+    <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/releases">Releases</a>
+  </nav>
+  
+  <main>
+    <div class="hero">
+      <h2>Production-Grade SDR Platform</h2>
+      <p>Combining radio frequency operations with blockchain-inspired audit logging and international regulatory compliance</p>
+      <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia/releases/latest" class="btn">Download Latest Release</a>
+    </div>
+    
+    <h2 style="margin-bottom: 2rem; text-align: center;">✨ Key Features</h2>
+    
+    <div class="features">
+      <div class="card">
+        <h3>📊 Audit-Trail System</h3>
+        <p>Immutable event logging with SHA-256 hash chaining. Real-time monitoring via WebSocket. Compliance export for authorities (BNetzA, FCC, etc.).</p>
+      </div>
+      
+      <div class="card">
+        <h3>🏛️ Regulatory Compliance</h3>
+        <p>Germany (BNetzA), EU (RED 2014/53/EU), USA (FCC Part 15/97), Netherlands (Agentschap Telecom), ITU Band Plans.</p>
+      </div>
+      
+      <div class="card">
+        <h3>⏰ Global Meeting Clock</h3>
+        <p>Timezone-synchronized scheduling. Multi-timezone display. Countdown timers. Calendar integration (Google, Outlook).</p>
+      </div>
+      
+      <div class="card">
+        <h3>🎨 Canvas Swipe</h3>
+        <p>Touch-optimized UI/UX. Gesture recognition. Hardware-accelerated animations. 60 FPS performance.</p>
+      </div>
+      
+      <div class="card">
+        <h3>🛡️ RF Validation</h3>
+        <p>License verification. Frequency band validation. Power limit enforcement. Offline operation with cached band plans.</p>
+      </div>
+      
+      <div class="card">
+        <h3>💾 Backup & Recovery</h3>
+        <p>3-2-1 backup strategy. Versioned snapshots. AES-256-GCM encryption. Multiple backends (Local, S3, Mega.nz).</p>
+      </div>
+    </div>
+    
+    <h2 style="margin-bottom: 2rem; text-align: center;">📊 Project Status</h2>
+    
+    <div class="status-grid">
+      <div class="status">
+        <div class="status-value">v1.0.0</div>
+        <div class="status-label">Latest Release</div>
+      </div>
+      
+      <div class="status">
+        <div class="status-value">4</div>
+        <div class="status-label">Core Modules</div>
+      </div>
+      
+      <div class="status">
+        <div class="status-value">>85%</div>
+        <div class="status-label">Test Coverage</div>
+      </div>
+      
+      <div class="status">
+        <div class="status-value">MIT</div>
+        <div class="status-label">License</div>
+      </div>
+    </div>
+    
+    <div class="card" style="margin-bottom: 3rem;">
+      <h3>🚀 Quick Start</h3>
+      <pre style="background: var(--bg-dark); padding: 1rem; border-radius: 0.5rem; overflow-x: auto;"><code># Clone repository
+git clone https://github.com/ViewunitySystem/OnAirMulTiMedia.git
+cd OnAirMulTiMedia
+
+# Install dependencies
+npm install
+
+# Build Rust core
+cargo build --release
+
+# Run setup
+npm run setup
+
+# Start server
+npm start</code></pre>
+    </div>
+    
+    <div class="card">
+      <h3>📞 Contact & Support</h3>
+      <p><strong>Maintainer:</strong> Raymond Demitrio Dr. Tel (DD5BE)</p>
+      <p><strong>Email:</strong> gentlyoverdone@outlook.com</p>
+      <p><strong>Website:</strong> <a href="https://tel1.jouwweb.nl/servicesoftware" style="color: var(--accent);">tel1.jouwweb.nl/servicesoftware</a></p>
+      <p><strong>GitHub:</strong> <a href="https://github.com/ViewunitySystem" style="color: var(--accent);">@ViewunitySystem</a></p>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Raymond Demitrio Dr. Tel - ViewunitySystem / TEL Portal</p>
+    <p style="margin-top: 0.5rem; color: var(--text-muted);">"Connecting the world through technology, compliance, and community." 🌍📡🎵🤝</p>
+    
+    <div class="badges">
+      <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+      <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome">
+      <img src="https://img.shields.io/github/stars/ViewunitySystem/OnAirMulTiMedia?style=social" alt="Stars">
+    </div>
+    
+    <p style="margin-top: 1rem; font-size: 1.2rem;"><strong>73 de DD5BE</strong> 📻</p>
+  </footer>
+</body>
+</html>
+

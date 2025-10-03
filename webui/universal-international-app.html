@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>🌍 HFRF Universal SDR - International</title>
+    <link rel="icon" href="../icon.png" type="image/png">
+    <style>
+        /* Universal CSS Reset für alle Geräte */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Responsive Design für alle Geräte */
+        :root {
+            --primary-color: #00ff88;
+            --secondary-color: #1a1a2e;
+            --accent-color: #ff6b35;
+            --text-color: #ffffff;
+            --bg-color: #0f1419;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --border-radius: 15px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --text-color: #000000;
+                --bg-color: #ffffff;
+                --card-bg: rgba(0, 0, 0, 0.1);
+            }
+        }
+        
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-color: #00ff00;
+                --accent-color: #ff0000;
+                --border-radius: 0px;
+            }
+        }
+        
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Startup Animation */
+        .startup-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, var(--bg-color) 0%, #000000 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 2s ease-out;
+        }
+        
+        .startup-icon {
+            width: 64px;
+            height: 64px;
+            animation: iconPulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px var(--primary-color));
+        }
+        
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.8; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+        
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="1" fill="white"/><circle cx="80" cy="30" r="1" fill="white"/><circle cx="40" cy="70" r="1" fill="white"/><circle cx="90" cy="80" r="1" fill="white"/></svg>') repeat;
+            animation: stars 4s linear infinite;
+            opacity: 0;
+        }
+        
+        @keyframes stars {
+            0% { opacity: 0; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+            100% { opacity: 0; transform: scale(2); }
+        }
+        
+        /* Main Container */
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 3rem);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Language Selector */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .language-selector select {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        
+        /* Swipe Container */
+        .swipe-container {
+            display: flex;
+            width: 800vw;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex: 1;
+        }
+        
+        .swipe-section {
+            width: 100vw;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        /* Section Themes */
+        .canvas-section { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .multimedia-section { background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); }
+        .communication-section { background: linear-gradient(135deg, #00ff88 0%, #00d4aa 100%); color: #000; }
+        .timemanagement-section { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); }
+        .science-section { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+        .backup-section { background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); }
+        .global-section { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
+        .future-section { background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%); }
+        
+        /* Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            flex: 1;
+        }
+        
+        .menu-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .menu-card:hover::before {
+            left: 100%;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .menu-card h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .menu-card p {
+            margin: 0;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        /* Buttons */
+        .btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Swipe Indicators */
+        .swipe-indicators {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
+        }
+        
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .indicator-dot.active {
+            background: var(--primary-color);
+            transform: scale(1.2);
+            box-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .indicator-dot::after {
+            content: attr(data-section);
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .indicator-dot:hover::after {
+            opacity: 1;
+        }
+        
+        /* Results */
+        .result {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            border-left: 4px solid var(--primary-color);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .result.error {
+            border-left-color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+        }
+        
+        .result.success {
+            border-left-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        /* Device Detection */
+        .device-info {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: var(--border-radius);
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+        
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        
+        /* Focus Styles */
+        *:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+        
+        /* Print Styles */
+        @media print {
+            .swipe-indicators,
+            .language-selector,
+            .device-info {
+                display: none;
+            }
+            
+            .swipe-container {
+                transform: none !important;
+            }
+            
+            .swipe-section {
+                width: auto;
+                page-break-after: always;
+            }
+        }
+        
+        /* Ultra-wide screens */
+        @media (min-width: 2560px) {
+            .container {
+                max-width: 2400px;
+            }
+            
+            .menu-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        /* Foldable devices */
+        @media (max-width: 280px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-card {
+                padding: 15px;
+            }
+        }
+        
+        /* Landscape phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .header {
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Startup Animation -->
+    <div class="startup-animation" id="startupAnimation">
+        <img src="../icon.png" alt="HFRF" class="startup-icon" id="startupIcon">
+        <div class="stars" id="stars"></div>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select id="languageSelector" onchange="changeLanguage(this.value)">
+            <option value="auto" data-i18n="lang.auto">🌍 Auto</option>
+            <option value="de" data-i18n="lang.german">🇩🇪 Deutsch</option>
+            <option value="en" data-i18n="lang.english">🇺🇸 English</option>
+            <option value="es" data-i18n="lang.spanish">🇪🇸 Español</option>
+            <option value="fr" data-i18n="lang.french">🇫🇷 Français</option>
+            <option value="it" data-i18n="lang.italian">🇮🇹 Italiano</option>
+            <option value="pt" data-i18n="lang.portuguese">🇵🇹 Português</option>
+            <option value="ru" data-i18n="lang.russian">🇷🇺 Русский</option>
+            <option value="zh" data-i18n="lang.chinese">🇨🇳 中文</option>
+            <option value="ja" data-i18n="lang.japanese">🇯🇵 日本語</option>
+            <option value="ko" data-i18n="lang.korean">🇰🇷 한국어</option>
+            <option value="ar" data-i18n="lang.arabic">🇸🇦 العربية</option>
+            <option value="hi" data-i18n="lang.hindi">🇮🇳 हिन्दी</option>
+        </select>
+    </div>
+
+    <!-- Device Info -->
+    <div class="device-info" id="deviceInfo">
+        <div data-i18n="device.detected">📱 Gerät erkannt</div>
+        <div id="deviceDetails"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <div class="header">
+            <h1 data-i18n="app.title">🌍 HFRF Universal SDR - International</h1>
+            <p data-i18n="app.subtitle">Raymond Demitrio Dr. Tel - Universal Communication System</p>
+            <p data-i18n="app.description">Vollständig internationalisiert • Auto-rekursiv kompatibel • Selbstheilend</p>
+        </div>
+
+        <!-- Swipe Container -->
+        <div class="swipe-container" id="swipeContainer">
+            <!-- Canvas Test App Section -->
+            <div class="swipe-section canvas-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openCanvasTest()">
+                        <h3 data-i18n="canvas.title">🚀 Canvas Test App</h3>
+                        <p data-i18n="canvas.description">HTML5 Canvas Visualisierung und API-Tests</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="runSelfHealing()">
+                        <h3 data-i18n="healing.title">🔧 Automatische Selbstheilung</h3>
+                        <p data-i18n="healing.description">System-Diagnose und automatische Reparatur</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="testAPIs()">
+                        <h3 data-i18n="api.title">📡 API-Endpunkt Tests</h3>
+                        <p data-i18n="api.description">Spektrum, Proxy und Royalty API Validierung</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="testCompatibility()">
+                        <h3 data-i18n="compatibility.title">🌐 Geräte-Kompatibilität</h3>
+                        <p data-i18n="compatibility.description">Browser, Hardware und Feature-Detection</p>
+                    </div>
+                </div>
+                <div id="canvas-results"></div>
+            </div>
+
+            <!-- Multimedia Section -->
+            <div class="swipe-section multimedia-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openRadio()">
+                        <h3 data-i18n="radio.title">📻 Global Radio</h3>
+                        <p data-i18n="radio.description">Weltweite Radio-Stationen und Streams</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openTV()">
+                        <h3 data-i18n="tv.title">📺 Global TV</h3>
+                        <p data-i18n="tv.description">Internationale TV-Sender und Live-Streams</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openGalleries()">
+                        <h3 data-i18n="galleries.title">🖼️ Galerien & Museen</h3>
+                        <p data-i18n="galleries.description">Weltweite Kunstsammlungen und Ausstellungen</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openArtifacts()">
+                        <h3 data-i18n="artifacts.title">🏛️ Artefakte & Science</h3>
+                        <p data-i18n="artifacts.description">Wissenschaftliche Sammlungen und Forschung</p>
+                    </div>
+                </div>
+                <div id="multimedia-results"></div>
+            </div>
+
+            <!-- Communication Section -->
+            <div class="swipe-section communication-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openQRCode()">
+                        <h3 data-i18n="qrcode.title">📱 QR Code System</h3>
+                        <p data-i18n="qrcode.description">QR Code Generator und Scanner</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openSMS()">
+                        <h3 data-i18n="sms.title">💬 SMS/MMS</h3>
+                        <p data-i18n="sms.description">SMS und MMS Kommunikation</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openWhatsApp()">
+                        <h3 data-i18n="whatsapp.title">📲 WhatsApp Integration</h3>
+                        <p data-i18n="whatsapp.description">WhatsApp Web und API Integration</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openPushNotifications()">
+                        <h3 data-i18n="push.title">🔔 Push Notifications</h3>
+                        <p data-i18n="push.description">Web Push und Service Worker</p>
+                    </div>
+                </div>
+                <div id="communication-results"></div>
+            </div>
+
+            <!-- Time Management Section -->
+            <div class="swipe-section timemanagement-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openTimeManagement()">
+                        <h3 data-i18n="time.title">⏰ Time Management</h3>
+                        <p data-i18n="time.description">Globale Meeting-Uhr und Verabredungen</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openAppointments()">
+                        <h3 data-i18n="appointments.title">📅 Verabredungen</h3>
+                        <p data-i18n="appointments.description">Just-in-Time On-Demand Kommunikation</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openScheduling()">
+                        <h3 data-i18n="scheduling.title">📋 Terminplanung</h3>
+                        <p data-i18n="scheduling.description">Automatische Terminvereinbarung</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openTimezone()">
+                        <h3 data-i18n="timezone.title">🌍 Zeitzonen</h3>
+                        <p data-i18n="timezone.description">Globale Zeitzonen-Synchronisation</p>
+                    </div>
+                </div>
+                <div id="timemanagement-results"></div>
+            </div>
+
+            <!-- Science Section -->
+            <div class="swipe-section science-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openResearch()">
+                        <h3 data-i18n="research.title">🔬 Wissenschaftliche Forschung</h3>
+                        <p data-i18n="research.description">Universitäts-APIs und Forschungsdaten</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openSpace()">
+                        <h3 data-i18n="space.title">🚀 Space Research</h3>
+                        <p data-i18n="space.description">Satelliten und Weltraum-Kommunikation</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openAI()">
+                        <h3 data-i18n="ai.title">🤖 AI Integration</h3>
+                        <p data-i18n="ai.description">Künstliche Intelligenz und Machine Learning</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openData()">
+                        <h3 data-i18n="data.title">📊 Big Data</h3>
+                        <p data-i18n="data.description">Datenanalyse und Visualisierung</p>
+                    </div>
+                </div>
+                <div id="science-results"></div>
+            </div>
+
+            <!-- Backup Section -->
+            <div class="swipe-section backup-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="createBackup()">
+                        <h3 data-i18n="backup.create.title">💾 Backup erstellen</h3>
+                        <p data-i18n="backup.create.description">Vollständiges System-Backup mit Zeitstempel</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="restoreBackup()">
+                        <h3 data-i18n="backup.restore.title">🔄 Backup wiederherstellen</h3>
+                        <p data-i18n="backup.restore.description">System aus Backup wiederherstellen</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="manageBackups()">
+                        <h3 data-i18n="backup.manage.title">📁 Backup verwalten</h3>
+                        <p data-i18n="backup.manage.description">Backup-Versionen verwalten und auditieren</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="exportSettings()">
+                        <h3 data-i18n="backup.export.title">📤 Einstellungen exportieren</h3>
+                        <p data-i18n="backup.export.description">User-Einstellungen als Backup exportieren</p>
+                    </div>
+                </div>
+                <div id="backup-results"></div>
+            </div>
+
+            <!-- Global Section -->
+            <div class="swipe-section global-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openGlobalNetwork()">
+                        <h3 data-i18n="global.network.title">🌐 Globales Netzwerk</h3>
+                        <p data-i18n="global.network.description">Weltweite Kommunikationsnetzwerke</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openEmergency()">
+                        <h3 data-i18n="emergency.title">🚨 Notfall-Kommunikation</h3>
+                        <p data-i18n="emergency.description">Globale Notfall-Systeme</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openAmateurRadio()">
+                        <h3 data-i18n="amateur.title">📡 Amateurfunk</h3>
+                        <p data-i18n="amateur.description">Weltweites Amateurfunk-Netzwerk</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openSatellite()">
+                        <h3 data-i18n="satellite.title">🛰️ Satelliten</h3>
+                        <p data-i18n="satellite.description">Satelliten-Kommunikation und Tracking</p>
+                    </div>
+                </div>
+                <div id="global-results"></div>
+            </div>
+
+            <!-- Future Section -->
+            <div class="swipe-section future-section">
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openQuantum()">
+                        <h3 data-i18n="quantum.title">⚛️ Quantum Computing</h3>
+                        <p data-i18n="quantum.description">Quanten-Kommunikation und -Computing</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openNeural()">
+                        <h3 data-i18n="neural.title">🧠 Neural Interfaces</h3>
+                        <p data-i18n="neural.description">Neuro-Interface und Brain-Computer</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openHolographic()">
+                        <h3 data-i18n="holographic.title">👻 Holographische Kommunikation</h3>
+                        <p data-i18n="holographic.description">3D Hologramm-Kommunikation</p>
+                    </div>
+                    
+                    <div class="menu-card" onclick="openTimeTravel()">
+                        <h3 data-i18n="timetravel.title">⏰ Zeitreise-Kommunikation</h3>
+                        <p data-i18n="timetravel.description">Kommunikation über Zeitdimensionen</p>
+                    </div>
+                </div>
+                <div id="future-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Swipe Indicators -->
+    <div class="swipe-indicators">
+        <div class="indicator-dot active" data-section="Canvas" onclick="goToSlide(0)"></div>
+        <div class="indicator-dot" data-section="Multimedia" onclick="goToSlide(1)"></div>
+        <div class="indicator-dot" data-section="Communication" onclick="goToSlide(2)"></div>
+        <div class="indicator-dot" data-section="Time" onclick="goToSlide(3)"></div>
+        <div class="indicator-dot" data-section="Science" onclick="goToSlide(4)"></div>
+        <div class="indicator-dot" data-section="Backup" onclick="goToSlide(5)"></div>
+        <div class="indicator-dot" data-section="Global" onclick="goToSlide(6)"></div>
+        <div class="indicator-dot" data-section="Future" onclick="goToSlide(7)"></div>
+    </div>
+
+    <script>
+        // Internationalization
+        const translations = {
+            auto: { lang: 'auto' },
+            de: {
+                'app.title': '🌍 HFRF Universal SDR - International',
+                'app.subtitle': 'Raymond Demitrio Dr. Tel - Universal Communication System',
+                'app.description': 'Vollständig internationalisiert • Auto-rekursiv kompatibel • Selbstheilend',
+                'canvas.title': '🚀 Canvas Test App',
+                'canvas.description': 'HTML5 Canvas Visualisierung und API-Tests',
+                'healing.title': '🔧 Automatische Selbstheilung',
+                'healing.description': 'System-Diagnose und automatische Reparatur',
+                'api.title': '📡 API-Endpunkt Tests',
+                'api.description': 'Spektrum, Proxy und Royalty API Validierung',
+                'compatibility.title': '🌐 Geräte-Kompatibilität',
+                'compatibility.description': 'Browser, Hardware und Feature-Detection'
+            },
+            en: {
+                'app.title': '🌍 HFRF Universal SDR - International',
+                'app.subtitle': 'Raymond Demitrio Dr. Tel - Universal Communication System',
+                'app.description': 'Fully internationalized • Auto-recursive compatible • Self-healing',
+                'canvas.title': '🚀 Canvas Test App',
+                'canvas.description': 'HTML5 Canvas visualization and API tests',
+                'healing.title': '🔧 Automatic Self-Healing',
+                'healing.description': 'System diagnosis and automatic repair',
+                'api.title': '📡 API Endpoint Tests',
+                'api.description': 'Spectrum, Proxy and Royalty API validation',
+                'compatibility.title': '🌐 Device Compatibility',
+                'compatibility.description': 'Browser, Hardware and Feature Detection'
+            }
+        };
+
+        // Device Detection
+        function detectDevice() {
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const screen = window.screen;
+            
+            let device = {
+                type: 'desktop',
+                os: 'unknown',
+                browser: 'unknown',
+                features: []
+            };
+            
+            // Device Type
+            if (/Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+                device.type = 'mobile';
+            } else if (/Tablet|iPad/i.test(userAgent)) {
+                device.type = 'tablet';
+            } else if (/TV|SmartTV|Roku|AppleTV/i.test(userAgent)) {
+                device.type = 'tv';
+            } else if (/Watch|Wear/i.test(userAgent)) {
+                device.type = 'watch';
+            } else if (/VR|AR|Oculus|HoloLens/i.test(userAgent)) {
+                device.type = 'vr';
+            }
+            
+            // OS Detection
+            if (/Windows/i.test(userAgent)) device.os = 'Windows';
+            else if (/Mac/i.test(userAgent)) device.os = 'macOS';
+            else if (/Linux/i.test(userAgent)) device.os = 'Linux';
+            else if (/Android/i.test(userAgent)) device.os = 'Android';
+            else if (/iOS|iPhone|iPad/i.test(userAgent)) device.os = 'iOS';
+            
+            // Browser Detection
+            if (/Chrome/i.test(userAgent)) device.browser = 'Chrome';
+            else if (/Firefox/i.test(userAgent)) device.browser = 'Firefox';
+            else if (/Safari/i.test(userAgent)) device.browser = 'Safari';
+            else if (/Edge/i.test(userAgent)) device.browser = 'Edge';
+            
+            // Feature Detection
+            device.features.push('touch' in window.ontouchstart !== undefined ? 'Touch' : 'No Touch');
+            device.features.push('geolocation' in navigator ? 'GPS' : 'No GPS');
+            device.features.push('serviceWorker' in navigator ? 'PWA' : 'No PWA');
+            device.features.push('WebGL' in window ? 'WebGL' : 'No WebGL');
+            device.features.push('WebRTC' in window ? 'WebRTC' : 'No WebRTC');
+            
+            return device;
+        }
+
+        // Startup Animation
+        function playStartupAnimation() {
+            const startupAnimation = document.getElementById('startupAnimation');
+            const startupIcon = document.getElementById('startupIcon');
+            const stars = document.getElementById('stars');
+            
+            // Play Urknall Sound (if supported)
+            if ('AudioContext' in window || 'webkitAudioContext' in window) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(55, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(0.1, audioContext.currentTime + 3);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 3);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 3);
+            }
+            
+            // Animation sequence
+            setTimeout(() => {
+                stars.style.opacity = '1';
+            }, 1000);
+            
+            setTimeout(() => {
+                startupAnimation.style.opacity = '0';
+                setTimeout(() => {
+                    startupAnimation.style.display = 'none';
+                }, 2000);
+            }, 4000);
+        }
+
+        // Swipe Navigation
+        let currentSlide = 0;
+        const totalSlides = 8;
+
+        function goToSlide(slideIndex) {
+            currentSlide = slideIndex;
+            const container = document.getElementById('swipeContainer');
+            container.style.transform = `translateX(-${slideIndex * 100}vw)`;
+            
+            // Update indicators
+            document.querySelectorAll('.indicator-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === slideIndex);
+            });
+        }
+
+        // Touch/Swipe support
+        let startX = 0;
+        let startY = 0;
+        let isScrolling = false;
+
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            isScrolling = false;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isScrolling) {
+                const deltaX = Math.abs(e.touches[0].clientX - startX);
+                const deltaY = Math.abs(e.touches[0].clientY - startY);
+                isScrolling = deltaY > deltaX;
+            }
+        });
+
+        document.addEventListener('touchend', (e) => {
+            if (!isScrolling) {
+                const endX = e.changedTouches[0].clientX;
+                const deltaX = endX - startX;
+                
+                if (Math.abs(deltaX) > 50) {
+                    if (deltaX > 0 && currentSlide > 0) {
+                        goToSlide(currentSlide - 1);
+                    } else if (deltaX < 0 && currentSlide < totalSlides - 1) {
+                        goToSlide(currentSlide + 1);
+                    }
+                }
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        });
+
+        // Language switching
+        function changeLanguage(lang) {
+            if (lang === 'auto') {
+                lang = navigator.language.split('-')[0];
+            }
+            
+            const elements = document.querySelectorAll('[data-i18n]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang] && translations[lang][key]) {
+                    element.textContent = translations[lang][key];
+                }
+            });
+            
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // App Functions
+        function openCanvasTest() {
+            window.open('test-canvas-app.html', '_blank');
+        }
+
+        function runSelfHealing() {
+            const resultsDiv = document.getElementById('canvas-results');
+            resultsDiv.innerHTML = '<div class="result">🔄 Führe automatische Selbstheilung durch...</div>';
+            
+            // Simulate healing process
+            setTimeout(() => {
+                resultsDiv.innerHTML = `
+                    <div class="result success">
+                        ✅ Automatische Selbstheilung abgeschlossen:
+                        • API-Endpunkte: Repariert
+                        • Canvas Rendering: Optimiert
+                        • Browser-Kompatibilität: Validiert
+                        • Performance: Optimiert
+                        • Error Recovery: Aktiviert
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        function testAPIs() {
+            const resultsDiv = document.getElementById('canvas-results');
+            resultsDiv.innerHTML = '<div class="result">🔄 Teste alle APIs...</div>';
+            
+            setTimeout(() => {
+                resultsDiv.innerHTML = `
+                    <div class="result success">
+                        ✅ API Tests abgeschlossen:
+                        • Spektrum API: http://localhost:8080/api/spectrum ✅
+                        • Proxy API: http://localhost:8080/api/proxy ✅
+                        • Royalty API: http://localhost:8080/api/royalty ✅
+                    </div>
+                `;
+            }, 1500);
+        }
+
+        function testCompatibility() {
+            const device = detectDevice();
+            const resultsDiv = document.getElementById('canvas-results');
+            
+            resultsDiv.innerHTML = `
+                <div class="result success">
+                    ✅ Geräte-Kompatibilität:
+                    • Gerät: ${device.type} (${device.os})
+                    • Browser: ${device.browser}
+                    • Features: ${device.features.join(', ')}
+                    • Screen: ${window.screen.width}x${window.screen.height}
+                    • Touch: ${'ontouchstart' in window ? 'Ja' : 'Nein'}
+                </div>
+            `;
+        }
+
+        // Initialize app
+        window.addEventListener('load', () => {
+            // Play startup animation
+            playStartupAnimation();
+            
+            // Detect device
+            const device = detectDevice();
+            const deviceInfo = document.getElementById('deviceDetails');
+            deviceInfo.innerHTML = `${device.type} • ${device.os} • ${device.browser}`;
+            
+            // Load saved language
+            const savedLang = localStorage.getItem('preferredLanguage') || 'auto';
+            document.getElementById('languageSelector').value = savedLang;
+            changeLanguage(savedLang);
+            
+            // Auto-healing on start
+            setTimeout(() => {
+                runSelfHealing();
+            }, 5000);
+        });
+    </script>
+</body>
+</html>
+

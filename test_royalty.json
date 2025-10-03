@@ -1,0 +1,10 @@
+{
+  "event_type": "STREAM_START",
+  "asset_id": "test-asset",
+  "timestamp": 1759268723980,
+  "session_id": "test-session",
+  "frequency": null,
+  "position": null,
+  "data": {}
+}
+

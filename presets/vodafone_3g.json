@@ -1,0 +1,20 @@
+{
+  "name": "Vodafone 3G Modem",
+  "frequency": 900000000,
+  "modulation": "qpsk",
+  "bandwidth": 5000000,
+  "gain": 30,
+  "sample_rate": 10000000,
+  "dsp_chain": [
+    "vodafone_modem",
+    "3g_encoder"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true,
+    "hash_iq": true,
+    "generate_report": true
+  }
+}
+
+

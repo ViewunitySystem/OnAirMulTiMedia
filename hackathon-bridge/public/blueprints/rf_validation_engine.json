@@ -1,0 +1,41 @@
+{
+  "module": "RFValidationEngine",
+  "version": "1.0.0",
+  "description": "Validiert RF-Parameter gegen länderspezifische Limits; HIL-Trigger für Messgeräte.",
+  "interfaces": {
+    "inputs": [
+      { "name": "freq_mhz", "type": "number", "required": true },
+      { "name": "bandwidth_khz", "type": "number", "required": true },
+      { "name": "power_dbm", "type": "number", "required": true },
+      { "name": "country", "type": "ISO-3166-1 alpha-2", "required": true }
+    ],
+    "outputs": [
+      { "name": "verdict", "type": "enum(allow|warn|deny)" },
+      { "name": "rationale", "type": "string" }
+    ],
+    "logs": [
+      { "event": "LICENSE_CHECK", "level": "info", "description": "Regelwerk geladen" },
+      { "event": "SIGNAL_TX", "level": "info", "description": "Verdict ausgegeben" },
+      { "event": "RECOVERY_TRIGGER", "level": "warn", "description": "Fallback-Regel aktiv" }
+    ]
+  },
+  "validation": {
+    "ci": true,
+    "tests": ["unit: rules matcher", "unit: boundaries", "int: api contract"],
+    "hil_tests": ["Spektrumanalysator-Messung @freq/power"],
+    "recovery": ["fallback rules bei DC-Ausfall"]
+  },
+  "regulatory": {
+    "license_required": true,
+    "references": [
+      { "jurisdiction": "NL", "section": "RDI §3.2.1" },
+      { "jurisdiction": "DE", "section": "BNetzA 226.4.5" }
+    ]
+  },
+  "checklist": [
+    "Lizenzprüfung erfolgt lokal",
+    "Signalpfad dokumentiert",
+    "Recovery bei Fehler getestet"
+  ]
+}
+

@@ -1,0 +1,22 @@
+{
+  "name": "2m SSB Voice",
+  "frequency": 144300000,
+  "modulation": "ssb",
+  "bandwidth": 2700,
+  "gain": 40,
+  "sample_rate": 2400000,
+  "dsp_chain": [
+    "audio_compressor",
+    "voice_processor", 
+    "ssb_modulator",
+    "bandpass_filter"
+  ],
+  "audit_settings": {
+    "log_tx": true,
+    "log_rx": true, 
+    "hash_iq": true,
+    "generate_report": true
+  }
+}
+
+

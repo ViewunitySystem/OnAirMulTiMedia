@@ -1,0 +1,63 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ mainzero ]
+    paths:
+      - 'hackathon-bridge/**'
+      - 'docs/**'
+      - '.github/workflows/deploy-pages.yml'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      
+      - name: Install hackathon-bridge dependencies
+        run: |
+          cd hackathon-bridge
+          npm install
+      
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p gh-pages-deploy
+          cp -r hackathon-bridge/public/* gh-pages-deploy/
+          cp README.md gh-pages-deploy/
+          echo "# OnAirMulTiMedia - Live Demo" > gh-pages-deploy/README.md
+          echo "" >> gh-pages-deploy/README.md
+          echo "Visit the live demo at https://viewunitysystem.github.io/OnAirMulTiMedia/" >> gh-pages-deploy/README.md
+          echo "" >> gh-pages-deploy/README.md
+          echo "## Pages Available:" >> gh-pages-deploy/README.md
+          echo "- [Info Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/info.html)" >> gh-pages-deploy/README.md
+          echo "- [Test Client](https://viewunitysystem.github.io/OnAirMulTiMedia/client.html)" >> gh-pages-deploy/README.md
+          echo "- [Audit Overlay](https://viewunitysystem.github.io/OnAirMulTiMedia/overlay.html)" >> gh-pages-deploy/README.md
+          echo "- [Blueprints](https://viewunitysystem.github.io/OnAirMulTiMedia/blueprints.html)" >> gh-pages-deploy/README.md
+          echo "- [Manifest](https://viewunitysystem.github.io/OnAirMulTiMedia/manifest.html)" >> gh-pages-deploy/README.md
+          echo "- [Regulatory](https://viewunitysystem.github.io/OnAirMulTiMedia/regulatory.html)" >> gh-pages-deploy/README.md
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./gh-pages-deploy
+          cname: false
+      
+      - name: Deployment Success
+        run: |
+          echo "✅ Deployment successful!"
+          echo "🌐 Live at: https://viewunitysystem.github.io/OnAirMulTiMedia/"
+

@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OnAirMulTiMedia - Amateur Radio SDR Platform</title>
+  
+  <!-- WICHTIG: KEINE Meta-Refresh oder JS-Redirects mehr! -->
+  
+  <meta name="description" content="Open-source Software-Defined Radio platform with regulatory compliance, audit trails, and modular architecture">
+  <meta name="author" content="Raymond Demitrio Dr. Tel">
+  <meta name="keywords" content="SDR, Amateur Radio, HackRF, RTL-SDR, WebRTC, APRS">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #0a0e27;
+      color: #fff;
+    }
+    
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /* Optional: Ladeanzeige während iframe lädt */
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 1;
+      transition: opacity 0.3s ease;
+    }
+    
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-left-color: #00ff88;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    #inlay {
+      border: 0;
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      background: #0a0e27;
+    }
+    
+    /* Noscript Fallback */
+    noscript {
+      display: block;
+      padding: 2rem;
+      text-align: center;
+      background: #1a1e37;
+      color: #00ff88;
+    }
+    
+    noscript a {
+      color: #00ff88;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Ladeanzeige (optional) -->
+    <div id="loading">
+      <div class="spinner"></div>
+      <p>Loading Info Dashboard...</p>
+    </div>
+    
+    <!-- Haupt-Iframe für Info Dashboard -->
+    <iframe
+      id="inlay"
+      name="inlay"
+      src="./info.html"
+      title="OnAirMulTiMedia Info Dashboard"
+      loading="eager"
+      referrerpolicy="no-referrer"
+      allow="fullscreen"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+    ></iframe>
+  </div>
+
+  <!-- Fallback für deaktiviertes JavaScript -->
+  <noscript>
+    <strong>JavaScript ist deaktiviert.</strong><br>
+    Bitte aktiviere JavaScript oder gehe direkt zur 
+    <a href="./info.html">Info-Seite</a>.
+  </noscript>
+
+  <script>
+    // Optional: Query-Parameter an die Info-Seite durchreichen
+    const iframe = document.getElementById('inlay');
+    const loading = document.getElementById('loading');
+    const params = new URLSearchParams(location.search).toString();
+    
+    // Query-Parameter weitergeben (falls vorhanden)
+    if (params) {
+      iframe.src = `./info.html?${params}`;
+    }
+    
+    // Ladeanzeige ausblenden wenn iframe geladen ist
+    iframe.addEventListener('load', () => {
+      if (loading) {
+        loading.classList.add('hidden');
+        setTimeout(() => loading.remove(), 300);
+      }
+    });
+    
+    // Error Handling
+    iframe.addEventListener('error', () => {
+      if (loading) {
+        loading.innerHTML = `
+          <div class="spinner"></div>
+          <p style="color: #ff6b6b;">Fehler beim Laden der Info-Seite.</p>
+          <p><a href="./info.html" style="color: #00ff88; text-decoration: underline;">Direkt zur Info-Seite</a></p>
+        `;
+      }
+    });
+    
+    // Prevent multiple redirects
+    if (window.history && window.history.replaceState) {
+      // Clean URL if it came from a redirect
+      const cleanUrl = window.location.pathname;
+      if (window.location.search.includes('redirect')) {
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+  </script>
+</body>
+</html>
+
