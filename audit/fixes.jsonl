@@ -1,0 +1,1 @@
+{"ts":"2025-01-03T02:52:00.000Z","rule":"system-init","action":"create-meta-growth-system","detail":{"components":["config/meta.json","docs/change-log.html","scripts/evolve-engine.ts","scripts/changelog.mjs",".github/workflows/meta-growth.yml"],"blueprints":["module-basic","app-pwa"],"safety":{"dryRun":true,"requireTests":true,"requireDocs":true}}}

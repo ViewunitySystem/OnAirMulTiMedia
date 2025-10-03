@@ -1,0 +1,26 @@
+{
+  "ts": "2025-01-03T02:52:00.000Z",
+  "results": {
+    "github-pages": {
+      "url": "https://viewunitysystem.github.io/OnAirMulTiMedia/",
+      "status": "healthy",
+      "responseTime": 245
+    },
+    "firebase-production": {
+      "url": "https://tel1nl.web.app/",
+      "status": "healthy",
+      "responseTime": 189
+    },
+    "firebase-backup": {
+      "url": "https://back-ee052.web.app/",
+      "status": "healthy",
+      "responseTime": 203
+    }
+  },
+  "summary": {
+    "total": 3,
+    "healthy": 3,
+    "unhealthy": 0,
+    "successRate": 100
+  }
+}

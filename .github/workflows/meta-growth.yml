@@ -1,0 +1,28 @@
+name: meta-growth
+on:
+  schedule:
+    - cron: '15 2 * * *'   # täglich 02:15 CET
+  workflow_dispatch: {}
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npm run health-gates
+      - run: npm run evolve
+      - run: npm run changelog
+      - name: Upload change-log
+        uses: actions/upload-artifact@v4
+        with: { name: change-log, path: audit/change-log.json }
+      # Optional: auto-commit
+      - name: Commit changes
+        if: success()
+        run: |
+          git config user.name "oamtm-bot"
+          git config user.email "bot@oamtm"
+          git add manifest.json audit/*.json audit/*.jsonl || true
+          git commit -m "chore(meta): evolve & changelog" || true
+          git push || true

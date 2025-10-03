@@ -1,0 +1,34 @@
+<!doctype html><meta charset="utf-8"><title>OAMTM – Change Log</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial;max-width:1000px;margin:2rem auto;padding:0 1rem;}
+  h1{margin:0 0 1rem} .badge{background:#222;color:#fff;border-radius:6px;padding:.1rem .5rem;margin-left:.5rem}
+  .entry{border:1px solid #ddd;border-radius:12px;padding:1rem;margin:.75rem 0}
+  .meta{color:#666;font-size:.9rem}
+  code{background:#f6f6f6;padding:.1rem .3rem;border-radius:6px}
+</style>
+<h1>Change Log <span class="badge" id="count">0</span></h1>
+<p class="meta">Automatisch aggregiert aus <code>audit/fixes.jsonl</code>, <code>status/targets.json</code>, <code>audit/redirect-map.json</code> und <code>git</code>.</p>
+<div id="list">Lade…</div>
+<script type="module">
+const BASE = location.pathname.includes('/OnAirMulTiMedia/')? '/OnAirMulTiMedia' : '';
+const files = [
+  `${BASE}/audit/fixes.jsonl`,
+  `${BASE}/status/targets.json`,
+  `${BASE}/audit/redirect-map.json`
+];
+async function fetchText(u){ try{ const r=await fetch(u,{cache:'no-store'}); return r.ok? await r.text() : ''; }catch{ return ''}}
+async function fetchJson(u){ try{ const r=await fetch(u,{cache:'no-store'}); return r.ok? await r.json() : null }catch{ return null }}
+
+const out=[];
+const fixesTxt = await fetchText(files[0]);
+fixesTxt.split('\n').filter(Boolean).forEach(l=>{ try{ const j=JSON.parse(l); out.push({ type:'fix', ts:j.ts||j.time||'', title:j.rule||j.action||'Fix', detail:j }) }catch{}});
+const targets = await fetchJson(files[1]);
+if (targets?.results){ out.push({ type:'health', ts:targets.ts, title:'Health Snapshot', detail:targets.results }); }
+const map = await fetchJson(files[2]);
+if (map?.rules){ out.push({ type:'redirects', ts:map.generatedAt, title:`Redirect Rules (${map.rules.length})`, detail:map.rules.slice(-10) }); }
+
+out.sort((a,b)=> String(b.ts).localeCompare(String(a.ts)));
+count.textContent = String(out.length);
+list.innerHTML = out.map(e=>`<div class="entry"><strong>${e.title}</strong><div class="meta">${e.ts||''} · ${e.type}</div><pre>${escapeHtml(JSON.stringify(e.detail,null,2))}</pre></div>`).join('');
+function escapeHtml(s){ return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])) }
+</script>
