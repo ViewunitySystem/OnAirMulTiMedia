@@ -44,7 +44,7 @@
     "firebase:deploy:staging": "firebase deploy --only hosting:onairmultimedia-staging",
     "firebase:deploy:dev": "firebase deploy --only hosting:onairmultimedia-dev",
     "clean": "rm -rf dist/ build/ node_modules/.cache/ .vite/",
-    "postinstall": "npm run security",
+    "postinstall": "echo 'Skipping security checks for Cloudflare Pages deployment'",
     "precommit": "npm run lint && npm run format && npm run test",
     "prepush": "npm run security && npm run test:e2e"
   },
