@@ -56,13 +56,22 @@ Das **OAMTM OS Integration System** ermöglicht eine **1:1 Integration** als Sys
 - **URL Schemes**: Deep link support
 - **Plugin Management**: Camera, Contacts, etc.
 
-### 5. Tool Map (`docs/tool-map.html`)
+### 5. Android Launcher (`scripts/android-launcher.mjs`)
+- **Vollständige Launcher Implementation**: MUSS vorhanden sein zur Auswahl
+- **Home Screen**: App Grid, Widgets, Dock
+- **App Drawer**: Alle Apps mit Kategorien
+- **Gestures**: Swipe up/down für App Drawer
+- **Search**: Globale Suche nach Apps
+- **System Integration**: Android Intents, Fullscreen
+- **Launcher Selection**: Aktivierung als Default Launcher
+
+### 6. Tool Map (`docs/tool-map.html`)
 - **Live Catalog**: OS-Tool Übersicht
 - **Feature Detection**: Real-time capability check
 - **Platform Filter**: Web/Android/iOS/Desktop
 - **Integration Status**: Available/Unavailable
 
-### 6. Consent UI (`docs/consent-ui.html`)
+### 7. Consent UI (`docs/consent-ui.html`)
 - **User Interface**: Consent management
 - **GDPR Compliance**: Full transparency
 - **Audit Trail**: Action history
@@ -146,11 +155,25 @@ npm run consent-manager
 npm run capacitor-starter
 ```
 
+#### Android Launcher
+```bash
+npm run android-launcher
+```
+
 ### Tool Map
 - Öffne `docs/tool-map.html` im Browser
 - Live-Feature-Detection
 - Platform-spezifische Filter
 - Integration-Status
+
+### Android Launcher
+- Öffne `docs/android-launcher.html` im Browser
+- Vollständige Launcher Implementation
+- Home Screen mit App Grid und Widgets
+- App Drawer mit allen Apps
+- Gesture-Steuerung (Swipe up/down)
+- Search-Funktionalität
+- System-Integration (Android Intents)
 
 ### Consent UI
 - Öffne `docs/consent-ui.html` im Browser
@@ -190,7 +213,7 @@ const caps = {
 - [ ] Capacitor AAB erstellt
 - [ ] Intents konfiguriert (tel/sms/share)
 - [ ] Permissions definiert (CAMERA, READ_CONTACTS)
-- [ ] Optional: Launcher-Modus
+- [x] Launcher-Modus (MUSS vorhanden sein zur Auswahl)
 - [ ] Privacy Labels aktualisiert
 
 ### iOS
@@ -275,7 +298,7 @@ const caps = {
 - **Offline**: ✅ Available
 - **Install**: ✅ Available
 - **Updates**: ⚠️ Limited
-- **Launcher**: ⚠️ Limited
+- **Launcher**: ✅ Available (MUSS vorhanden sein zur Auswahl)
 
 ## 🧪 Tests & Validierung
 
