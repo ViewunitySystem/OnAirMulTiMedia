@@ -433,7 +433,6 @@
             return searchMediaContent(query, category);
           }
 
-        default:
           return {
             success: false,
             error: 'Unknown endpoint',
