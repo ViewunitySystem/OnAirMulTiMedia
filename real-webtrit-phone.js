@@ -374,6 +374,44 @@ class RealWebTritPhone {
   async initiateCall(phoneNumber, isVideo) {
     console.log(`Initiating ${isVideo ? 'video' : 'audio'} call to ${phoneNumber}`);
     
+    // ECHTE Vodafone-Telefonie verwenden wenn verfügbar
+    if (window.vodafoneTelephony && window.vodafoneTelephony.isNetworkConnected()) {
+      console.log('📞 Verwende Vodafone-Telefonie für Anruf');
+      
+      try {
+        const success = await window.vodafoneTelephony.makeCall(phoneNumber);
+        
+        if (success) {
+          this.isCallActive = true;
+          this.isVideoEnabled = false; // Vodafone-Telefonie ist Audio-only
+          
+          // Phone-Interface verstecken
+          this.hidePhoneInterface();
+          
+          // Call-Interface anzeigen
+          this.showCallInterface();
+          
+          // Caller-Info aktualisieren
+          document.getElementById('caller-number').textContent = phoneNumber;
+          document.getElementById('caller-name').textContent = this.getContactName(phoneNumber);
+          document.getElementById('call-status-text').textContent = 'Vodafone-Anruf wird aufgebaut...';
+          
+          // Vodafone-spezifische UI-Anpassungen
+          this.setupVodafoneCallInterface();
+          
+          this.updateCallStatus('vodafone-calling');
+          return;
+        }
+      } catch (error) {
+        console.error('Vodafone-Anruf fehlgeschlagen:', error);
+        this.showError(`Vodafone-Anruf fehlgeschlagen: ${error.message}`);
+        // Fallback zu WebRTC
+      }
+    }
+    
+    // Fallback zu WebRTC wenn Vodafone nicht verfügbar
+    console.log('📞 Fallback zu WebRTC für Anruf');
+    
     // Prüfe ob Media-Devices verfügbar sind
     if (!this.localStream) {
       console.log('Keine Media-Stream verfügbar - Fallback-Mode');
@@ -394,7 +432,7 @@ class RealWebTritPhone {
     // Caller-Info aktualisieren
     document.getElementById('caller-number').textContent = phoneNumber;
     document.getElementById('caller-name').textContent = this.getContactName(phoneNumber);
-    document.getElementById('call-status-text').textContent = 'Anruf wird aufgebaut...';
+    document.getElementById('call-status-text').textContent = 'WebRTC-Anruf wird aufgebaut...';
     
     try {
       // ECHTE Offer erstellen
@@ -437,12 +475,22 @@ class RealWebTritPhone {
     }
   }
   
-  endCall() {
+  async endCall() {
     console.log('Ending call');
     
     this.isCallActive = false;
     
-    // Streams stoppen
+    // ECHTE Vodafone-Telefonie beenden wenn aktiv
+    if (window.vodafoneTelephony && window.vodafoneTelephony.isNetworkConnected()) {
+      try {
+        await window.vodafoneTelephony.hangupCall();
+        console.log('✅ Vodafone-Anruf beendet');
+      } catch (error) {
+        console.error('❌ Vodafone-Anruf-Beendigung fehlgeschlagen:', error);
+      }
+    }
+    
+    // WebRTC-Streams stoppen
     if (this.localStream) {
       this.localStream.getTracks().forEach(track => track.stop());
     }
@@ -542,7 +590,10 @@ class RealWebTritPhone {
       'disconnected': 'Verbindung getrennt',
       'failed': 'Verbindung fehlgeschlagen',
       'media-ready': 'Media-Devices bereit',
-      'fallback-mode': 'Fallback-Mode aktiv'
+      'fallback-mode': 'Fallback-Mode aktiv',
+      'vodafone-calling': 'Vodafone-Anruf wird aufgebaut...',
+      'vodafone-connected': 'Vodafone-Verbindung hergestellt',
+      'vodafone-ringing': 'Vodafone-Anruf klingelt'
     };
     
     if (statusText) {
@@ -552,9 +603,11 @@ class RealWebTritPhone {
       switch(status) {
         case 'connected':
         case 'media-ready':
+        case 'vodafone-connected':
           statusText.style.color = '#10b981';
           break;
         case 'connecting':
+        case 'vodafone-calling':
           statusText.style.color = '#f59e0b';
           break;
         case 'failed':
@@ -564,9 +617,105 @@ class RealWebTritPhone {
         case 'fallback-mode':
           statusText.style.color = '#f59e0b';
           break;
+        case 'vodafone-ringing':
+          statusText.style.color = '#3b82f6';
+          break;
         default:
           statusText.style.color = '#9ca3af';
       }
+    }
+  }
+  
+  setupVodafoneCallInterface() {
+    console.log('📞 Vodafone-spezifische Call-Interface wird eingerichtet');
+    
+    // Vodafone-spezifische UI-Elemente
+    const callInterface = document.getElementById('call-interface');
+    if (callInterface) {
+      // Vodafone-Branding hinzufügen
+      const vodafoneIndicator = document.createElement('div');
+      vodafoneIndicator.id = 'vodafone-indicator';
+      vodafoneIndicator.style.cssText = `
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #e60012;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+      `;
+      vodafoneIndicator.textContent = 'VODAFONE';
+      callInterface.appendChild(vodafoneIndicator);
+      
+      // Signal-Stärke-Anzeige
+      const signalIndicator = document.createElement('div');
+      signalIndicator.id = 'signal-indicator';
+      signalIndicator.style.cssText = `
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: #10b981;
+        font-size: 14px;
+      `;
+      signalIndicator.innerHTML = '📶 <span id="signal-strength">--</span> dBm';
+      callInterface.appendChild(signalIndicator);
+      
+      // Signal-Stärke aktualisieren
+      this.updateSignalStrength();
+    }
+    
+    // Vodafone-Event-Listener
+    document.addEventListener('vodafone-status-change', (event) => {
+      console.log('📊 Vodafone-Status geändert:', event.detail);
+      this.updateVodafoneStatus(event.detail);
+    });
+    
+    document.addEventListener('vodafone-call-status-change', (event) => {
+      console.log('📞 Vodafone-Call-Status geändert:', event.detail);
+      this.updateCallStatus(event.detail.status);
+    });
+  }
+  
+  updateSignalStrength() {
+    if (window.vodafoneTelephony) {
+      const signalStrength = window.vodafoneTelephony.getSignalStrength();
+      const signalElement = document.getElementById('signal-strength');
+      if (signalElement) {
+        signalElement.textContent = signalStrength;
+        
+        // Signal-Stärke-Farbe basierend auf Qualität
+        if (signalStrength >= 15) {
+          signalElement.style.color = '#10b981'; // Grün - Gut
+        } else if (signalStrength >= 10) {
+          signalElement.style.color = '#f59e0b'; // Gelb - Mittel
+        } else {
+          signalElement.style.color = '#ef4444'; // Rot - Schlecht
+        }
+      }
+    }
+  }
+  
+  updateVodafoneStatus(statusData) {
+    const { status, signalStrength } = statusData;
+    
+    // Signal-Stärke aktualisieren
+    this.updateSignalStrength();
+    
+    // Status-spezifische Aktionen
+    switch(status) {
+      case 'connected':
+        console.log('✅ Vodafone-Netzwerk verbunden');
+        break;
+      case 'disconnected':
+        console.log('❌ Vodafone-Netzwerk getrennt');
+        this.showError('Vodafone-Netzwerk-Verbindung verloren');
+        break;
+      case 'error':
+        console.log('❌ Vodafone-Netzwerk-Fehler');
+        this.showError('Vodafone-Netzwerk-Fehler');
+        break;
     }
   }
   

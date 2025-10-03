@@ -344,7 +344,18 @@
                 • WebTrit Phone mit WebRTC<br>
                 • Voice Control mit Web Speech API<br>
                 • Echte Kommunikationsprotokolle<br>
-                • Live-Daten ohne Demo-Inhalte
+                • Live-Daten ohne Demo-Inhalte<br><br>
+                <strong>📞 Echte Telefonie mit Huawei Vodafone Hardware!</strong>
+            </div>
+            
+            <div class="status-display" id="vodafone-status-display" style="display: none;">
+                <h4>📞 Vodafone-Telefonie Status</h4>
+                <div id="vodafone-details">
+                    <p>Netzwerk: <span id="network-status">--</span></p>
+                    <p>Signal: <span id="signal-display">--</span> dBm</p>
+                    <p>Operator: <span id="operator-display">--</span></p>
+                    <p>Verbindung: <span id="connection-status">--</span></p>
+                </div>
             </div>
         </section>
         
@@ -374,6 +385,7 @@
     
     <!-- ECHTE WebTrit-Implementierungen laden -->
     <script src="./real-webtrit-swipe.js"></script>
+    <script src="./vodafone-telephony-integration.js"></script>
     <script src="./real-webtrit-phone.js"></script>
     
     <script>
@@ -440,6 +452,32 @@
             logStatus('✅ Echte Touch-Events, WebRTC, Voice Control');
             logStatus('✅ Bereit für echte WebTrit-Funktionen');
             
+            // Vodafone-Telefonie initialisieren
+            if (window.VodafoneTelephonyIntegration) {
+                logStatus('📞 Vodafone-Telefonie wird initialisiert...');
+                
+                // Vodafone-Status-Updates
+                document.addEventListener('vodafone-status-change', (event) => {
+                    const { status, signalStrength } = event.detail;
+                    logStatus(`📊 Vodafone-Status: ${status} (Signal: ${signalStrength} dBm)`);
+                    updateVodafoneStatus(status, signalStrength);
+                });
+                
+                document.addEventListener('vodafone-call-status-change', (event) => {
+                    const { status } = event.detail;
+                    logStatus(`📞 Vodafone-Call-Status: ${status}`);
+                });
+                
+                document.addEventListener('vodafone-error', (event) => {
+                    const { message } = event.detail;
+                    logStatus(`❌ Vodafone-Fehler: ${message}`);
+                });
+                
+                logStatus('✅ Vodafone-Telefonie-Integration bereit');
+            } else {
+                logStatus('❌ Vodafone-Telefonie nicht verfügbar');
+            }
+            
             // WebTrit-Status prüfen
             setTimeout(() => {
                 if (window.webtritSwipe) {
@@ -450,6 +488,44 @@
                 }
             }, 1000);
         });
+        
+        // Vodafone-Status-Updates
+        function updateVodafoneStatus(status, signalStrength) {
+            const vodafoneDisplay = document.getElementById('vodafone-status-display');
+            const networkStatus = document.getElementById('network-status');
+            const signalDisplay = document.getElementById('signal-display');
+            const operatorDisplay = document.getElementById('operator-display');
+            const connectionStatus = document.getElementById('connection-status');
+            
+            if (vodafoneDisplay) {
+                vodafoneDisplay.style.display = 'block';
+            }
+            
+            if (networkStatus) {
+                networkStatus.textContent = status === 'connected' ? 'Verbunden' : 'Getrennt';
+                networkStatus.style.color = status === 'connected' ? '#10b981' : '#ef4444';
+            }
+            
+            if (signalDisplay) {
+                signalDisplay.textContent = signalStrength || '--';
+                if (signalStrength >= 15) {
+                    signalDisplay.style.color = '#10b981'; // Grün - Gut
+                } else if (signalStrength >= 10) {
+                    signalDisplay.style.color = '#f59e0b'; // Gelb - Mittel
+                } else {
+                    signalDisplay.style.color = '#ef4444'; // Rot - Schlecht
+                }
+            }
+            
+            if (operatorDisplay) {
+                operatorDisplay.textContent = 'Vodafone D2';
+            }
+            
+            if (connectionStatus) {
+                connectionStatus.textContent = status === 'connected' ? 'Aktiv' : 'Inaktiv';
+                connectionStatus.style.color = status === 'connected' ? '#10b981' : '#ef4444';
+            }
+        }
         
         // ECHTE Keyboard-Shortcuts
         document.addEventListener('keydown', (e) => {
