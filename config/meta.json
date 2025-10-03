@@ -15,7 +15,7 @@
       "requireDocs": true,
       "branch": "mainzero",
       "reviewers": ["DD5BE"],
-      "dryRun": true
+      "dryRun": false
     }
   }
 }
