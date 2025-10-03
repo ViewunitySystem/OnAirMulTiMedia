@@ -1,7 +1,7 @@
 {
   "name": "oamtm-serverfarm-static",
   "version": "1.0.0",
-  "description": "Static site for OnAirMulTiMedia Serverfarm",
+  "description": "Static site for OnAirMulTiMedia Serverfarm - Cloudflare Pages",
   "private": true,
   "scripts": {
     "build": "echo 'Static site - no build step needed'",
@@ -10,5 +10,17 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia.git"
+  },
+  "keywords": [
+    "static-site",
+    "cloudflare-pages",
+    "serverfarm",
+    "onairmultimedia"
+  ],
+  "author": "Raymond Demitrio Dr. Tel",
+  "license": "MIT"
 }
