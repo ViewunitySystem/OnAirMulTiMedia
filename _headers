@@ -1,0 +1,24 @@
+# Cloudflare Pages Headers für OAMTM Serverfarm
+
+# Security Headers für alle Dateien
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; script-src 'self'; style-src 'self'; connect-src 'self' https://api.github.com; frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com; frame-ancestors 'self'; base-uri 'self'; upgrade-insecure-requests
+
+# Cache Headers für statische Assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache Headers für HTML-Dateien
+*.html
+  Cache-Control: public, max-age=300
+
+# Cache Headers für CSS/JS
+*.css
+  Cache-Control: public, max-age=86400
+
+*.js
+  Cache-Control: public, max-age=86400

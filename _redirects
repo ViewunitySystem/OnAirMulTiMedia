@@ -1,0 +1,23 @@
+# Cloudflare Pages Redirects für OAMTM Serverfarm
+# Alle Routen zu index.html weiterleiten für SPA-Verhalten
+
+# Hauptseite
+/ /index.html 200
+
+# Serverfarm Dashboard
+/serverfarm-dashboard /serverfarm-dashboard.html 200
+
+# Apps
+/apps/* /apps/:splat 200
+
+# Modules
+/modules/* /modules/:splat 200
+
+# Assets
+/assets/* /assets/:splat 200
+
+# API Routes (falls später benötigt)
+/api/* /api/:splat 200
+
+# Fallback für alle anderen Routen
+/* /index.html 200
