@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDR Exam Proctoring Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-card: #2d3748;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --border-color: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar h2 {
+            color: var(--accent-blue);
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow);
+        }
+
+        .status-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+        }
+
+        .sessions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .session-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .session-id {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .session-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        .status-completed {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .status-suspended {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        .session-info {
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .proctoring-mode {
+            background: var(--bg-card);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .mode-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .mode-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .mode-badge {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .integrity-status {
+            margin-bottom: 1rem;
+        }
+
+        .integrity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .integrity-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .integrity-pass {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .integrity-fail {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .integrity-warning {
+            background: var(--accent-yellow);
+            color: black;
+        }
+
+        .session-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .alerts-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-yellow);
+        }
+
+        .alert-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-description {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .video-preview {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 1000;
+            display: none;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .video-preview.show {
+            display: block;
+        }
+
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .video-content {
+            background: var(--bg-primary);
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 300px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .video-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 1001;
+            display: none;
+            max-width: 400px;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--accent-red);
+        }
+
+        .notification.warning {
+            border-left: 4px solid var(--accent-yellow);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .sessions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-preview {
+                width: 95%;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <nav class="sidebar">
+            <h2>📹 Proctoring Dashboard</h2>
+            <a href="#" class="nav-item active">📊 Übersicht</a>
+            <a href="#" class="nav-item">🎥 Live Sessions</a>
+            <a href="#" class="nav-item">📋 Warteschlange</a>
+            <a href="#" class="nav-item">🔍 Evidenz-Review</a>
+            <a href="#" class="nav-item">⚠️ Alerts</a>
+            <a href="#" class="nav-item">👥 Proctoren</a>
+            <a href="#" class="nav-item">📈 Statistiken</a>
+            <a href="#" class="nav-item">⚙️ Einstellungen</a>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <div>
+                    <h1>Proctoring Dashboard</h1>
+                    <p>Live-Überwachung und Verwaltung von Prüfungssessions</p>
+                </div>
+                <div>
+                    <span class="status-indicator status-active" id="overall-status">
+                        🟢 3 Aktive Sessions
+                    </span>
+                    <button class="btn btn-primary" onclick="refreshSessions()">🔄 Aktualisieren</button>
+                </div>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="active-sessions">3</div>
+                    <div class="stat-label">Aktive Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-sessions">47</div>
+                    <div class="stat-label">Heute Gesamt</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completed-sessions">44</div>
+                    <div class="stat-label">Abgeschlossen</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="alerts-count">2</div>
+                    <div class="stat-label">Aktive Alerts</div>
+                </div>
+            </div>
+
+            <div class="alerts-panel">
+                <h3>🚨 Aktive Alerts</h3>
+                <div class="alert-item">
+                    <div class="alert-icon alert-warning">⚠️</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Verdächtige Aktivität erkannt</div>
+                        <div class="alert-description">Session SESSION-A1B2C3D4: Mehrere Browser-Tabs erkannt</div>
+                    </div>
+                    <div class="alert-actions">
+                        <button class="btn btn-primary" onclick="investigateAlert('SESSION-A1B2C3D4')">Untersuchen</button>
+                        <button class="btn btn-secondary" onclick="dismissAlert('SESSION-A1B2C3D4')">Ignorieren</button>
+                    </div>
+                </div>
+                <div class="alert-item">
+                    <div class="alert-icon alert-critical">🚨</div>
+                    <div class="alert-content">
+                        <div class="alert-title">Video-Verbindung unterbrochen</div>
+                        <div class="alert-description">Session SESSION-E5F6G7H8: Video-Feed seit 2 Minuten offline</div>
+                    </div>
+                    <div class="alert-actions">
+                        <button class="btn btn-danger" onclick="suspendSession('SESSION-E5F6G7H8')">Session Pausieren</button>
+                        <button class="btn btn-secondary" onclick="contactCandidate('SESSION-E5F6G7H8')">Kandidat Kontaktieren</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sessions-grid" id="sessions-container">
+                <!-- Sessions werden dynamisch geladen -->
+            </div>
+        </main>
+    </div>
+
+    <div class="video-preview" id="video-preview">
+        <div class="video-header">
+            <h3 id="video-title">Video-Überwachung</h3>
+            <button class="close-btn" onclick="closeVideoPreview()">&times;</button>
+        </div>
+        <div class="video-content">
+            <div class="video-placeholder" id="video-placeholder">
+                📹 Video-Stream wird geladen...
+            </div>
+        </div>
+        <div class="video-controls">
+            <button class="btn btn-secondary" onclick="takeSnapshot()">📸 Screenshot</button>
+            <button class="btn btn-secondary" onclick="startRecording()">🔴 Aufnahme Start</button>
+            <button class="btn btn-danger" onclick="stopRecording()">⏹️ Aufnahme Stop</button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div id="notification-message"></div>
+    </div>
+
+    <script>
+        // Session-Daten
+        const sessions = [
+            {
+                sessionId: 'SESSION-A1B2C3D4',
+                userId: 'USER-12345678',
+                courseId: 'sdr-fundamentals',
+                profile: 'B',
+                proctoringMode: 'live',
+                startedAt: '2025-10-04T14:30:00Z',
+                timeRemaining: 2340, // Sekunden
+                currentQuestion: 8,
+                totalQuestions: 20,
+                proctorId: 'PROCTOR-001',
+                integrity: {
+                    browser: 'passed',
+                    device: 'passed',
+                    network: 'warning'
+                },
+                alerts: ['multiple-tabs', 'copy-paste-detected'],
+                status: 'active'
+            },
+            {
+                sessionId: 'SESSION-E5F6G7H8',
+                userId: 'USER-87654321',
+                courseId: 'sdr-technical',
+                profile: 'A',
+                proctoringMode: 'live',
+                startedAt: '2025-10-04T15:00:00Z',
+                timeRemaining: 1800,
+                currentQuestion: 12,
+                totalQuestions: 25,
+                proctorId: 'PROCTOR-002',
+                integrity: {
+                    browser: 'passed',
+                    device: 'failed',
+                    network: 'passed'
+                },
+                alerts: ['video-disconnected'],
+                status: 'suspended'
+            },
+            {
+                sessionId: 'SESSION-I9J0K1L2',
+                userId: 'USER-11223344',
+                courseId: 'sdr-fundamentals',
+                profile: 'C',
+                proctoringMode: 'trust-but-verify',
+                startedAt: '2025-10-04T15:15:00Z',
+                timeRemaining: 900,
+                currentQuestion: 15,
+                totalQuestions: 20,
+                proctorId: null,
+                integrity: {
+                    browser: 'passed',
+                    device: 'passed',
+                    network: 'passed'
+                },
+                alerts: [],
+                status: 'active'
+            }
+        ];
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSessions();
+            updateStats();
+            startRealTimeUpdates();
+        });
+
+        // Sessions laden
+        function loadSessions() {
+            const container = document.getElementById('sessions-container');
+            container.innerHTML = '';
+
+            sessions.forEach(session => {
+                const sessionCard = createSessionCard(session);
+                container.appendChild(sessionCard);
+            });
+        }
+
+        // Session-Karte erstellen
+        function createSessionCard(session) {
+            const card = document.createElement('div');
+            card.className = 'session-card';
+            card.id = `session-${session.sessionId}`;
+
+            const statusClass = session.status === 'active' ? 'status-active' : 
+                               session.status === 'completed' ? 'status-completed' : 'status-suspended';
+
+            const statusText = session.status === 'active' ? 'Aktiv' :
+                              session.status === 'completed' ? 'Abgeschlossen' : 'Pausiert';
+
+            const timeRemaining = formatTime(session.timeRemaining);
+
+            card.innerHTML = `
+                <div class="session-header">
+                    <div class="session-id">${session.sessionId}</div>
+                    <div class="session-status ${statusClass}">${statusText}</div>
+                </div>
+
+                <div class="session-info">
+                    <div class="info-item">
+                        <span class="info-label">Kandidat:</span>
+                        <span class="info-value">${session.userId}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Kurs:</span>
+                        <span class="info-value">${session.courseId}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Profil:</span>
+                        <span class="info-value">${session.profile}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Fortschritt:</span>
+                        <span class="info-value">${session.currentQuestion}/${session.totalQuestions}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Verbleibende Zeit:</span>
+                        <span class="info-value">${timeRemaining}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Proctor:</span>
+                        <span class="info-value">${session.proctorId || 'Keiner'}</span>
+                    </div>
+                </div>
+
+                <div class="proctoring-mode">
+                    <div class="mode-title">Proctoring-Modus:</div>
+                    <div class="mode-badges">
+                        <span class="mode-badge">${getProctoringModeText(session.proctoringMode)}</span>
+                        ${session.profile === 'A' ? '<span class="mode-badge">Video-Ident</span>' : ''}
+                    </div>
+                </div>
+
+                <div class="integrity-status">
+                    <div class="integrity-item">
+                        <div class="integrity-icon ${getIntegrityClass(session.integrity.browser)}">
+                            ${session.integrity.browser === 'passed' ? '✓' : session.integrity.browser === 'warning' ? '⚠' : '✗'}
+                        </div>
+                        <span>Browser-Integrität: ${getIntegrityText(session.integrity.browser)}</span>
+                    </div>
+                    <div class="integrity-item">
+                        <div class="integrity-icon ${getIntegrityClass(session.integrity.device)}">
+                            ${session.integrity.device === 'passed' ? '✓' : session.integrity.device === 'warning' ? '⚠' : '✗'}
+                        </div>
+                        <span>Geräte-Integrität: ${getIntegrityText(session.integrity.device)}</span>
+                    </div>
+                    <div class="integrity-item">
+                        <div class="integrity-icon ${getIntegrityClass(session.integrity.network)}">
+                            ${session.integrity.network === 'passed' ? '✓' : session.integrity.network === 'warning' ? '⚠' : '✗'}
+                        </div>
+                        <span>Netzwerk-Integrität: ${getIntegrityText(session.integrity.network)}</span>
+                    </div>
+                </div>
+
+                <div class="session-actions">
+                    ${session.status === 'active' ? 
+                        `<button class="btn btn-primary" onclick="viewVideo('${session.sessionId}')">📹 Video</button>` :
+                        ''
+                    }
+                    <button class="btn btn-secondary" onclick="viewEvidence('${session.sessionId}')">🔍 Evidenz</button>
+                    ${session.status === 'active' ? 
+                        `<button class="btn btn-danger" onclick="suspendSession('${session.sessionId}')">⏸️ Pausieren</button>` :
+                        session.status === 'suspended' ?
+                            `<button class="btn btn-primary" onclick="resumeSession('${session.sessionId}')">▶️ Fortsetzen</button>` :
+                            ''
+                    }
+                    <button class="btn btn-secondary" onclick="chatCandidate('${session.sessionId}')">💬 Chat</button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Hilfsfunktionen
+        function getProctoringModeText(mode) {
+            const modes = {
+                'live': 'Live Proctoring',
+                'deferred': 'Deferred Review',
+                'trust-but-verify': 'Trust but Verify',
+                'none': 'Kein Proctoring'
+            };
+            return modes[mode] || mode;
+        }
+
+        function getIntegrityClass(status) {
+            return status === 'passed' ? 'integrity-pass' : 
+                   status === 'warning' ? 'integrity-warning' : 'integrity-fail';
+        }
+
+        function getIntegrityText(status) {
+            const texts = {
+                'passed': 'OK',
+                'warning': 'Warnung',
+                'failed': 'Fehler'
+            };
+            return texts[status] || status;
+        }
+
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            } else {
+                return `${minutes}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Session-Aktionen
+        function viewVideo(sessionId) {
+            const session = sessions.find(s => s.sessionId === sessionId);
+            if (session) {
+                document.getElementById('video-title').textContent = `Video-Überwachung - ${sessionId}`;
+                document.getElementById('video-preview').classList.add('show');
+                showNotification('Video-Stream wird gestartet...', 'success');
+            }
+        }
+
+        function closeVideoPreview() {
+            document.getElementById('video-preview').classList.remove('show');
+        }
+
+        function viewEvidence(sessionId) {
+            showNotification('Evidenz-Dashboard wird geöffnet...', 'success');
+        }
+
+        function suspendSession(sessionId) {
+            if (confirm(`Möchten Sie die Session ${sessionId} wirklich pausieren?`)) {
+                const session = sessions.find(s => s.sessionId === sessionId);
+                if (session) {
+                    session.status = 'suspended';
+                    loadSessions();
+                    showNotification(`Session ${sessionId} wurde pausiert`, 'warning');
+                }
+            }
+        }
+
+        function resumeSession(sessionId) {
+            const session = sessions.find(s => s.sessionId === sessionId);
+            if (session) {
+                session.status = 'active';
+                loadSessions();
+                showNotification(`Session ${sessionId} wurde fortgesetzt`, 'success');
+            }
+        }
+
+        function chatCandidate(sessionId) {
+            showNotification('Chat-Fenster wird geöffnet...', 'success');
+        }
+
+        function investigateAlert(sessionId) {
+            showNotification(`Alert für Session ${sessionId} wird untersucht...`, 'warning');
+        }
+
+        function dismissAlert(sessionId) {
+            showNotification(`Alert für Session ${sessionId} wurde ignoriert`, 'success');
+        }
+
+        function contactCandidate(sessionId) {
+            showNotification(`Kandidat von Session ${sessionId} wird kontaktiert...`, 'success');
+        }
+
+        function takeSnapshot() {
+            showNotification('Screenshot wurde aufgenommen', 'success');
+        }
+
+        function startRecording() {
+            showNotification('Aufnahme gestartet', 'success');
+        }
+
+        function stopRecording() {
+            showNotification('Aufnahme gestoppt', 'success');
+        }
+
+        // Statistiken aktualisieren
+        function updateStats() {
+            const active = sessions.filter(s => s.status === 'active').length;
+            const completed = sessions.filter(s => s.status === 'completed').length;
+            const alerts = sessions.reduce((acc, s) => acc + s.alerts.length, 0);
+            
+            document.getElementById('active-sessions').textContent = active;
+            document.getElementById('completed-sessions').textContent = completed;
+            document.getElementById('alerts-count').textContent = alerts;
+            
+            document.getElementById('overall-status').textContent = 
+                `🟢 ${active} Aktive Sessions`;
+        }
+
+        // Real-time Updates
+        function startRealTimeUpdates() {
+            setInterval(() => {
+                // Zeit aktualisieren
+                sessions.forEach(session => {
+                    if (session.status === 'active' && session.timeRemaining > 0) {
+                        session.timeRemaining--;
+                        
+                        // Session beenden wenn Zeit abgelaufen
+                        if (session.timeRemaining <= 0) {
+                            session.status = 'completed';
+                            showNotification(`Session ${session.sessionId} wurde automatisch beendet`, 'warning');
+                        }
+                    }
+                });
+                
+                loadSessions();
+                updateStats();
+            }, 1000);
+        }
+
+        // Sessions aktualisieren
+        function refreshSessions() {
+            showNotification('Sessions werden aktualisiert...', 'success');
+            loadSessions();
+            updateStats();
+        }
+
+        // Benachrichtigung anzeigen
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            messageElement.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Keyboard-Shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Escape schließt Video-Preview
+            if (e.key === 'Escape') {
+                closeVideoPreview();
+            }
+            
+            // F5 aktualisiert Sessions
+            if (e.key === 'F5') {
+                e.preventDefault();
+                refreshSessions();
+            }
+        });
+    </script>
+</body>
+</html>

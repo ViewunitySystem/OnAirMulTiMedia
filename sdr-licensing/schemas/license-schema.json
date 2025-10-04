@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SDR License Schema",
+  "description": "Schema für SDR-Lizenzen und Zertifikate",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "licenseId": {
+      "type": "string",
+      "pattern": "^LIC-[A-Z0-9]{8}-[A-Z0-9]{4}$",
+      "description": "Eindeutige Lizenz-ID",
+      "examples": ["LIC-A1B2C3D4-E5F6", "LIC-12345678-9ABC"]
+    },
+    "certificateId": {
+      "type": "string",
+      "pattern": "^CERT-[A-Z0-9]{8}-[A-Z0-9]{4}$",
+      "description": "Eindeutige Zertifikats-ID",
+      "examples": ["CERT-A1B2C3D4-E5F6"]
+    },
+    "holder": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "pattern": "^USER-[A-Z0-9]{8}$",
+          "description": "Anonymisierte Benutzer-ID"
+        },
+        "profile": {
+          "type": "string",
+          "enum": ["A", "B", "C"],
+          "description": "Lizenz-Profil (A=Streng, B=Standard, C=Lernfreundlich)"
+        },
+        "region": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}(-[A-Z]{2})?$",
+          "description": "Region/Land-Code",
+          "examples": ["DE", "US", "EU-DE"]
+        }
+      },
+      "required": ["userId", "profile", "region"]
+    },
+    "licenseType": {
+      "type": "string",
+      "enum": ["sdr-basic", "sdr-advanced", "sdr-instructor"],
+      "description": "Art der SDR-Lizenz"
+    },
+    "validity": {
+      "type": "object",
+      "properties": {
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Ausstellungsdatum"
+        },
+        "validFrom": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Gültigkeitsbeginn"
+        },
+        "validUntil": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Gültigkeitsende"
+        },
+        "renewalRequired": {
+          "type": "boolean",
+          "description": "Re-Zertifizierung erforderlich"
+        },
+        "renewalDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Re-Zertifizierungsdatum"
+        }
+      },
+      "required": ["issuedAt", "validFrom", "validUntil", "renewalRequired"]
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "txEnabled": {
+          "type": "boolean",
+          "description": "Transmission aktiviert"
+        },
+        "bands": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["160m", "80m", "40m", "20m", "15m", "10m", "6m", "2m", "70cm", "23cm", "13cm", "6cm", "3cm"]
+          },
+          "description": "Erlaubte Frequenzbänder"
+        },
+        "powerLimit": {
+          "type": "object",
+          "properties": {
+            "maxPowerW": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 10000,
+              "description": "Maximale Leistung in Watt"
+            },
+            "powerLevels": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "description": "Erlaubte Leistungsstufen"
+            }
+          },
+          "required": ["maxPowerW"]
+        },
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["CW", "SSB", "FM", "AM", "DIGITAL", "FT8", "JT65", "PSK31", "RTTY"]
+          },
+          "description": "Erlaubte Betriebsarten"
+        },
+        "specialPermissions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["teaching", "examination", "emergency", "experimental", "commercial"]
+          },
+          "description": "Spezielle Berechtigungen"
+        }
+      },
+      "required": ["txEnabled", "bands", "powerLimit", "modes"]
+    },
+    "examination": {
+      "type": "object",
+      "properties": {
+        "examId": {
+          "type": "string",
+          "pattern": "^EXAM-[A-Z0-9]{8}$",
+          "description": "Prüfungs-ID"
+        },
+        "examDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Prüfungsdatum"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Prüfungsergebnis in Prozent"
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Prüfung bestanden"
+        },
+        "proctorId": {
+          "type": "string",
+          "pattern": "^PROCTOR-[A-Z0-9]{8}$",
+          "description": "Aufsichtsperson-ID (optional)"
+        },
+        "proctoringMode": {
+          "type": "string",
+          "enum": ["live", "deferred", "trust-but-verify", "none"],
+          "description": "Proctoring-Modus"
+        },
+        "evidence": {
+          "type": "object",
+          "properties": {
+            "sessionHash": {
+              "type": "string",
+              "description": "Hash der Prüfungssession"
+            },
+            "signatures": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Digitale Signaturen"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Zusätzliche Metadaten"
+            }
+          }
+        }
+      },
+      "required": ["examId", "examDate", "score", "passed"]
+    },
+    "course": {
+      "type": "object",
+      "properties": {
+        "courseId": {
+          "type": "string",
+          "pattern": "^COURSE-[A-Z0-9]{8}$",
+          "description": "Kurs-ID"
+        },
+        "courseName": {
+          "type": "string",
+          "description": "Kursname"
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Kursabschlussdatum"
+        },
+        "progress": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Kursfortschritt in Prozent"
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "moduleId": {
+                "type": "string",
+                "description": "Modul-ID"
+              },
+              "moduleName": {
+                "type": "string",
+                "description": "Modulname"
+              },
+              "completed": {
+                "type": "boolean",
+                "description": "Modul abgeschlossen"
+              },
+              "score": {
+                "type": "number",
+                "description": "Modulbewertung"
+              }
+            },
+            "required": ["moduleId", "moduleName", "completed"]
+          }
+        }
+      },
+      "required": ["courseId", "courseName", "completedAt", "progress"]
+    },
+    "application": {
+      "type": "object",
+      "properties": {
+        "applicationId": {
+          "type": "string",
+          "pattern": "^APP-[A-Z0-9]{8}$",
+          "description": "Antrags-ID"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Antragseingang"
+        },
+        "authority": {
+          "type": "string",
+          "description": "Zuständige Behörde"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["submitted", "under-review", "approved", "rejected", "expired"],
+          "description": "Antragsstatus"
+        },
+        "decisionDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Entscheidungsdatum"
+        },
+        "referenceNumber": {
+          "type": "string",
+          "description": "Behördliche Aktenzeichen"
+        }
+      },
+      "required": ["applicationId", "submittedAt", "authority", "status"]
+    },
+    "signatures": {
+      "type": "object",
+      "properties": {
+        "issuer": {
+          "type": "string",
+          "description": "Aussteller-Signatur"
+        },
+        "validator": {
+          "type": "string",
+          "description": "Validierer-Signatur"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Signatur-Zeitstempel"
+        },
+        "algorithm": {
+          "type": "string",
+          "enum": ["RSA-SHA256", "ECDSA-SHA256", "EdDSA"],
+          "description": "Signatur-Algorithmus"
+        }
+      },
+      "required": ["issuer", "timestamp", "algorithm"]
+    },
+    "audit": {
+      "type": "object",
+      "properties": {
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Erstellungsdatum"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Letzte Aktualisierung"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Schema-Version",
+          "examples": ["1.0.0", "1.1.0"]
+        },
+        "hash": {
+          "type": "string",
+          "description": "Hash des Lizenzdokuments"
+        },
+        "previousHash": {
+          "type": "string",
+          "description": "Hash des vorherigen Dokuments (für Chain)"
+        },
+        "revocationStatus": {
+          "type": "string",
+          "enum": ["active", "suspended", "revoked", "expired"],
+          "description": "Sperrstatus"
+        },
+        "revocationReason": {
+          "type": "string",
+          "description": "Grund für Sperrung"
+        }
+      },
+      "required": ["createdAt", "version", "hash"]
+    }
+  },
+  "required": [
+    "licenseId",
+    "certificateId",
+    "holder",
+    "licenseType",
+    "validity",
+    "permissions",
+    "examination",
+    "course",
+    "signatures",
+    "audit"
+  ],
+  "if": {
+    "properties": {
+      "holder": {
+        "properties": {
+          "profile": {
+            "const": "A"
+          }
+        }
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "examination": {
+        "properties": {
+          "proctoringMode": {
+            "enum": ["live", "deferred"]
+          }
+        }
+      },
+      "application": {
+        "required": ["applicationId", "submittedAt", "authority", "status", "referenceNumber"]
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "examination": {
+        "properties": {
+          "proctoringMode": {
+            "enum": ["trust-but-verify", "none"]
+          }
+        }
+      }
+    }
+  }
+}

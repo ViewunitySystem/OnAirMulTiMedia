@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDR Learning Platform - Kurs-Katalog</title>
+    <style>
+        :root {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-card: #2d3748;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --border-color: #374151;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo h1 {
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-badge {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .filter-select {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .course-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .course-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .course-level {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .course-level.beginner {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+        }
+
+        .course-level.intermediate {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-yellow);
+        }
+
+        .course-level.advanced {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        .course-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .course-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .meta-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .course-modules {
+            margin-bottom: 1rem;
+        }
+
+        .modules-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .modules-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .module-tag {
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .course-accessibility {
+            margin-bottom: 1rem;
+        }
+
+        .accessibility-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .accessibility-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .accessibility-feature {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-green);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .accessibility-panel {
+            position: fixed;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .accessibility-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .accessibility-toggle:hover {
+            background: var(--bg-card);
+        }
+
+        .accessibility-options {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .accessibility-options.active {
+            display: block;
+        }
+
+        .accessibility-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .accessibility-option input[type="checkbox"] {
+            accent-color: var(--accent-blue);
+        }
+
+        .accessibility-option label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .notification {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            z-index: 1001;
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .notification.error {
+            border-left: 4px solid var(--accent-red);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .accessibility-panel {
+                position: relative;
+                transform: none;
+                margin-bottom: 2rem;
+            }
+        }
+
+        /* High Contrast Mode */
+        body.high-contrast {
+            --bg-primary: #000000;
+            --bg-secondary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #ffffff;
+        }
+
+        /* Large Font Mode */
+        body.large-font {
+            font-size: 1.2rem;
+        }
+
+        body.large-font .course-title {
+            font-size: 1.4rem;
+        }
+
+        body.large-font .btn {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <span>📡</span>
+            <h1>SDR Learning Platform</h1>
+        </div>
+        <div class="user-info">
+            <span class="profile-badge" id="user-profile">Profil B</span>
+            <span id="user-name">Benutzer: USER-12345678</span>
+            <button class="btn btn-secondary" onclick="logout()">Abmelden</button>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Kurs-Katalog</h1>
+            <p class="page-subtitle">Wählen Sie einen Kurs aus, um Ihre SDR-Ausbildung zu beginnen</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="total-courses">3</div>
+                <div class="stat-label">Verfügbare Kurse</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="enrolled-courses">1</div>
+                <div class="stat-label">Angemeldete Kurse</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completed-courses">0</div>
+                <div class="stat-label">Abgeschlossene Kurse</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="certificates">0</div>
+                <div class="stat-label">Zertifikate</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label" for="level-filter">Schwierigkeitsgrad</label>
+                <select class="filter-select" id="level-filter" onchange="filterCourses()">
+                    <option value="all">Alle</option>
+                    <option value="beginner">Anfänger</option>
+                    <option value="intermediate">Fortgeschritten</option>
+                    <option value="advanced">Experte</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label" for="status-filter">Status</label>
+                <select class="filter-select" id="status-filter" onchange="filterCourses()">
+                    <option value="all">Alle</option>
+                    <option value="available">Verfügbar</option>
+                    <option value="enrolled">Angemeldet</option>
+                    <option value="completed">Abgeschlossen</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label" for="language-filter">Sprache</label>
+                <select class="filter-select" id="language-filter" onchange="filterCourses()">
+                    <option value="all">Alle</option>
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="courses-grid" id="courses-container">
+            <!-- Kurse werden dynamisch geladen -->
+        </div>
+    </main>
+
+    <div class="accessibility-panel">
+        <button class="accessibility-toggle" onclick="toggleAccessibility()">
+            ♿ Barrierefreiheit
+        </button>
+        <div class="accessibility-options" id="accessibility-options">
+            <div class="accessibility-option">
+                <input type="checkbox" id="high-contrast" onchange="toggleHighContrast()">
+                <label for="high-contrast">Hoher Kontrast</label>
+            </div>
+            <div class="accessibility-option">
+                <input type="checkbox" id="large-font" onchange="toggleLargeFont()">
+                <label for="large-font">Große Schrift</label>
+            </div>
+            <div class="accessibility-option">
+                <input type="checkbox" id="subtitles" onchange="toggleSubtitles()">
+                <label for="subtitles">Untertitel</label>
+            </div>
+            <div class="accessibility-option">
+                <input type="checkbox" id="screen-reader" onchange="toggleScreenReader()">
+                <label for="screen-reader">Screen Reader</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <div id="notification-message"></div>
+    </div>
+
+    <script>
+        // Kurs-Daten
+        const courses = [
+            {
+                id: 'sdr-fundamentals',
+                title: 'SDR Grundlagen & Frequenzrecht',
+                description: 'Lernen Sie die Grundlagen von Software-Defined Radio, Frequenzrecht und ethische Betriebspraktiken kennen.',
+                level: 'beginner',
+                duration: '20 Stunden',
+                modules: 5,
+                languages: ['de', 'en'],
+                accessibility: {
+                    subtitles: true,
+                    transcripts: true,
+                    screenReader: true,
+                    highContrast: true
+                },
+                prerequisites: [],
+                enrolled: false,
+                completed: false,
+                progress: 0
+            },
+            {
+                id: 'sdr-technical',
+                title: 'Technische SDR-Module',
+                description: 'Vertiefen Sie Ihr Verständnis von Signalverarbeitung, Modulationstechniken und Antennentechnik.',
+                level: 'intermediate',
+                duration: '40 Stunden',
+                modules: 5,
+                languages: ['de', 'en'],
+                accessibility: {
+                    subtitles: true,
+                    transcripts: true,
+                    screenReader: true,
+                    highContrast: true,
+                    interactiveLabs: true
+                },
+                prerequisites: ['sdr-fundamentals'],
+                enrolled: false,
+                completed: false,
+                progress: 0
+            },
+            {
+                id: 'sdr-advanced',
+                title: 'Erweiterte SDR-Techniken',
+                description: 'Meistern Sie fortgeschrittene SDR-Konzepte und Praxisübungen für professionelle Anwendungen.',
+                level: 'advanced',
+                duration: '60 Stunden',
+                modules: 5,
+                languages: ['de', 'en'],
+                accessibility: {
+                    subtitles: true,
+                    transcripts: true,
+                    screenReader: true,
+                    highContrast: true,
+                    interactiveLabs: true,
+                    rxOnlyMode: true
+                },
+                prerequisites: ['sdr-technical'],
+                enrolled: false,
+                completed: false,
+                progress: 0
+            }
+        ];
+
+        const userProfile = 'B'; // Standard-Profil
+        const userLanguage = 'de';
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCourses();
+            updateStats();
+            applySavedAccessibilitySettings();
+        });
+
+        // Kurse laden
+        function loadCourses() {
+            const container = document.getElementById('courses-container');
+            container.innerHTML = '';
+
+            courses.forEach(course => {
+                const courseCard = createCourseCard(course);
+                container.appendChild(courseCard);
+            });
+        }
+
+        // Kurs-Karte erstellen
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'course-card';
+            card.id = `course-${course.id}`;
+
+            const levelClass = course.level === 'beginner' ? 'beginner' : 
+                             course.level === 'intermediate' ? 'intermediate' : 'advanced';
+
+            const levelText = course.level === 'beginner' ? 'Anfänger' :
+                             course.level === 'intermediate' ? 'Fortgeschritten' : 'Experte';
+
+            const canEnroll = canUserEnroll(course);
+
+            card.innerHTML = `
+                <div class="course-header">
+                    <div>
+                        <h3 class="course-title">${course.title}</h3>
+                        <span class="course-level ${levelClass}">${levelText}</span>
+                    </div>
+                </div>
+                
+                <div class="course-description">
+                    ${course.description}
+                </div>
+
+                ${course.progress > 0 ? `
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${course.progress}%"></div>
+                    </div>
+                    <div class="progress-text">${course.progress}% abgeschlossen</div>
+                ` : ''}
+
+                <div class="course-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon">⏱️</span>
+                        <span>${course.duration}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">📚</span>
+                        <span>${course.modules} Module</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🌐</span>
+                        <span>${course.languages.join(', ').toUpperCase()}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🎯</span>
+                        <span>${levelText}</span>
+                    </div>
+                </div>
+
+                <div class="course-modules">
+                    <div class="modules-title">Modulinhalte:</div>
+                    <div class="modules-list">
+                        <span class="module-tag">SDR-Basics</span>
+                        <span class="module-tag">Frequenzrecht</span>
+                        <span class="module-tag">Antennentechnik</span>
+                        <span class="module-tag">Ethik</span>
+                        <span class="module-tag">Praxisübungen</span>
+                    </div>
+                </div>
+
+                <div class="course-accessibility">
+                    <div class="accessibility-title">Barrierefreiheit:</div>
+                    <div class="accessibility-features">
+                        ${course.accessibility.subtitles ? '<span class="accessibility-feature">📝 Untertitel</span>' : ''}
+                        ${course.accessibility.transcripts ? '<span class="accessibility-feature">📄 Transkripte</span>' : ''}
+                        ${course.accessibility.screenReader ? '<span class="accessibility-feature">🔊 Screen Reader</span>' : ''}
+                        ${course.accessibility.highContrast ? '<span class="accessibility-feature">🎨 Hoher Kontrast</span>' : ''}
+                        ${course.accessibility.interactiveLabs ? '<span class="accessibility-feature">🧪 Interaktive Labs</span>' : ''}
+                        ${course.accessibility.rxOnlyMode ? '<span class="accessibility-feature">📡 RX-Only Modus</span>' : ''}
+                    </div>
+                </div>
+
+                <div class="course-actions">
+                    ${course.completed ? 
+                        '<button class="btn btn-primary" disabled>✅ Abgeschlossen</button>' :
+                        course.enrolled ?
+                            '<button class="btn btn-primary" onclick="continueCourse(\'' + course.id + '\')">📖 Fortfahren</button>' :
+                            canEnroll ?
+                                '<button class="btn btn-primary" onclick="enrollCourse(\'' + course.id + '\')">📝 Anmelden</button>' :
+                                '<button class="btn btn-secondary" disabled>🔒 Voraussetzungen fehlen</button>'
+                    }
+                    <button class="btn btn-secondary" onclick="viewCourseDetails('${course.id}')">ℹ️ Details</button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Prüfen ob Benutzer sich anmelden kann
+        function canUserEnroll(course) {
+            // Prüfe Voraussetzungen
+            if (course.prerequisites.length > 0) {
+                const completedPrereqs = courses.filter(c => 
+                    course.prerequisites.includes(c.id) && c.completed
+                );
+                return completedPrereqs.length === course.prerequisites.length;
+            }
+            
+            // Profil C kann nur Anfänger-Kurse belegen
+            if (userProfile === 'C' && course.level !== 'beginner') {
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Kurs-Filter
+        function filterCourses() {
+            const levelFilter = document.getElementById('level-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const languageFilter = document.getElementById('language-filter').value;
+
+            const cards = document.querySelectorAll('.course-card');
+            
+            cards.forEach(card => {
+                const courseId = card.id.replace('course-', '');
+                const course = courses.find(c => c.id === courseId);
+                
+                let show = true;
+                
+                // Level-Filter
+                if (levelFilter !== 'all' && course.level !== levelFilter) {
+                    show = false;
+                }
+                
+                // Status-Filter
+                if (statusFilter !== 'all') {
+                    if (statusFilter === 'available' && (course.enrolled || course.completed)) {
+                        show = false;
+                    } else if (statusFilter === 'enrolled' && !course.enrolled) {
+                        show = false;
+                    } else if (statusFilter === 'completed' && !course.completed) {
+                        show = false;
+                    }
+                }
+                
+                // Sprache-Filter
+                if (languageFilter !== 'all' && !course.languages.includes(languageFilter)) {
+                    show = false;
+                }
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // Kurs anmelden
+        function enrollCourse(courseId) {
+            const course = courses.find(c => c.id === courseId);
+            if (course) {
+                course.enrolled = true;
+                course.progress = 0;
+                
+                loadCourses();
+                updateStats();
+                showNotification('Erfolgreich für Kurs angemeldet!', 'success');
+            }
+        }
+
+        // Kurs fortsetzen
+        function continueCourse(courseId) {
+            showNotification('Kurs wird geöffnet...', 'success');
+            // Hier würde der Kurs geöffnet werden
+        }
+
+        // Kurs-Details anzeigen
+        function viewCourseDetails(courseId) {
+            showNotification('Kurs-Details werden geladen...', 'success');
+            // Hier würden die Details geöffnet werden
+        }
+
+        // Statistiken aktualisieren
+        function updateStats() {
+            const enrolled = courses.filter(c => c.enrolled).length;
+            const completed = courses.filter(c => c.completed).length;
+            
+            document.getElementById('enrolled-courses').textContent = enrolled;
+            document.getElementById('completed-courses').textContent = completed;
+        }
+
+        // Barrierefreiheit
+        function toggleAccessibility() {
+            const options = document.getElementById('accessibility-options');
+            options.classList.toggle('active');
+        }
+
+        function toggleHighContrast() {
+            const enabled = document.getElementById('high-contrast').checked;
+            document.body.classList.toggle('high-contrast', enabled);
+            localStorage.setItem('highContrast', enabled);
+            showNotification(enabled ? 'Hoher Kontrast aktiviert' : 'Hoher Kontrast deaktiviert', 'success');
+        }
+
+        function toggleLargeFont() {
+            const enabled = document.getElementById('large-font').checked;
+            document.body.classList.toggle('large-font', enabled);
+            localStorage.setItem('largeFont', enabled);
+            showNotification(enabled ? 'Große Schrift aktiviert' : 'Große Schrift deaktiviert', 'success');
+        }
+
+        function toggleSubtitles() {
+            const enabled = document.getElementById('subtitles').checked;
+            localStorage.setItem('subtitles', enabled);
+            showNotification(enabled ? 'Untertitel aktiviert' : 'Untertitel deaktiviert', 'success');
+        }
+
+        function toggleScreenReader() {
+            const enabled = document.getElementById('screen-reader').checked;
+            localStorage.setItem('screenReader', enabled);
+            showNotification(enabled ? 'Screen Reader Modus aktiviert' : 'Screen Reader Modus deaktiviert', 'success');
+        }
+
+        // Gespeicherte Barrierefreiheits-Einstellungen anwenden
+        function applySavedAccessibilitySettings() {
+            const highContrast = localStorage.getItem('highContrast') === 'true';
+            const largeFont = localStorage.getItem('largeFont') === 'true';
+            
+            if (highContrast) {
+                document.getElementById('high-contrast').checked = true;
+                document.body.classList.add('high-contrast');
+            }
+            
+            if (largeFont) {
+                document.getElementById('large-font').checked = true;
+                document.body.classList.add('large-font');
+            }
+        }
+
+        // Benachrichtigung anzeigen
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const messageElement = document.getElementById('notification-message');
+            
+            messageElement.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Abmelden
+        function logout() {
+            if (confirm('Möchten Sie sich wirklich abmelden?')) {
+                showNotification('Sie werden abgemeldet...', 'success');
+                // Hier würde die Abmeldung durchgeführt werden
+            }
+        }
+
+        // Keyboard-Navigation
+        document.addEventListener('keydown', function(e) {
+            // Escape-Taste schließt Barrierefreiheits-Panel
+            if (e.key === 'Escape') {
+                document.getElementById('accessibility-options').classList.remove('active');
+            }
+            
+            // Alt + A öffnet Barrierefreiheits-Panel
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                toggleAccessibility();
+            }
+        });
+    </script>
+</body>
+</html>
