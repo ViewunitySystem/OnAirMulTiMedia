@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/space.alert.v1.schema.json",
+  "title": "Space Alert v1",
+  "description": "Space weather alerts and warnings",
+  "type": "object",
+  "required": ["provider", "issuedAt", "severity", "message", "alertId", "signature"],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "description": "Space weather provider identifier"
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when alert was issued"
+    },
+    "alertId": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]{2,}-[0-9]{8}-[A-Z0-9]{4}$",
+      "description": "Unique alert identifier"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["info", "watch", "warning", "critical"],
+      "description": "Alert severity level"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["solar_flare", "geomagnetic_storm", "radiation_storm", "radio_blackout", "cme", "solar_wind"],
+      "description": "Type of space weather event"
+    },
+    "message": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 1000,
+      "description": "Human-readable alert message"
+    },
+    "details": {
+      "type": "object",
+      "properties": {
+        "affectedRegion": {
+          "type": "string",
+          "description": "Geographic region affected"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expected start time of the event"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Expected end time of the event"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence level (0-1)"
+        },
+        "impact": {
+          "type": "object",
+          "properties": {
+            "satellites": {
+              "type": "string",
+              "enum": ["none", "minor", "moderate", "severe"],
+              "description": "Impact on satellites"
+            },
+            "aviation": {
+              "type": "string",
+              "enum": ["none", "minor", "moderate", "severe"],
+              "description": "Impact on aviation"
+            },
+            "powerGrids": {
+              "type": "string",
+              "enum": ["none", "minor", "moderate", "severe"],
+              "description": "Impact on power grids"
+            },
+            "communications": {
+              "type": "string",
+              "enum": ["none", "minor", "moderate", "severe"],
+              "description": "Impact on communications"
+            }
+          },
+          "additionalProperties": false
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "kpIndex": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 9,
+              "description": "Kp index for geomagnetic activity"
+            },
+            "dstIndex": {
+              "type": "number",
+              "description": "Dst index for geomagnetic storm intensity"
+            },
+            "flux": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Particle flux measurements"
+            },
+            "xrayClass": {
+              "type": "string",
+              "pattern": "^[ABCX][0-9]\\.[0-9]$",
+              "description": "X-ray flare classification"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "required": ["alg", "value", "timestamp"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "enum": ["RS256", "ES256", "EdDSA"],
+          "description": "Signature algorithm"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/=]+$",
+          "description": "Base64-encoded signature"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the signature was created"
+        },
+        "keyId": {
+          "type": "string",
+          "description": "Identifier of the signing key"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schemas/weather.nowcast.v1.schema.json",
+  "title": "Weather Nowcast v1",
+  "description": "Real-time weather data with sub-minute freshness",
+  "type": "object",
+  "required": ["provider", "issuedAt", "region", "points", "signature"],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50,
+      "description": "Data provider identifier"
+    },
+    "issuedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp when data was issued"
+    },
+    "region": {
+      "type": "string",
+      "pattern": "^[a-z]{2}-[a-z]+(-[0-9]+)?$",
+      "description": "Region code (e.g., eu-central, us-east-1)"
+    },
+    "unitSystem": {
+      "type": "string",
+      "enum": ["SI"],
+      "default": "SI",
+      "description": "Unit system (SI only for consistency)"
+    },
+    "points": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10000,
+      "description": "Weather data points for the region",
+      "items": {
+        "type": "object",
+        "required": ["lat", "lon", "time", "tempC", "windMS", "precipMMph", "humidity", "pressure"],
+        "properties": {
+          "lat": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90,
+            "description": "Latitude in decimal degrees"
+          },
+          "lon": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180,
+            "description": "Longitude in decimal degrees"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "UTC timestamp for this data point"
+          },
+          "tempC": {
+            "type": "number",
+            "minimum": -100,
+            "maximum": 70,
+            "description": "Temperature in Celsius"
+          },
+          "windMS": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 150,
+            "description": "Wind speed in meters per second"
+          },
+          "precipMMph": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 500,
+            "description": "Precipitation in millimeters per hour"
+          },
+          "humidity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Relative humidity percentage"
+          },
+          "pressure": {
+            "type": "number",
+            "minimum": 800,
+            "maximum": 1200,
+            "description": "Atmospheric pressure in hectopascals"
+          },
+          "quality": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Data quality score (0-1)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "resolution": {
+          "type": "string",
+          "enum": ["1km", "5km", "10km"],
+          "description": "Spatial resolution of the data"
+        },
+        "forecastHours": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6,
+          "description": "Hours into the future this data represents"
+        },
+        "source": {
+          "type": "string",
+          "description": "Original data source (e.g., radar, satellite)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "required": ["alg", "value", "timestamp"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "enum": ["RS256", "ES256", "EdDSA"],
+          "description": "Signature algorithm"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9+/=]+$",
+          "description": "Base64-encoded signature"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the signature was created"
+        },
+        "keyId": {
+          "type": "string",
+          "description": "Identifier of the signing key"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

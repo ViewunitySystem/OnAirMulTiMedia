@@ -1,0 +1,138 @@
+{
+  "name": "live-data-platform",
+  "version": "1.0.0",
+  "description": "Real-time live data platform with weather, space, and geo data streaming",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && npm run build:schemas",
+    "build:schemas": "node scripts/build-schemas.js",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "lint": "eslint src/**/*.ts tests/**/*.ts --ext .ts",
+    "lint:fix": "eslint src/**/*.ts tests/**/*.ts --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write src/**/*.ts tests/**/*.ts",
+    "format:check": "prettier --check src/**/*.ts tests/**/*.ts",
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:contracts": "jest --testPathPattern=contracts",
+    "test:performance": "jest --testPathPattern=performance",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:services:start": "docker-compose -f docker-compose.test.yml up -d",
+    "test:services:wait": "node scripts/wait-for-services.js",
+    "test:services:stop": "docker-compose -f docker-compose.test.yml down",
+    "test:smoke:staging": "node scripts/smoke-tests.js --env=staging",
+    "test:smoke:production": "node scripts/smoke-tests.js --env=production",
+    "test:build": "node scripts/test-build.js",
+    "schema:validate": "node scripts/validate-schemas.js",
+    "schema:compatibility": "node scripts/schema-compatibility.js",
+    "security:check": "npm audit --audit-level=moderate",
+    "security:fix": "npm audit fix",
+    "deploy:staging": "node scripts/deploy.js --env=staging",
+    "deploy:production": "node scripts/deploy.js --env=production",
+    "notify:deployment": "node scripts/notify-deployment.js",
+    "clean": "rimraf dist coverage test-results",
+    "prepare": "husky install",
+    "precommit": "lint-staged"
+  },
+  "keywords": [
+    "live-data",
+    "real-time",
+    "weather",
+    "space-weather",
+    "streaming",
+    "api",
+    "typescript",
+    "nodejs"
+  ],
+  "author": "Live Data Platform Team",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5",
+    "helmet": "^8.0.0",
+    "express-rate-limit": "^7.4.1",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "node-fetch": "^3.3.2",
+    "ws": "^8.18.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.12",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/ws": "^8.5.12",
+    "@types/jest": "^29.5.12",
+    "@typescript-eslint/eslint-plugin": "^8.6.0",
+    "@typescript-eslint/parser": "^8.6.0",
+    "typescript": "^5.6.0",
+    "tsx": "^4.16.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.7",
+    "rimraf": "^5.0.10",
+    "codecov": "^3.8.3",
+    "docker-compose": "^0.24.6"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/tests"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.ts",
+      "**/?(*.)+(spec|test).ts"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.d.ts",
+      "!src/**/*.test.ts",
+      "!src/**/*.spec.ts"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/live-data-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/live-data-platform/issues"
+  },
+  "homepage": "https://github.com/your-org/live-data-platform#readme"
+}
