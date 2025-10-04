@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-10-04T19:02:05.494Z",
+  "timestamp": "2025-10-04T19:06:21.660Z",
   "version": "1.0.0",
   "scanType": "full-module-discovery",
   "stats": {
-    "total": 898,
+    "total": 899,
     "byType": {
       "special": 122,
       "program": 24,
@@ -12,7 +12,7 @@
       "doc": 169,
       "tool": 112,
       "resource": 6,
-      "app": 52
+      "app": 53
     },
     "byCategory": {
       "Advanced Analytics": 1,
@@ -73,7 +73,7 @@
       "Vite Config": 1,
       "Vitest Config": 1,
       "Vodafone Integration": 1,
-      "Web App": 52,
+      "Web App": 53,
       "WebTrit Phone": 1,
       "WebTrit Real": 1,
       "WebTrit Swipe": 1,
@@ -83,7 +83,7 @@
       "YAML Config": 5
     },
     "byStatus": {
-      "aktiv": 898
+      "aktiv": 899
     }
   },
   "modules": [
@@ -565,8 +565,8 @@
       "path": "docs\\audit-run.json",
       "type": "config",
       "category": "Configuration",
-      "size": 296354,
-      "modified": "2025-10-04T19:02:01.518Z",
+      "size": 296645,
+      "modified": "2025-10-04T19:06:17.740Z",
       "auditierbar": true,
       "zertifiziert": true,
       "status": "aktiv"
@@ -7859,7 +7859,7 @@
       "type": "special",
       "category": "Main Portal",
       "size": 21806,
-      "modified": "2025-10-04T19:02:01.645Z",
+      "modified": "2025-10-04T19:06:17.874Z",
       "auditierbar": true,
       "zertifiziert": true,
       "status": "aktiv"
@@ -9532,6 +9532,17 @@
       "category": "Web App",
       "size": 21764,
       "modified": "2025-10-03T08:33:06.470Z",
+      "auditierbar": true,
+      "zertifiziert": true,
+      "status": "aktiv"
+    },
+    {
+      "name": "investor-dashboard.html",
+      "path": "investor-dashboard.html",
+      "type": "app",
+      "category": "Web App",
+      "size": 19714,
+      "modified": "2025-10-04T19:01:34.281Z",
       "auditierbar": true,
       "zertifiziert": true,
       "status": "aktiv"
