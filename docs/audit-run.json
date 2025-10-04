@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-10-04T19:06:21.660Z",
+  "timestamp": "2025-10-04T19:19:22.031Z",
   "version": "1.0.0",
   "scanType": "full-module-discovery",
   "stats": {
-    "total": 899,
+    "total": 902,
     "byType": {
       "special": 122,
       "program": 24,
@@ -12,7 +12,7 @@
       "doc": 169,
       "tool": 112,
       "resource": 6,
-      "app": 53
+      "app": 56
     },
     "byCategory": {
       "Advanced Analytics": 1,
@@ -73,7 +73,7 @@
       "Vite Config": 1,
       "Vitest Config": 1,
       "Vodafone Integration": 1,
-      "Web App": 53,
+      "Web App": 56,
       "WebTrit Phone": 1,
       "WebTrit Real": 1,
       "WebTrit Swipe": 1,
@@ -83,7 +83,7 @@
       "YAML Config": 5
     },
     "byStatus": {
-      "aktiv": 899
+      "aktiv": 902
     }
   },
   "modules": [
@@ -565,8 +565,8 @@
       "path": "docs\\audit-run.json",
       "type": "config",
       "category": "Configuration",
-      "size": 296645,
-      "modified": "2025-10-04T19:06:17.740Z",
+      "size": 297474,
+      "modified": "2025-10-04T19:19:17.515Z",
       "auditierbar": true,
       "zertifiziert": true,
       "status": "aktiv"
@@ -7209,8 +7209,8 @@
       "path": "index.html",
       "type": "special",
       "category": "Homepage",
-      "size": 1788,
-      "modified": "2025-10-04T19:01:43.263Z",
+      "size": 1794,
+      "modified": "2025-10-04T19:15:36.970Z",
       "auditierbar": true,
       "zertifiziert": true,
       "status": "aktiv"
@@ -7859,7 +7859,7 @@
       "type": "special",
       "category": "Main Portal",
       "size": 21806,
-      "modified": "2025-10-04T19:06:17.874Z",
+      "modified": "2025-10-04T19:19:18.285Z",
       "auditierbar": true,
       "zertifiziert": true,
       "status": "aktiv"
@@ -9537,6 +9537,17 @@
       "status": "aktiv"
     },
     {
+      "name": "investor-charging.html",
+      "path": "investor-charging.html",
+      "type": "app",
+      "category": "Web App",
+      "size": 11121,
+      "modified": "2025-10-04T19:12:14.237Z",
+      "auditierbar": true,
+      "zertifiziert": true,
+      "status": "aktiv"
+    },
+    {
       "name": "investor-dashboard.html",
       "path": "investor-dashboard.html",
       "type": "app",
@@ -9752,6 +9763,28 @@
       "category": "Web App",
       "size": 12649,
       "modified": "2025-10-03T18:40:10.369Z",
+      "auditierbar": true,
+      "zertifiziert": true,
+      "status": "aktiv"
+    },
+    {
+      "name": "test-nav.html",
+      "path": "test-nav.html",
+      "type": "app",
+      "category": "Web App",
+      "size": 30,
+      "modified": "2025-10-04T19:17:13.628Z",
+      "auditierbar": true,
+      "zertifiziert": true,
+      "status": "aktiv"
+    },
+    {
+      "name": "test-pages.html",
+      "path": "test-pages.html",
+      "type": "app",
+      "category": "Web App",
+      "size": 19,
+      "modified": "2025-10-04T19:07:19.812Z",
       "auditierbar": true,
       "zertifiziert": true,
       "status": "aktiv"
