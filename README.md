@@ -2,6 +2,9 @@
 
 **Universal Software-Defined Radio (SDR) Platform with Audit-Trail & Regulatory Compliance**
 
+[![CI](https://img.shields.io/github/actions/workflow/status/ViewunitySystem/OnAirMulTiMedia/ci.yml?branch=mainzero)](../../actions)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/ViewunitySystem/OnAirMulTiMedia/codeql.yml?branch=mainzero&label=CodeQL)](../../actions)
+[![Pages](https://img.shields.io/github/deployments/ViewunitySystem/OnAirMulTiMedia/github-pages?label=Pages)](../../deployments)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Release](https://img.shields.io/github/v/release/ViewunitySystem/OnAirMulTiMedia?include_prereleases)](https://github.com/ViewunitySystem/OnAirMulTiMedia/releases)
 [![GitHub Stars](https://img.shields.io/github/stars/ViewunitySystem/OnAirMulTiMedia?style=social)](https://github.com/ViewunitySystem/OnAirMulTiMedia/stargazers)

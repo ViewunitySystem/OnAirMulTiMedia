@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "rangeStrategy": "bump",
+  "labels": ["dependencies"],
+  "packageRules": [
+    { "matchManagers": ["npm"], "prPriority": 1 },
+    { "matchManagers": ["cargo"], "prPriority": 1 }
+  ]
+}

@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: npm
+    directory: "/webui"
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: cargo
+    directory: "/core"
+    schedule:
+      interval: weekly

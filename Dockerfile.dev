@@ -1,0 +1,4 @@
+FROM mcr.microsoft.com/devcontainers/javascript-node:20
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+WORKDIR /workspace

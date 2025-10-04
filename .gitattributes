@@ -1,0 +1,15 @@
+*.exe binary
+*.dll binary
+*.so  binary
+*.dylib binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.zip binary
+*.7z binary
+*.tar.gz binary
+
+docs/** linguist-documentation
+*.md linguist-documentation

@@ -1,0 +1,25 @@
+name: release-please
+
+on:
+  push:
+    branches: [ mainzero ]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: simple
+          package-name: OnAirMulTiMedia
+          changelog-types: |
+            [
+              {"type":"feat","section":"Features","hidden":false},
+              {"type":"fix","section":"Bug Fixes","hidden":false},
+              {"type":"perf","section":"Performance","hidden":false},
+              {"type":"refactor","section":"Refactoring","hidden":false},
+              {"type":"docs","section":"Docs","hidden":false},
+              {"type":"test","section":"Tests","hidden":true},
+              {"type":"chore","section":"Chores","hidden":true}
+            ]

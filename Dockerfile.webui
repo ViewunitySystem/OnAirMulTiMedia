@@ -1,0 +1,13 @@
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY webui/package*.json webui/pnpm-lock.yaml* webui/
+RUN apk add --no-cache libc6-compat && corepack enable && corepack prepare pnpm@latest --activate || true
+WORKDIR /app/webui
+RUN pnpm i --frozen-lockfile || npm ci || true
+COPY webui/ .
+RUN pnpm build || npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/webui/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx","-g","daemon off;"]
