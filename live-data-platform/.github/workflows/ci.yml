@@ -274,16 +274,28 @@ jobs:
         with:
           name: build-artifacts
           
+      - name: Set environment variables
+        run: |
+          echo "STAGING_URL=${{ secrets.STAGING_URL }}" >> $GITHUB_ENV
+          echo "STAGING_TOKEN=${{ secrets.STAGING_TOKEN }}" >> $GITHUB_ENV
+          
+      - name: Validate staging secrets
+        run: |
+          if [ -z "$STAGING_URL" ]; then
+            echo "Error: STAGING_URL secret is not set"
+            exit 1
+          fi
+          if [ -z "$STAGING_TOKEN" ]; then
+            echo "Error: STAGING_TOKEN secret is not set"
+            exit 1
+          fi
+          echo "Staging secrets validated successfully"
+          
       - name: Deploy to staging
         run: npm run deploy:staging
-        env:
-          STAGING_URL: ${{ secrets.STAGING_URL }}
-          STAGING_TOKEN: ${{ secrets.STAGING_TOKEN }}
           
       - name: Run smoke tests
         run: npm run test:smoke:staging
-        env:
-          STAGING_URL: ${{ secrets.STAGING_URL }}
 
   deploy-production:
     name: Deploy to Production
@@ -307,21 +319,32 @@ jobs:
         with:
           name: build-artifacts
           
+      - name: Set environment variables
+        run: |
+          echo "PRODUCTION_URL=${{ secrets.PRODUCTION_URL }}" >> $GITHUB_ENV
+          echo "PRODUCTION_TOKEN=${{ secrets.PRODUCTION_TOKEN }}" >> $GITHUB_ENV
+          echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}" >> $GITHUB_ENV
+          
+      - name: Validate production secrets
+        run: |
+          if [ -z "$PRODUCTION_URL" ]; then
+            echo "Error: PRODUCTION_URL secret is not set"
+            exit 1
+          fi
+          if [ -z "$PRODUCTION_TOKEN" ]; then
+            echo "Error: PRODUCTION_TOKEN secret is not set"
+            exit 1
+          fi
+          echo "Production secrets validated successfully"
+          
       - name: Deploy to production
         run: npm run deploy:production
-        env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
-          PRODUCTION_TOKEN: ${{ secrets.PRODUCTION_TOKEN }}
           
       - name: Run smoke tests
         run: npm run test:smoke:production
-        env:
-          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
           
       - name: Notify deployment
         run: npm run notify:deployment
-        env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
   cleanup:
     name: Cleanup

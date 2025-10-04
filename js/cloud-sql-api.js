@@ -5,8 +5,8 @@
 
 class CloudSQLAPI {
   constructor() {
-    // Fallback URLs - werden später durch Vercel URLs ersetzt
-    this.baseURL = 'https://your-vercel-app.vercel.app';
+    // Lokale API URLs für Entwicklung
+    this.baseURL = 'http://localhost:3001';
     this.endpoints = {
       auditEvents: '/api/audit-events',
       healthCheck: '/api/health-check',

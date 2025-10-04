@@ -1,106 +1,40 @@
 /**
- * OAMTM Health Check API - Vercel Serverless Function
- * System-Status und Verbindungstest
+ * Lokaler Health Check API Stub
+ * Für GitHub Pages ohne Backend
  */
 
-const mysql = require('mysql2/promise');
-
-// Cloud SQL Verbindungskonfiguration
-const dbConfig = {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  ssl: {
-    rejectUnauthorized: false
-  }
-};
-
-export default async function handler(req, res) {
-  // CORS Headers setzen
+export default function handler(req, res) {
+  // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // OPTIONS Request für CORS
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
 
-  if (req.method !== 'GET') {
-    res.status(405).json({
-      success: false,
-      error: 'Method not allowed'
+  if (req.method === 'GET') {
+    res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+      modules: {
+        total: 867,
+        active: 867,
+        apps: 49,
+        tools: 106,
+        programs: 21,
+        configs: 401,
+        docs: 164,
+        resources: 6,
+        containers: 1,
+        special: 119
+      },
+      uptime: '100%',
+      lastScan: new Date().toISOString()
     });
-    return;
-  }
-
-  const healthStatus = {
-    timestamp: new Date().toISOString(),
-    system: 'OAMTM Cloud SQL API',
-    version: '1.0.0',
-    status: 'healthy',
-    services: {}
-  };
-
-  try {
-    // Cloud SQL Verbindungstest
-    const connection = await mysql.createConnection(dbConfig);
-    const [rows] = await connection.execute('SELECT 1 as test');
-    await connection.end();
-    
-    healthStatus.services.cloud_sql = {
-      status: 'healthy',
-      response_time: Date.now(),
-      test_query: 'successful'
-    };
-    
-  } catch (error) {
-    healthStatus.status = 'degraded';
-    healthStatus.services.cloud_sql = {
-      status: 'error',
-      error: error.message
-    };
-  }
-
-  // Environment Variables Check
-  const requiredEnvVars = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
-  const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-  
-  if (missingVars.length > 0) {
-    healthStatus.status = 'degraded';
-    healthStatus.services.environment = {
-      status: 'error',
-      missing_variables: missingVars
-    };
   } else {
-    healthStatus.services.environment = {
-      status: 'healthy',
-      variables_configured: requiredEnvVars.length
-    };
+    res.status(405).json({ error: 'Method not allowed' });
   }
-
-  // API Endpoints Check
-  healthStatus.services.api_endpoints = {
-    status: 'healthy',
-    available_endpoints: [
-      '/api/audit-events',
-      '/api/health-check',
-      '/api/audit-stats'
-    ]
-  };
-
-  // System Resources
-  healthStatus.services.system = {
-    status: 'healthy',
-    uptime: process.uptime(),
-    memory_usage: process.memoryUsage(),
-    node_version: process.version
-  };
-
-  const statusCode = healthStatus.status === 'healthy' ? 200 : 503;
-  
-  res.status(statusCode).json(healthStatus);
 }

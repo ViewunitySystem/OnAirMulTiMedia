@@ -1,0 +1,310 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "created": "2025-01-10T18:00:00Z",
+    "currency": "EUR",
+    "company": "OnAirMulTiMedia (OATMM)",
+    "founder": "Raymond Demitrio Dr. Tel (DD5BE)",
+    "description": "Live-Datenplattform & SDR-Lizenzsystem - Financial Model"
+  },
+  "assumptions": {
+    "baseYear": 2025,
+    "projectionYears": 5,
+    "discountRate": 0.12,
+    "inflationRate": 0.03,
+    "taxRate": 0.25,
+    "workingCapitalDays": 30,
+    "capex": {
+      "year1": 600000,
+      "year2": 480000,
+      "year3": 384000,
+      "year4": 307200,
+      "year5": 245760,
+      "depreciationYears": 3
+    },
+    "opex": {
+      "base": 1500000,
+      "growthRate": 0.25,
+      "personnel": {
+        "year1": 800000,
+        "year2": 1200000,
+        "year3": 1800000,
+        "year4": 2700000,
+        "year5": 4050000
+      },
+      "infrastructure": {
+        "year1": 200000,
+        "year2": 300000,
+        "year3": 450000,
+        "year4": 675000,
+        "year5": 1012500
+      },
+      "marketing": {
+        "year1": 300000,
+        "year2": 450000,
+        "year3": 675000,
+        "year4": 1012500,
+        "year5": 1518750
+      },
+      "operations": {
+        "year1": 200000,
+        "year2": 300000,
+        "year3": 450000,
+        "year4": 675000,
+        "year5": 1012500
+      }
+    }
+  },
+  "revenue": {
+    "year1": 900000,
+    "growthRate": 0.9,
+    "channels": [
+      {
+        "name": "SaaS Enterprise",
+        "arpu": 48000,
+        "startCustomers": 6,
+        "customerGrowth": 1.2,
+        "churnRate": 0.05,
+        "description": "Enterprise Live-Data Platform Subscriptions"
+      },
+      {
+        "name": "Data Subscriptions",
+        "arpu": 12000,
+        "startCustomers": 20,
+        "customerGrowth": 0.8,
+        "churnRate": 0.08,
+        "description": "API Access & Data Feeds"
+      },
+      {
+        "name": "Professional Services",
+        "arpu": 60000,
+        "startCustomers": 3,
+        "customerGrowth": 0.5,
+        "churnRate": 0.02,
+        "description": "Implementation & Consulting"
+      },
+      {
+        "name": "SDR License System",
+        "arpu": 2400,
+        "startCustomers": 50,
+        "customerGrowth": 1.5,
+        "churnRate": 0.03,
+        "description": "Amateurfunk License Management"
+      },
+      {
+        "name": "Training & Certification",
+        "arpu": 1800,
+        "startCustomers": 100,
+        "customerGrowth": 1.0,
+        "churnRate": 0.10,
+        "description": "Online Courses & Certifications"
+      }
+    ]
+  },
+  "financials": {
+    "year1": {
+      "revenue": 900000,
+      "costOfGoodsSold": 180000,
+      "grossProfit": 720000,
+      "grossMargin": 0.80,
+      "operatingExpenses": 1500000,
+      "ebitda": -780000,
+      "ebitdaMargin": -0.87,
+      "netIncome": -780000
+    },
+    "year2": {
+      "revenue": 1710000,
+      "costOfGoodsSold": 342000,
+      "grossProfit": 1368000,
+      "grossMargin": 0.80,
+      "operatingExpenses": 1875000,
+      "ebitda": -507000,
+      "ebitdaMargin": -0.30,
+      "netIncome": -507000
+    },
+    "year3": {
+      "revenue": 3249000,
+      "costOfGoodsSold": 649800,
+      "grossProfit": 2599200,
+      "grossMargin": 0.80,
+      "operatingExpenses": 2343750,
+      "ebitda": 255450,
+      "ebitdaMargin": 0.08,
+      "netIncome": 255450
+    },
+    "year4": {
+      "revenue": 6173100,
+      "costOfGoodsSold": 1234620,
+      "grossProfit": 4938480,
+      "grossMargin": 0.80,
+      "operatingExpenses": 2929687,
+      "ebitda": 2008793,
+      "ebitdaMargin": 0.33,
+      "netIncome": 2008793
+    },
+    "year5": {
+      "revenue": 11728890,
+      "costOfGoodsSold": 2345778,
+      "grossProfit": 9383112,
+      "grossMargin": 0.80,
+      "operatingExpenses": 3662109,
+      "ebitda": 5721003,
+      "ebitdaMargin": 0.49,
+      "netIncome": 5721003
+    }
+  },
+  "keyMetrics": {
+    "targets": {
+      "breakEvenYear": 3,
+      "ebitdaMarginYear5": 0.35,
+      "customerLifetimeValue": 150000,
+      "customerAcquisitionCost": 15000,
+      "netPromoterScore": 70,
+      "monthlyChurnRate": 0.02
+    },
+    "benchmarks": {
+      "industryEBITDAMargin": 0.25,
+      "saasGrossMargin": 0.80,
+      "enterpriseARR": 48000,
+      "dataSubscriptionARR": 12000,
+      "professionalServicesARR": 60000
+    }
+  },
+  "funding": {
+    "seriesA": {
+      "amount": 5000000,
+      "preMoneyValuation": 15000000,
+      "postMoneyValuation": 20000000,
+      "useOfFunds": {
+        "productDevelopment": 0.40,
+        "salesAndMarketing": 0.35,
+        "operations": 0.15,
+        "workingCapital": 0.10
+      },
+      "milestones": [
+        "Year 1: €900K ARR, 20 Enterprise Customers",
+        "Year 2: €1.7M ARR, 50 Enterprise Customers",
+        "Year 3: €3.2M ARR, Break-Even Achieved"
+      ]
+    },
+    "seriesB": {
+      "amount": 15000000,
+      "preMoneyValuation": 50000000,
+      "postMoneyValuation": 65000000,
+      "targetYear": 2027,
+      "milestones": [
+        "Year 4: €6.2M ARR, 100+ Enterprise Customers",
+        "Year 5: €11.7M ARR, International Expansion"
+      ]
+    }
+  },
+  "valuation": {
+    "dcf": {
+      "terminalGrowthRate": 0.03,
+      "wacc": 0.12,
+      "terminalValue": 85700000,
+      "presentValue": 48600000
+    },
+    "multiples": {
+      "revenueMultiple": 8.0,
+      "ebitdaMultiple": 25.0,
+      "comparableCompanies": [
+        {
+          "name": "DataDog",
+          "revenueMultiple": 12.0,
+          "ebitdaMultiple": 35.0
+        },
+        {
+          "name": "Snowflake",
+          "revenueMultiple": 15.0,
+          "ebitdaMultiple": 40.0
+        },
+        {
+          "name": "MongoDB",
+          "revenueMultiple": 10.0,
+          "ebitdaMultiple": 30.0
+        }
+      ]
+    }
+  },
+  "risks": {
+    "technical": {
+      "dataQuality": "Medium",
+      "scalability": "Medium",
+      "security": "Low",
+      "compliance": "Low"
+    },
+    "market": {
+      "competition": "Medium",
+      "adoption": "Medium",
+      "regulation": "Low",
+      "economic": "Medium"
+    },
+    "financial": {
+      "funding": "Medium",
+      "cashFlow": "Medium",
+      "customerConcentration": "Low",
+      "pricing": "Low"
+    }
+  },
+  "scenarios": {
+    "optimistic": {
+      "revenueMultiplier": 1.5,
+      "probability": 0.25,
+      "description": "Faster adoption, premium pricing"
+    },
+    "base": {
+      "revenueMultiplier": 1.0,
+      "probability": 0.50,
+      "description": "Expected market conditions"
+    },
+    "pessimistic": {
+      "revenueMultiplier": 0.6,
+      "probability": 0.25,
+      "description": "Slower adoption, price pressure"
+    }
+  },
+  "exitStrategy": {
+    "ipo": {
+      "targetYear": 2030,
+      "targetValuation": 500000000,
+      "requirements": [
+        "€50M+ ARR",
+        "30%+ EBITDA Margin",
+        "International Presence",
+        "Strong Governance"
+      ]
+    },
+    "strategicSale": {
+      "targetYear": 2029,
+      "targetValuation": 300000000,
+      "potentialAcquirers": [
+        "Microsoft (Azure Data Services)",
+        "Amazon (AWS Data Platform)",
+        "Google (Cloud Data Solutions)",
+        "Oracle (Enterprise Data)",
+        "IBM (Hybrid Cloud Data)"
+      ]
+    }
+  },
+  "governance": {
+    "boardComposition": {
+      "founder": 1,
+      "investor": 1,
+      "independent": 1,
+      "total": 3
+    },
+    "votingRights": {
+      "founder": 0.60,
+      "investor": 0.30,
+      "employee": 0.10
+    },
+    "protectiveProvisions": [
+      "Board Seats",
+      "Information Rights",
+      "Pro-Rata Rights",
+      "Anti-Dilution",
+      "Drag-Along Rights"
+    ]
+  }
+}

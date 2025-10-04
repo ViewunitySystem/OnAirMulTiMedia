@@ -7,7 +7,24 @@
     "dev": "vercel dev",
     "build": "echo 'Build completed'",
     "deploy": "vercel --prod",
-    "test": "echo 'Tests completed'"
+    "test": "echo 'Tests completed'",
+    "scan-modules": "node scripts/scan-all-modules.mjs",
+    "auto-detect": "node scripts/auto-module-detector.mjs",
+    "start-auto-detector": "node scripts/auto-module-detector.mjs",
+    "auto-audit": "node scripts/auto-audit-updater.mjs",
+    "start-auto-audit": "node scripts/auto-audit-updater.mjs",
+    "api-server": "node api-server.js",
+    "start-api": "node api-server.js",
+    "fix-console-errors": "node scripts/auto-console-error-fixer.mjs",
+    "auto-fix": "node scripts/auto-console-error-fixer.mjs",
+    "security": "npm audit && echo 'Security check completed'",
+    "security:ci": "npm audit --audit-level=high || echo '(non-blocking) audit warnings'",
+    "routes": "node scripts/gen-recovery-map.mjs && node scripts/scan-urls.mjs",
+    "heal": "node scripts/rule-recovery-bridge.mjs && node scripts/meta-reflector.mjs && node scripts/recursive-fix-engine.mjs",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "mysql2": "^3.6.5"

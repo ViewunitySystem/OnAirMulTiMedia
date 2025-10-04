@@ -95,6 +95,9 @@ jobs:
       - name: Build Application (if needed)
         run: |
           echo "📦 Static site - no build required"
+          echo "📁 Copying investor materials to deployment"
+          mkdir -p _public/investors
+          cp -r investors/* _public/investors/ 2>/dev/null || echo "Investor materials already copied"
           echo "✅ Ready for deployment"
 
       - name: GitHub Pages Deployment Check

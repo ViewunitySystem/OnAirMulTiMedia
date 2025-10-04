@@ -363,15 +363,20 @@ function createOfflineResponse(request) {
       window.location.reload();
     });
     
-    // Show connection status
-    function updateConnectionStatus() {
-      const status = navigator.onLine ? 'Online' : 'Offline';
-      document.querySelector('.status div:last-child').textContent = `Connection: ${status}`;
+    // Show connection status (only in main thread, not in service worker)
+    if (typeof document !== 'undefined') {
+      function updateConnectionStatus() {
+        const status = navigator.onLine ? 'Online' : 'Offline';
+        const statusElement = document.querySelector('.status div:last-child');
+        if (statusElement) {
+          statusElement.textContent = `Connection: ${status}`;
+        }
+      }
+      
+      window.addEventListener('online', updateConnectionStatus);
+      window.addEventListener('offline', updateConnectionStatus);
+      updateConnectionStatus();
     }
-    
-    window.addEventListener('online', updateConnectionStatus);
-    window.addEventListener('offline', updateConnectionStatus);
-    updateConnectionStatus();
   </script>
 </body>
 </html>`;

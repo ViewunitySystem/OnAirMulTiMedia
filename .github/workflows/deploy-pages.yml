@@ -36,6 +36,7 @@ jobs:
         run: |
           mkdir -p gh-pages-deploy
           cp -r hackathon-bridge/public/* gh-pages-deploy/
+          cp -r _public/* gh-pages-deploy/
           cp README.md gh-pages-deploy/
           echo "# OnAirMulTiMedia - Live Demo" > gh-pages-deploy/README.md
           echo "" >> gh-pages-deploy/README.md
@@ -48,6 +49,7 @@ jobs:
           echo "- [Blueprints](https://viewunitysystem.github.io/OnAirMulTiMedia/blueprints.html)" >> gh-pages-deploy/README.md
           echo "- [Manifest](https://viewunitysystem.github.io/OnAirMulTiMedia/manifest.html)" >> gh-pages-deploy/README.md
           echo "- [Regulatory](https://viewunitysystem.github.io/OnAirMulTiMedia/regulatory.html)" >> gh-pages-deploy/README.md
+          echo "- [Investor Dashboard](https://viewunitysystem.github.io/OnAirMulTiMedia/investors/investor-dashboard.html)" >> gh-pages-deploy/README.md
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
