@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OAMTM API Status Monitor - Live Monitoring</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <script src="./js/error-handler.js"></script>
+  <script src="./js/cloud-sql-api.js"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
+    header { background:#121a34; padding:16px; position:sticky; top:0; z-index:10; }
+    main { padding:16px; display:grid; gap:16px; max-width:1400px; margin:0 auto; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:16px; }
+    .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:16px; }
+    .big { font-size:28px; font-weight:700; }
+    .muted { opacity:.8; font-size:12px; }
+    .hero { display:flex; align-items:center; gap:12px; }
+    a { color:#93c5fd; text-decoration: none; }
+    a:hover { color: #bfdbfe; }
+    button { padding:8px 16px; border-radius:8px; border:1px solid #374151; background:#3b82f6; color:white; cursor:pointer; }
+    button:hover { opacity: 0.8; }
+    .status-online { color: #10b981; }
+    .status-offline { color: #ef4444; }
+    .status-loading { color: #f59e0b; }
+    .status-warning { color: #f59e0b; }
+    .metric { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #1f2a52; }
+    .metric:last-child { border-bottom:none; }
+    .metric-value { font-weight:600; color:#93c5fd; }
+    .alert { padding:12px; border-radius:8px; margin:8px 0; }
+    .alert-success { background:#065f46; border:1px solid #10b981; }
+    .alert-error { background:#7f1d1d; border:1px solid #ef4444; }
+    .alert-warning { background:#78350f; border:1px solid #f59e0b; }
+    .alert-info { background:#1e3a8a; border:1px solid #3b82f6; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    .status-indicator { width:12px; height:12px; border-radius:50%; display:inline-block; margin-right:8px; }
+    .indicator-online { background:#10b981; }
+    .indicator-offline { background:#ef4444; }
+    .indicator-loading { background:#f59e0b; animation: pulse 1s infinite; }
+    .indicator-warning { background:#f59e0b; }
+    .log-entry { padding:4px 8px; margin:2px 0; border-radius:4px; font-size:12px; }
+    .log-success { background:#065f46; }
+    .log-error { background:#7f1d1d; }
+    .log-warning { background:#78350f; }
+    .log-info { background:#1e3a8a; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div style="font-weight:800; font-size:20px;">📡 OAMTM API Status Monitor</div>
+      <div id="globalStatus" class="status-indicator indicator-loading"></div>
+      <a href="./info.html" style="margin-left:12px;">← Info</a>
+      <a href="./cloud-sql-dashboard.html" style="margin-left:12px;">🔥 Dashboard</a>
+      <a href="./test-api.html" style="margin-left:12px;">🧪 Test</a>
+    </div>
+    <div class="muted">Real-time API Monitoring • Auto-refresh: 10s • Last Update: <span id="lastUpdate">Never</span></div>
+  </header>
+
+  <main>
+    <!-- Global System Status -->
+    <section class="card">
+      <h3>🌐 Global System Status</h3>
+      <div id="globalSystemStatus" class="status-loading">Checking global status...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>🌐 GitHub Pages:</span>
+          <span id="githubStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>🔥 Cloud SQL API:</span>
+          <span id="cloudSqlStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>📊 Database:</span>
+          <span id="databaseStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>⚡ Response Time:</span>
+          <span id="responseTime" class="metric-value">-</span>
+        </div>
+      </div>
+      <button onclick="checkAllServices()" style="margin-top:12px;">🔄 Check All Services</button>
+    </section>
+
+    <!-- API Endpoints Status -->
+    <section class="card">
+      <h3>🔗 API Endpoints Status</h3>
+      <div id="endpointsStatus" class="status-loading">Checking endpoints...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>🏥 Health Check:</span>
+          <span id="healthEndpoint" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>📊 Audit Events:</span>
+          <span id="eventsEndpoint" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>📈 Statistics:</span>
+          <span id="statsEndpoint" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>🌐 CORS:</span>
+          <span id="corsStatus" class="status-loading">Checking...</span>
+        </div>
+      </div>
+      <button onclick="checkAllEndpoints()" style="margin-top:12px;">🔗 Test All Endpoints</button>
+    </section>
+
+    <!-- Performance Metrics -->
+    <section class="card">
+      <h3>⚡ Performance Metrics</h3>
+      <div id="performanceMetrics" class="status-loading">Loading metrics...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>📊 Uptime:</span>
+          <span id="uptime" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>🎯 Success Rate:</span>
+          <span id="successRate" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>⚡ Avg Response:</span>
+          <span id="avgResponse" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>📈 Total Requests:</span>
+          <span id="totalRequests" class="metric-value">-</span>
+        </div>
+      </div>
+      <button onclick="loadPerformanceMetrics()" style="margin-top:12px;">⚡ Load Metrics</button>
+    </section>
+
+    <!-- Error Monitoring -->
+    <section class="card">
+      <h3>🚨 Error Monitoring</h3>
+      <div id="errorMonitoring" class="status-loading">Monitoring errors...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>❌ Error Count:</span>
+          <span id="errorCount" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>⚠️ Warning Count:</span>
+          <span id="warningCount" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>🔧 Last Error:</span>
+          <span id="lastError" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>📊 Error Rate:</span>
+          <span id="errorRate" class="metric-value">-</span>
+        </div>
+      </div>
+      <button onclick="loadErrorMonitoring()" style="margin-top:12px;">🚨 Load Error Data</button>
+    </section>
+
+    <!-- Live Activity Log -->
+    <section class="card">
+      <h3>📋 Live Activity Log</h3>
+      <div id="activityLog" style="height:200px; overflow-y:auto; background:#0b1020; padding:12px; border-radius:8px; font-size:12px;">
+        <div class="log-entry log-info">📡 API Status Monitor initialized</div>
+      </div>
+      <button onclick="clearActivityLog()" style="margin-top:12px;">🗑️ Clear Log</button>
+      <button onclick="exportActivityLog()" style="margin-top:12px;">📤 Export Log</button>
+    </section>
+
+    <!-- Configuration -->
+    <section class="card">
+      <h3>⚙️ Configuration</h3>
+      <div class="grid">
+        <div class="metric">
+          <span>🔄 Auto Refresh:</span>
+          <span id="autoRefreshStatus" class="status-online">10s</span>
+        </div>
+        <div class="metric">
+          <span>📊 Monitoring Interval:</span>
+          <span id="monitoringInterval" class="metric-value">30s</span>
+        </div>
+        <div class="metric">
+          <span>🚨 Alert Threshold:</span>
+          <span id="alertThreshold" class="metric-value">95%</span>
+        </div>
+        <div class="metric">
+          <span>📈 Max Log Entries:</span>
+          <span id="maxLogEntries" class="metric-value">100</span>
+        </div>
+      </div>
+      <button onclick="toggleAutoRefresh()" style="margin-top:12px;">🔄 Toggle Auto Refresh</button>
+    </section>
+  </main>
+
+  <script>
+    // API Status Monitor
+    class APIStatusMonitor {
+      constructor() {
+        this.autoRefreshInterval = null;
+        this.monitoringInterval = null;
+        this.isAutoRefreshEnabled = true;
+        this.refreshInterval = 10000; // 10 seconds
+        this.monitoringIntervalTime = 30000; // 30 seconds
+        this.maxLogEntries = 100;
+        this.alertThreshold = 95;
+        this.requestCount = 0;
+        this.errorCount = 0;
+        this.warningCount = 0;
+        this.startTime = Date.now();
+        this.responseTimes = [];
+        
+        this.init();
+      }
+
+      async init() {
+        console.log('📡 API Status Monitor initialized');
+        this.log('info', '📡 API Status Monitor initialized');
+        await this.checkAllServices();
+        this.startAutoRefresh();
+        this.startMonitoring();
+      }
+
+      async checkAllServices() {
+        this.log('info', '🔄 Checking all services...');
+        
+        try {
+          // Check GitHub Pages
+          await this.checkGitHubPages();
+          
+          // Check Cloud SQL API
+          await this.checkCloudSQLAPI();
+          
+          // Check Database
+          await this.checkDatabase();
+          
+          // Check API Endpoints
+          await this.checkAllEndpoints();
+          
+          // Update global status
+          this.updateGlobalStatus();
+          
+          // Update last update time
+          document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+          
+        } catch (error) {
+          this.log('error', '❌ Service check failed: ' + error.message);
+        }
+      }
+
+      async checkGitHubPages() {
+        const statusDiv = document.getElementById('githubStatus');
+        
+        try {
+          const response = await fetch(window.location.href, { method: 'HEAD' });
+          if (response.ok) {
+            statusDiv.className = 'status-online';
+            statusDiv.textContent = '✅ Online';
+            this.log('success', '✅ GitHub Pages: Online');
+          } else {
+            throw new Error('HTTP ' + response.status);
+          }
+        } catch (error) {
+          statusDiv.className = 'status-offline';
+          statusDiv.textContent = '❌ Offline';
+          this.log('error', '❌ GitHub Pages: ' + error.message);
+        }
+      }
+
+      async checkCloudSQLAPI() {
+        const statusDiv = document.getElementById('cloudSqlStatus');
+        
+        try {
+          if (window.cloudSQLAPI) {
+            const startTime = Date.now();
+            const health = await window.cloudSQLAPI.healthCheck();
+            const responseTime = Date.now() - startTime;
+            
+            this.recordResponseTime(responseTime);
+            
+            if (health.status === 'healthy') {
+              statusDiv.className = 'status-online';
+              statusDiv.textContent = '✅ Healthy';
+              this.log('success', `✅ Cloud SQL API: Healthy (${responseTime}ms)`);
+            } else {
+              statusDiv.className = 'status-warning';
+              statusDiv.textContent = '⚠️ Issues';
+              this.log('warning', '⚠️ Cloud SQL API: ' + health.status);
+            }
+          } else {
+            throw new Error('API not loaded');
+          }
+        } catch (error) {
+          statusDiv.className = 'status-offline';
+          statusDiv.textContent = '❌ Failed';
+          this.log('error', '❌ Cloud SQL API: ' + error.message);
+        }
+      }
+
+      async checkDatabase() {
+        const statusDiv = document.getElementById('databaseStatus');
+        
+        try {
+          if (window.cloudSQLAPI) {
+            const startTime = Date.now();
+            const stats = await window.cloudSQLAPI.getAuditStats();
+            const responseTime = Date.now() - startTime;
+            
+            this.recordResponseTime(responseTime);
+            
+            if (stats.success !== false) {
+              statusDiv.className = 'status-online';
+              statusDiv.textContent = '✅ Connected';
+              this.log('success', `✅ Database: Connected (${responseTime}ms)`);
+            } else {
+              statusDiv.className = 'status-warning';
+              statusDiv.textContent = '⚠️ Issues';
+              this.log('warning', '⚠️ Database: ' + stats.error);
+            }
+          } else {
+            throw new Error('API not loaded');
+          }
+        } catch (error) {
+          statusDiv.className = 'status-offline';
+          statusDiv.textContent = '❌ Failed';
+          this.log('error', '❌ Database: ' + error.message);
+        }
+      }
+
+      async checkAllEndpoints() {
+        const endpoints = [
+          { id: 'healthEndpoint', name: 'Health Check', method: () => window.cloudSQLAPI.healthCheck() },
+          { id: 'eventsEndpoint', name: 'Audit Events', method: () => window.cloudSQLAPI.getAuditEvents(1) },
+          { id: 'statsEndpoint', name: 'Statistics', method: () => window.cloudSQLAPI.getAuditStats() }
+        ];
+
+        for (const endpoint of endpoints) {
+          await this.checkEndpoint(endpoint);
+        }
+
+        // Check CORS
+        await this.checkCORS();
+      }
+
+      async checkEndpoint(endpoint) {
+        const statusDiv = document.getElementById(endpoint.id);
+        
+        try {
+          if (window.cloudSQLAPI && endpoint.method) {
+            const startTime = Date.now();
+            const result = await endpoint.method();
+            const responseTime = Date.now() - startTime;
+            
+            this.recordResponseTime(responseTime);
+            this.requestCount++;
+            
+            if (result.success !== false) {
+              statusDiv.className = 'status-online';
+              statusDiv.textContent = '✅ OK';
+              this.log('success', `✅ ${endpoint.name}: OK (${responseTime}ms)`);
+            } else {
+              statusDiv.className = 'status-warning';
+              statusDiv.textContent = '⚠️ Issues';
+              this.warningCount++;
+              this.log('warning', `⚠️ ${endpoint.name}: ${result.error}`);
+            }
+          } else {
+            throw new Error('Method not available');
+          }
+        } catch (error) {
+          statusDiv.className = 'status-offline';
+          statusDiv.textContent = '❌ Failed';
+          this.errorCount++;
+          this.log('error', `❌ ${endpoint.name}: ${error.message}`);
+        }
+      }
+
+      async checkCORS() {
+        const statusDiv = document.getElementById('corsStatus');
+        
+        try {
+          // Test CORS by making a request to our own API
+          const response = await fetch(window.location.origin + '/api/health-check', {
+            method: 'OPTIONS'
+          });
+          
+          if (response.ok || response.status === 0) {
+            statusDiv.className = 'status-online';
+            statusDiv.textContent = '✅ Enabled';
+            this.log('success', '✅ CORS: Enabled');
+          } else {
+            statusDiv.className = 'status-warning';
+            statusDiv.textContent = '⚠️ Issues';
+            this.log('warning', '⚠️ CORS: Issues detected');
+          }
+        } catch (error) {
+          statusDiv.className = 'status-offline';
+          statusDiv.textContent = '❌ Failed';
+          this.log('error', '❌ CORS: ' + error.message);
+        }
+      }
+
+      updateGlobalStatus() {
+        const globalStatus = document.getElementById('globalStatus');
+        const globalSystemStatus = document.getElementById('globalSystemStatus');
+        
+        const onlineServices = document.querySelectorAll('.status-online').length;
+        const totalServices = document.querySelectorAll('[class*="status-"]').length;
+        const successRate = Math.round((onlineServices / totalServices) * 100);
+        
+        if (successRate >= this.alertThreshold) {
+          globalStatus.className = 'status-indicator indicator-online';
+          globalSystemStatus.className = 'alert alert-success';
+          globalSystemStatus.innerHTML = `✅ System Healthy<br>Success Rate: ${successRate}%`;
+        } else if (successRate >= 70) {
+          globalStatus.className = 'status-indicator indicator-warning';
+          globalSystemStatus.className = 'alert alert-warning';
+          globalSystemStatus.innerHTML = `⚠️ System Issues<br>Success Rate: ${successRate}%`;
+        } else {
+          globalStatus.className = 'status-indicator indicator-offline';
+          globalSystemStatus.className = 'alert alert-error';
+          globalSystemStatus.innerHTML = `❌ System Critical<br>Success Rate: ${successRate}%`;
+        }
+
+        // Update performance metrics
+        this.updatePerformanceMetrics();
+      }
+
+      updatePerformanceMetrics() {
+        const uptime = Math.floor((Date.now() - this.startTime) / 1000);
+        const successRate = this.requestCount > 0 ? Math.round(((this.requestCount - this.errorCount) / this.requestCount) * 100) : 100;
+        const avgResponse = this.responseTimes.length > 0 ? Math.round(this.responseTimes.reduce((a, b) => a + b, 0) / this.responseTimes.length) : 0;
+        const errorRate = this.requestCount > 0 ? Math.round((this.errorCount / this.requestCount) * 100) : 0;
+
+        document.getElementById('uptime').textContent = this.formatUptime(uptime);
+        document.getElementById('successRate').textContent = successRate + '%';
+        document.getElementById('avgResponse').textContent = avgResponse + 'ms';
+        document.getElementById('totalRequests').textContent = this.requestCount;
+        document.getElementById('errorCount').textContent = this.errorCount;
+        document.getElementById('warningCount').textContent = this.warningCount;
+        document.getElementById('errorRate').textContent = errorRate + '%';
+        document.getElementById('responseTime').textContent = avgResponse + 'ms';
+
+        if (this.responseTimes.length > 0) {
+          document.getElementById('lastError').textContent = this.errorCount > 0 ? 'Recent' : 'None';
+        }
+      }
+
+      recordResponseTime(responseTime) {
+        this.responseTimes.push(responseTime);
+        if (this.responseTimes.length > 50) {
+          this.responseTimes.shift(); // Keep only last 50 measurements
+        }
+      }
+
+      formatUptime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hours}h ${minutes}m ${secs}s`;
+      }
+
+      log(type, message) {
+        const logDiv = document.getElementById('activityLog');
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry log-${type}`;
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        
+        logDiv.appendChild(logEntry);
+        
+        // Keep only max log entries
+        while (logDiv.children.length > this.maxLogEntries) {
+          logDiv.removeChild(logDiv.firstChild);
+        }
+        
+        logDiv.scrollTop = logDiv.scrollHeight;
+      }
+
+      startAutoRefresh() {
+        if (this.autoRefreshInterval) {
+          clearInterval(this.autoRefreshInterval);
+        }
+        
+        this.autoRefreshInterval = setInterval(() => {
+          if (this.isAutoRefreshEnabled) {
+            this.checkAllServices();
+          }
+        }, this.refreshInterval);
+      }
+
+      startMonitoring() {
+        if (this.monitoringInterval) {
+          clearInterval(this.monitoringInterval);
+        }
+        
+        this.monitoringInterval = setInterval(() => {
+          this.checkAllServices();
+        }, this.monitoringIntervalTime);
+      }
+
+      toggleAutoRefresh() {
+        this.isAutoRefreshEnabled = !this.isAutoRefreshEnabled;
+        const statusDiv = document.getElementById('autoRefreshStatus');
+        
+        if (this.isAutoRefreshEnabled) {
+          statusDiv.className = 'status-online';
+          statusDiv.textContent = '10s';
+          this.startAutoRefresh();
+          this.log('info', '🔄 Auto refresh enabled');
+        } else {
+          statusDiv.className = 'status-offline';
+          statusDiv.textContent = 'Off';
+          if (this.autoRefreshInterval) {
+            clearInterval(this.autoRefreshInterval);
+          }
+          this.log('info', '🔄 Auto refresh disabled');
+        }
+      }
+
+      clearActivityLog() {
+        document.getElementById('activityLog').innerHTML = '';
+        this.log('info', '🗑️ Activity log cleared');
+      }
+
+      exportActivityLog() {
+        const logDiv = document.getElementById('activityLog');
+        const logs = Array.from(logDiv.children).map(entry => entry.textContent).join('\n');
+        const blob = new Blob([logs], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `api-status-log-${new Date().toISOString().split('T')[0]}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.log('info', '📤 Activity log exported');
+      }
+    }
+
+    // Global Functions
+    async function checkAllServices() {
+      await window.apiStatusMonitor.checkAllServices();
+    }
+
+    async function checkAllEndpoints() {
+      await window.apiStatusMonitor.checkAllEndpoints();
+    }
+
+    function loadPerformanceMetrics() {
+      window.apiStatusMonitor.updatePerformanceMetrics();
+      window.apiStatusMonitor.log('info', '⚡ Performance metrics loaded');
+    }
+
+    function loadErrorMonitoring() {
+      window.apiStatusMonitor.updatePerformanceMetrics();
+      window.apiStatusMonitor.log('info', '🚨 Error monitoring data loaded');
+    }
+
+    function toggleAutoRefresh() {
+      window.apiStatusMonitor.toggleAutoRefresh();
+    }
+
+    function clearActivityLog() {
+      window.apiStatusMonitor.clearActivityLog();
+    }
+
+    function exportActivityLog() {
+      window.apiStatusMonitor.exportActivityLog();
+    }
+
+    // Initialize Monitor
+    document.addEventListener('DOMContentLoaded', function() {
+      window.apiStatusMonitor = new APIStatusMonitor();
+    });
+  </script>
+</body>
+</html>
