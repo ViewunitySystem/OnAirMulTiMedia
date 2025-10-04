@@ -14,6 +14,7 @@ class VodafoneTelephonyIntegration {
     this.signalStrength = 0;
     this.isCallActive = false;
     this.currentCallStatus = 'idle';
+    this.isRealHardware = false;
     
     // Vodafone-spezifische Konfiguration
     this.vodafoneConfig = {
@@ -50,9 +51,45 @@ class VodafoneTelephonyIntegration {
   async detectVodafoneHardware() {
     console.log('🔍 Vodafone Hardware wird erkannt...');
     
-    // Prüfe auf Vodafone USB-Stick oder Modem
     try {
-      // Versuche COM-Port-Erkennung für Vodafone-Hardware
+      // ECHTE Hardware-Erkennung über Rust-Backend
+      const response = await fetch('/api/vodafone/hardware/status');
+      if (response.ok) {
+        const hardwareStatus = await response.json();
+        console.log('📡 Rust-Backend Hardware-Status:', hardwareStatus);
+        
+        if (hardwareStatus.connected && hardwareStatus.port) {
+          console.log(`✅ ECHTE Vodafone Hardware gefunden auf ${hardwareStatus.port}`);
+          this.vodafonePort = hardwareStatus.port;
+          this.isRealHardware = true;
+          return;
+        }
+      }
+      
+      // Fallback: Web Serial API für direkte Hardware-Verbindung
+      if ('serial' in navigator) {
+        console.log('📡 Web Serial API verfügbar - direkte Hardware-Verbindung möglich');
+        
+        try {
+          const ports = await navigator.serial.getPorts();
+          const vodafonePort = ports.find(port => 
+            port.getInfo().usbProductId && 
+            (port.getInfo().usbProductName?.toLowerCase().includes('vodafone') ||
+             port.getInfo().usbProductName?.toLowerCase().includes('huawei'))
+          );
+          
+          if (vodafonePort) {
+            console.log(`✅ Vodafone Hardware über Web Serial gefunden`);
+            this.vodafonePort = vodafonePort;
+            this.isRealHardware = true;
+            return;
+          }
+        } catch (error) {
+          console.warn('⚠️ Web Serial API Hardware-Erkennung fehlgeschlagen:', error);
+        }
+      }
+      
+      // Fallback: COM-Port-Enumeration
       const ports = await this.enumerateCOMPorts();
       const vodafonePort = ports.find(port => 
         port.description.toLowerCase().includes('vodafone') ||
@@ -63,29 +100,15 @@ class VodafoneTelephonyIntegration {
       if (vodafonePort) {
         console.log(`✅ Vodafone Hardware gefunden auf ${vodafonePort.path}`);
         this.vodafonePort = vodafonePort.path;
+        this.isRealHardware = true;
         return;
-      }
-      
-      // Fallback: Prüfe auf WebUSB-Vodafone-Geräte
-      if ('usb' in navigator) {
-        const devices = await navigator.usb.getDevices();
-        const vodafoneDevice = devices.find(device => 
-          device.productName?.toLowerCase().includes('vodafone') ||
-          device.productName?.toLowerCase().includes('huawei')
-        );
-        
-        if (vodafoneDevice) {
-          console.log(`✅ Vodafone USB-Gerät gefunden: ${vodafoneDevice.productName}`);
-          this.vodafoneDevice = vodafoneDevice;
-          return;
-        }
       }
       
       throw new Error('Keine Vodafone-Hardware erkannt');
       
     } catch (error) {
       console.warn('⚠️ Vodafone Hardware-Erkennung fehlgeschlagen:', error);
-      // Fallback: Simuliere Vodafone-Verbindung für Entwicklung
+      console.log('🔧 Fallback zu Simulation-Modus');
       this.setupSimulationMode();
     }
   }
@@ -94,11 +117,44 @@ class VodafoneTelephonyIntegration {
     console.log('📡 Vodafone SDR wird initialisiert...');
     
     try {
+      if (this.isRealHardware) {
+        // ECHTE Hardware-Initialisierung über Rust-Backend
+        console.log('🔧 ECHTE Hardware-Initialisierung über Rust-Backend');
+        
+        const response = await fetch('/api/vodafone/initialize', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            port: this.vodafonePort,
+            baudRate: 115200 
+          })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ ECHTE Vodafone SDR über Rust-Backend initialisiert:', result);
+          
+          this.vodafoneSDR = {
+            sendCommand: async (command) => {
+              return await this.sendATCommand(command);
+            },
+            isConnected: true,
+            port: result.port,
+            isRealHardware: true
+          };
+          
+          return;
+        } else {
+          throw new Error(`Rust-Backend Initialisierung fehlgeschlagen: ${response.status}`);
+        }
+      }
+      
+      // Fallback: Direkte Hardware-Verbindung
       if (this.vodafonePort) {
-        // Echte COM-Port-Verbindung
         this.vodafoneSDR = await this.connectToCOMPort(this.vodafonePort);
       } else if (this.vodafoneDevice) {
-        // Echte USB-Verbindung
         this.vodafoneSDR = await this.connectToUSBDevice(this.vodafoneDevice);
       } else {
         // Simulation für Entwicklung
@@ -313,7 +369,28 @@ class VodafoneTelephonyIntegration {
     }
     
     try {
-      // Echte AT-Command-Übertragung
+      // ECHTE AT-Command-Übertragung über Rust-Backend
+      if (this.isRealHardware) {
+        console.log(`📡 ECHTER AT-Command über Rust-Backend: ${command}`);
+        
+        const response = await fetch('/api/vodafone/at-command', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ command: command })
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log(`📡 ECHTE AT-Response: ${result.response}`);
+          return result.response;
+        } else {
+          throw new Error(`Rust-Backend AT-Command fehlgeschlagen: ${response.status}`);
+        }
+      }
+      
+      // Fallback: Direkte Hardware-Verbindung
       if (this.vodafoneSDR.sendCommand) {
         return await this.vodafoneSDR.sendCommand(command);
       } else {
@@ -377,6 +454,11 @@ class VodafoneTelephonyIntegration {
   
   createSimulatedVodafoneSDR() {
     console.log('🔧 Simulierte Vodafone SDR erstellt (für Entwicklung)');
+    console.log('⚠️ WARNUNG: Dies ist eine SIMULATION!');
+    console.log('⚠️ Für echte Telefonie benötigst du:');
+    console.log('⚠️ 1. Web Serial API-fähigen Browser (Chrome/Edge)');
+    console.log('⚠️ 2. Echte Huawei Vodafone Hardware');
+    console.log('⚠️ 3. Berechtigung für COM-Port-Zugriff');
     
     return {
       sendCommand: async (command) => {
@@ -385,7 +467,8 @@ class VodafoneTelephonyIntegration {
         return this.simulateATResponse(command);
       },
       isConnected: true,
-      port: 'SIMULATION'
+      port: 'SIMULATION',
+      isSimulation: true
     };
   }
   
@@ -406,8 +489,50 @@ class VodafoneTelephonyIntegration {
   
   async connectToCOMPort(port) {
     console.log(`🔌 Verbindung zu COM-Port: ${port}`);
-    // Echte COM-Port-Verbindung würde hier implementiert
-    return this.createSimulatedVodafoneSDR();
+    
+    try {
+      // ECHTE COM-Port-Verbindung über Web Serial API
+      if ('serial' in navigator) {
+        console.log('📡 Web Serial API verfügbar - echte COM-Port-Verbindung');
+        
+        const serialPort = await navigator.serial.requestPort();
+        await serialPort.open({ baudRate: 115200 });
+        
+        const writer = serialPort.writable.getWriter();
+        const reader = serialPort.readable.getReader();
+        
+        return {
+          sendCommand: async (command) => {
+            console.log(`📡 ECHTER AT-Command: ${command}`);
+            
+            // Command senden
+            const data = new TextEncoder().encode(command + '\r\n');
+            await writer.write(data);
+            
+            // Response lesen
+            const { value, done } = await reader.read();
+            const response = new TextDecoder().decode(value);
+            
+            console.log(`📡 ECHTE AT-Response: ${response}`);
+            return response.trim();
+          },
+          disconnect: async () => {
+            await writer.close();
+            await reader.cancel();
+            await serialPort.close();
+          },
+          isConnected: true,
+          port: serialPort
+        };
+      } else {
+        console.log('⚠️ Web Serial API nicht verfügbar - Simulation verwenden');
+        return this.createSimulatedVodafoneSDR();
+      }
+    } catch (error) {
+      console.error('❌ COM-Port-Verbindung fehlgeschlagen:', error);
+      console.log('🔧 Fallback zu Simulation');
+      return this.createSimulatedVodafoneSDR();
+    }
   }
   
   async connectToUSBDevice(device) {
@@ -417,17 +542,32 @@ class VodafoneTelephonyIntegration {
   }
   
   monitorCallStatus() {
-    // Call-Status-Überwachung
-    setInterval(async () => {
+    // Call-Status-Überwachung - nur wenn Call aktiv ist
+    if (this.callStatusInterval) {
+      clearInterval(this.callStatusInterval);
+    }
+    
+    this.callStatusInterval = setInterval(async () => {
       try {
+        // Nur überwachen wenn Call aktiv ist
+        if (!this.isCallActive) {
+          clearInterval(this.callStatusInterval);
+          return;
+        }
+        
         const response = await this.sendATCommand('AT+CPAS');
         console.log('📞 Call-Status:', response);
         
         if (response.includes('+CPAS: 0')) {
+          this.isCallActive = false;
+          this.currentCallStatus = 'idle';
           this.updateCallStatus('idle');
+          clearInterval(this.callStatusInterval);
         } else if (response.includes('+CPAS: 2')) {
+          this.currentCallStatus = 'ringing';
           this.updateCallStatus('ringing');
         } else if (response.includes('+CPAS: 4')) {
+          this.currentCallStatus = 'connected';
           this.updateCallStatus('connected');
         }
         
@@ -479,6 +619,39 @@ class VodafoneTelephonyIntegration {
   
   isNetworkConnected() {
     return this.isConnected;
+  }
+  
+  isSimulationMode() {
+    return this.vodafoneSDR && this.vodafoneSDR.isSimulation;
+  }
+  
+  async enableRealHardware() {
+    console.log('🔧 Versuche echte Hardware zu aktivieren...');
+    
+    try {
+      if ('serial' in navigator) {
+        console.log('📡 Web Serial API verfügbar - echte Hardware möglich');
+        
+        // Benutzer um COM-Port-Auswahl bitten
+        const ports = await navigator.serial.getPorts();
+        console.log('Verfügbare Ports:', ports);
+        
+        if (ports.length > 0) {
+          console.log('✅ COM-Ports gefunden - echte Hardware verfügbar');
+          return true;
+        } else {
+          console.log('⚠️ Keine COM-Ports gefunden - Hardware nicht angeschlossen');
+          return false;
+        }
+      } else {
+        console.log('❌ Web Serial API nicht verfügbar - nur Simulation möglich');
+        console.log('💡 Verwende Chrome oder Edge für echte Hardware-Unterstützung');
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Hardware-Aktivierung fehlgeschlagen:', error);
+      return false;
+    }
   }
   
   async disconnect() {
