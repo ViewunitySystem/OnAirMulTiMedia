@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Backup System - OnAirMulTiMedia</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; frame-src 'self' blob:; base-uri 'self'">
+  <link rel="stylesheet" href="../assets/landing.css" />
+  <style>
+    .backup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+    .backup-card { background: #111827; border: 1px solid #1f2a52; border-radius: 12px; padding: 16px; }
+    .status-healthy { color: #10b981; }
+    .status-error { color: #ef4444; }
+    .status-warning { color: #f59e0b; }
+    .restore-btn { background: #dc2626; border-color: #dc2626; }
+    .restore-btn:hover { background: #b91c1c; }
+    .logs { max-height: 300px; overflow-y: auto; background: #0a0f1a; padding: 12px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>🔄 Backup System</h1>
+    <nav>
+      <a href="../index.html">← Zurück</a>
+      <a href="./backup-system.js">System Script</a>
+    </nav>
+  </header>
+
+  <main class="hero">
+    <section class="panel">
+      <h2>System Status</h2>
+      <div id="systemStatus" class="backup-grid">
+        <div class="backup-card">
+          <h3>Hauptsystem</h3>
+          <div id="primaryStatus">Prüfung läuft...</div>
+        </div>
+        <div class="backup-card">
+          <h3>Backup #1</h3>
+          <div id="backup1Status">Prüfung läuft...</div>
+        </div>
+        <div class="backup-card">
+          <h3>Backup #2</h3>
+          <div id="backup2Status">Prüfung läuft...</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Schnellaktionen</h2>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button id="checkHealth">🔄 Health Check</button>
+        <button id="restoreBackup1" class="restore-btn">🔄 Von Backup #1 wiederherstellen</button>
+        <button id="restoreBackup2" class="restore-btn">🔄 Von Backup #2 wiederherstellen</button>
+        <button id="exportLogs">📥 Backup-Logs exportieren</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Version History</h2>
+      <div id="versionHistory" class="logs">Lade Versionen...</div>
+    </section>
+
+    <section class="panel">
+      <h2>Backup Logs</h2>
+      <div id="backupLogs" class="logs">Lade Logs...</div>
+    </section>
+  </main>
+
+  <script src="./backup-system.js"></script>
+  <script>
+    // UI Controller
+    const statusElements = {
+      primary: document.getElementById('primaryStatus'),
+      backup1: document.getElementById('backup1Status'),
+      backup2: document.getElementById('backup2Status')
+    };
+
+    function updateStatusDisplay() {
+      if (!window.backupSystem) return;
+      
+      const health = window.backupSystem.status.health;
+      
+      // Primary Status
+      if (health.primary) {
+        const status = health.primary.status === 'healthy' ? 'healthy' : 'error';
+        statusElements.primary.innerHTML = `
+          <div class="status-${status}">✅ ${health.primary.url}</div>
+          <div>Response: ${health.primary.responseTime}ms</div>
+          <div>Letzte Prüfung: ${new Date(health.primary.lastCheck).toLocaleString()}</div>
+        `;
+      }
+
+      // Backup Status
+      if (health.backup_0) {
+        const status = health.backup_0.status === 'healthy' ? 'healthy' : 'error';
+        statusElements.backup1.innerHTML = `
+          <div class="status-${status}">${status === 'healthy' ? '✅' : '❌'} ${health.backup_0.url}</div>
+          <div>Response: ${health.backup_0.responseTime}ms</div>
+          <div>Letzte Prüfung: ${new Date(health.backup_0.lastCheck).toLocaleString()}</div>
+        `;
+      }
+
+      if (health.backup_1) {
+        const status = health.backup_1.status === 'healthy' ? 'healthy' : 'error';
+        statusElements.backup2.innerHTML = `
+          <div class="status-${status}">${status === 'healthy' ? '✅' : '❌'} ${health.backup_1.url}</div>
+          <div>Response: ${health.backup_1.responseTime}ms</div>
+          <div>Letzte Prüfung: ${new Date(health.backup_1.lastCheck).toLocaleString()}</div>
+        `;
+      }
+    }
+
+    function updateVersionHistory() {
+      if (!window.backupSystem) return;
+      
+      const versions = window.backupSystem.status.versions;
+      const container = document.getElementById('versionHistory');
+      
+      if (versions.length === 0) {
+        container.textContent = 'Keine Versionen verfügbar';
+        return;
+      }
+
+      container.innerHTML = versions.map(v => `
+        <div style="margin-bottom: 8px; padding: 8px; background: #1f2a52; border-radius: 4px;">
+          <strong>${v.timestamp}</strong><br>
+          Commit: ${v.commit || 'N/A'}<br>
+          Build: ${v.build || 'N/A'}<br>
+          Status: ${v.status}
+        </div>
+      `).join('');
+    }
+
+    function updateBackupLogs() {
+      try {
+        const logs = JSON.parse(localStorage.getItem('oamtm:backup:logs') || '[]');
+        const container = document.getElementById('backupLogs');
+        
+        if (logs.length === 0) {
+          container.textContent = 'Keine Logs verfügbar';
+          return;
+        }
+
+        container.innerHTML = logs.slice(0, 10).map(log => `
+          <div style="margin-bottom: 8px; padding: 8px; background: #1f2a52; border-radius: 4px;">
+            <strong>${log.timestamp}</strong><br>
+            Action: ${log.action}<br>
+            ${log.backupUrl ? `Backup: ${log.backupUrl}` : ''}
+          </div>
+        `).join('');
+      } catch (error) {
+        document.getElementById('backupLogs').textContent = 'Fehler beim Laden der Logs';
+      }
+    }
+
+    // Event Listeners
+    document.getElementById('checkHealth').addEventListener('click', async () => {
+      await window.backupSystem.checkHealth();
+      updateStatusDisplay();
+    });
+
+    document.getElementById('restoreBackup1').addEventListener('click', async () => {
+      if (confirm('Sicher, dass Sie von Backup #1 wiederherstellen möchten?')) {
+        try {
+          await window.backupSystem.restoreFromBackup(0);
+        } catch (error) {
+          alert('Wiederherstellung fehlgeschlagen: ' + error.message);
+        }
+      }
+    });
+
+    document.getElementById('restoreBackup2').addEventListener('click', async () => {
+      if (confirm('Sicher, dass Sie von Backup #2 wiederherstellen möchten?')) {
+        try {
+          await window.backupSystem.restoreFromBackup(1);
+        } catch (error) {
+          alert('Wiederherstellung fehlgeschlagen: ' + error.message);
+        }
+      }
+    });
+
+    document.getElementById('exportLogs').addEventListener('click', () => {
+      window.backupSystem.exportBackupLog();
+    });
+
+    // Auto-Update alle 10 Sekunden
+    setInterval(() => {
+      updateStatusDisplay();
+      updateVersionHistory();
+      updateBackupLogs();
+    }, 10000);
+
+    // Initial Update
+    setTimeout(() => {
+      updateStatusDisplay();
+      updateVersionHistory();
+      updateBackupLogs();
+    }, 2000);
+  </script>
+</body>
+</html>

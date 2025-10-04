@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -13,23 +13,13 @@
     .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:12px; }
     textarea, input, button { width:100%; padding:8px; border-radius:8px; border:1px solid #374151; background:#0b1020; color:#e5e7eb; }
     button { cursor:pointer; }
-    button:hover { opacity: 0.8; }
     table { width:100%; border-collapse: collapse; }
     th, td { border-bottom:1px solid #1f2a52; padding:6px; text-align:left; }
     .muted { opacity:.8; font-size:12px; }
     .ok { color:#10b981; }
     .bad { color:#ef4444; }
-    .status-loading { color: #f59e0b; }
-    .status-online { color: #10b981; }
-    .status-offline { color: #ef4444; }
     pre { white-space: pre-wrap; word-wrap: break-word; }
-    a { color:#93c5fd; cursor: pointer; text-decoration: none; }
-    a:hover { color: #bfdbfe; }
-    .module-item { background: #0b1020; padding: 8px; margin: 4px 0; border-radius: 6px; border: 1px solid #1f2a52; }
-    .module-item:hover { background: #1a2540; }
-    .checklist-item { margin: 8px 0; padding: 8px; background: #0b1020; border-radius: 6px; }
-    .checklist-item label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .checklist-item input[type="checkbox"] { margin: 0; }
+    a { color:#93c5fd; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -44,55 +34,13 @@
   <main>
     <section class="card">
       <h3>Module</h3>
-      <div class="muted">Verfügbare Module mit lokalen Daten (API-Simulation)</div>
-      <table id="mods">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Beschreibung</th>
-            <th>Status</th>
-            <th>Stand</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><a href="#" data-id="user-studio">user-studio</a></td>
-            <td>User Studio für Feature-Entwicklung</td>
-            <td><span class="ok">Aktiv</span></td>
-            <td>2025-10-03</td>
-          </tr>
-          <tr>
-            <td><a href="#" data-id="audit-manifest">audit-manifest</a></td>
-            <td>Audit Manifest System</td>
-            <td><span class="ok">Aktiv</span></td>
-            <td>2025-10-03</td>
-          </tr>
-          <tr>
-            <td><a href="#" data-id="cloudflare-worker">cloudflare-worker</a></td>
-            <td>Cloudflare Worker API</td>
-            <td><span class="ok">Aktiv</span></td>
-            <td>2025-10-03</td>
-          </tr>
-          <tr>
-            <td><a href="#" data-id="mobile-setup">mobile-setup</a></td>
-            <td>Mobile Setup (Capacitor)</td>
-            <td><span class="ok">Aktiv</span></td>
-            <td>2025-10-03</td>
-          </tr>
-          <tr>
-            <td><a href="#" data-id="desktop-electron">desktop-electron</a></td>
-            <td>Desktop Electron App</td>
-            <td><span class="ok">Aktiv</span></td>
-            <td>2025-10-03</td>
-          </tr>
-        </tbody>
-      </table>
+      <table id="mods"><thead><tr><th>ID</th><th>Beschreibung</th><th>Stand</th></tr></thead><tbody></tbody></table>
     </section>
 
     <section class="card">
       <h3>Blueprint registrieren</h3>
       <div class="muted">JSON per Schema einreichen. Beispiel: <a href="./blueprints/global_meeting_clock.json" target="_blank">GlobalMeetingClock</a></div>
-      <textarea id="bp" rows="12" placeholder='{"id": "example-module", "name": "Example Module", "description": "Ein Beispiel-Modul", "version": "1.0.0", "author": "Developer", "features": ["feature1", "feature2"]}'></textarea>
+      <textarea id="bp" rows="12"></textarea>
       <button id="reg">Registrieren</button>
       <div id="regMsg" class="muted"></div>
     </section>
@@ -104,252 +52,54 @@
     </section>
   </main>
 
+  <script src="../webtrit-swipe.js"></script>
   <script>
-    // Blueprints Manager mit lokalen Daten
-    class BlueprintsManager {
-      constructor() {
-        this.modules = new Map();
-        this.checklists = new Map();
-        this.init();
-      }
-
-      init() {
-        console.log('📋 Blueprints Manager initialisiert');
-        this.setupEventListeners();
-        this.loadDefaultModules();
-      }
-
-      setupEventListeners() {
-        // Module Click Handler
-        document.querySelectorAll('#mods tbody a').forEach(link => {
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const moduleId = link.getAttribute('data-id');
-            this.openChecklist(moduleId);
-          });
-        });
-
-        // Registration Handler
-        document.getElementById('reg').addEventListener('click', () => {
-          this.registerBlueprint();
-        });
-      }
-
-      loadDefaultModules() {
-        // Lade Standard-Module
-        const defaultModules = [
-          {
-            id: 'user-studio',
-            description: 'User Studio für Feature-Entwicklung',
-            status: 'Aktiv',
-            updated_at: '2025-10-03T10:00:00Z',
-            checklist: [
-              { id: 'us-1', item: 'User Interface funktional', status: true },
-              { id: 'us-2', item: 'AI Draft Generation implementiert', status: true },
-              { id: 'us-3', item: 'Preview-Funktion aktiv', status: true },
-              { id: 'us-4', item: 'Submit-Funktion getestet', status: true },
-              { id: 'us-5', item: 'Error Handling implementiert', status: true }
-            ]
-          },
-          {
-            id: 'audit-manifest',
-            description: 'Audit Manifest System',
-            status: 'Aktiv',
-            updated_at: '2025-10-03T10:00:00Z',
-            checklist: [
-              { id: 'am-1', item: 'Audit-Daten werden geladen', status: true },
-              { id: 'am-2', item: 'Module-Status wird angezeigt', status: true },
-              { id: 'am-3', item: 'Regulatory Checks funktional', status: true },
-              { id: 'am-4', item: 'Export-Funktionen aktiv', status: true },
-              { id: 'am-5', item: 'Live-Updates implementiert', status: true }
-            ]
-          },
-          {
-            id: 'cloudflare-worker',
-            description: 'Cloudflare Worker API',
-            status: 'Aktiv',
-            updated_at: '2025-10-03T10:00:00Z',
-            checklist: [
-              { id: 'cw-1', item: 'API-Endpunkte definiert', status: true },
-              { id: 'cw-2', item: 'GitHub Integration aktiv', status: true },
-              { id: 'cw-3', item: 'Error Handling implementiert', status: true },
-              { id: 'cw-4', item: 'Validation funktional', status: true },
-              { id: 'cw-5', item: 'Deployment bereit', status: false }
-            ]
-          },
-          {
-            id: 'mobile-setup',
-            description: 'Mobile Setup (Capacitor)',
-            status: 'Aktiv',
-            updated_at: '2025-10-03T10:00:00Z',
-            checklist: [
-              { id: 'ms-1', item: 'Capacitor konfiguriert', status: true },
-              { id: 'ms-2', item: 'Android Platform hinzugefügt', status: true },
-              { id: 'ms-3', item: 'iOS Platform hinzugefügt', status: true },
-              { id: 'ms-4', item: 'Build-Scripts definiert', status: true },
-              { id: 'ms-5', item: 'Testing durchgeführt', status: false }
-            ]
-          },
-          {
-            id: 'desktop-electron',
-            description: 'Desktop Electron App',
-            status: 'Aktiv',
-            updated_at: '2025-10-03T10:00:00Z',
-            checklist: [
-              { id: 'de-1', item: 'Electron konfiguriert', status: true },
-              { id: 'de-2', item: 'Main Process implementiert', status: true },
-              { id: 'de-3', item: 'Preload Script aktiv', status: true },
-              { id: 'de-4', item: 'Security Settings konfiguriert', status: true },
-              { id: 'de-5', item: 'Auto-Updater bereit', status: false }
-            ]
-          }
-        ];
-
-        defaultModules.forEach(module => {
-          this.modules.set(module.id, module);
-          this.checklists.set(module.id, module.checklist);
-        });
-      }
-
-      openChecklist(moduleId) {
-        const module = this.modules.get(moduleId);
-        if (!module) {
-          console.error(`Modul ${moduleId} nicht gefunden`);
-          return;
-        }
-
-        const checklist = this.checklists.get(moduleId) || [];
-        
-        document.getElementById('curMod').textContent = moduleId;
-        const itemsContainer = document.getElementById('items');
-        itemsContainer.innerHTML = '';
-
-        checklist.forEach(item => {
-          const itemDiv = document.createElement('div');
-          itemDiv.className = 'checklist-item';
-          
-          const label = document.createElement('label');
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.checked = item.status;
-          checkbox.setAttribute('data-id', item.id);
-          
-          const text = document.createElement('span');
-          text.textContent = item.item;
-          
-          label.appendChild(checkbox);
-          label.appendChild(text);
-          itemDiv.appendChild(label);
-          
-          // Checkbox Change Handler
-          checkbox.addEventListener('change', () => {
-            this.updateChecklistItem(moduleId, item.id, checkbox.checked);
-          });
-          
-          itemsContainer.appendChild(itemDiv);
-        });
-
-        document.getElementById('checklistSec').style.display = 'block';
-      }
-
-      updateChecklistItem(moduleId, itemId, status) {
-        const checklist = this.checklists.get(moduleId);
-        if (checklist) {
-          const item = checklist.find(i => i.id === itemId);
-          if (item) {
-            item.status = status;
-            console.log(`✅ Checklist Item ${itemId} für ${moduleId}: ${status ? 'Aktiviert' : 'Deaktiviert'}`);
-            
-            // Update UI
-            const checkbox = document.querySelector(`input[data-id="${itemId}"]`);
-            if (checkbox) {
-              checkbox.checked = status;
-            }
-          }
-        }
-      }
-
-      async registerBlueprint() {
-        const textarea = document.getElementById('bp');
-        const messageDiv = document.getElementById('regMsg');
-        
-        try {
-          const json = JSON.parse(textarea.value);
-          
-          // Validiere JSON-Struktur
-          if (!json.id || !json.name) {
-            throw new Error('ID und Name sind erforderlich');
-          }
-          
-          // Simuliere Registration
-          const newModule = {
-            id: json.id,
-            description: json.description || json.name,
-            status: 'Registriert',
-            updated_at: new Date().toISOString(),
-            checklist: [
-              { id: `${json.id}-1`, item: 'Modul initialisiert', status: true },
-              { id: `${json.id}-2`, item: 'Konfiguration geprüft', status: false },
-              { id: `${json.id}-3`, item: 'Tests durchgeführt', status: false },
-              { id: `${json.id}-4`, item: 'Dokumentation erstellt', status: false },
-              { id: `${json.id}-5`, item: 'Deployment bereit', status: false }
-            ]
-          };
-          
-          this.modules.set(json.id, newModule);
-          this.checklists.set(json.id, newModule.checklist);
-          
-          messageDiv.textContent = `✅ Modul "${json.id}" erfolgreich registriert!`;
-          messageDiv.className = 'muted status-online';
-          
-          // Leere Textarea
-          textarea.value = '';
-          
-          // Update Module Table
-          this.updateModuleTable();
-          
-        } catch (error) {
-          messageDiv.textContent = `❌ Fehler: ${error.message}`;
-          messageDiv.className = 'muted status-offline';
-        }
-      }
-
-      updateModuleTable() {
-        const tbody = document.querySelector('#mods tbody');
-        tbody.innerHTML = '';
-        
-        this.modules.forEach(module => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td><a href="#" data-id="${module.id}">${module.id}</a></td>
-            <td>${module.description}</td>
-            <td><span class="${module.status === 'Aktiv' ? 'ok' : 'bad'}">${module.status}</span></td>
-            <td>${new Date(module.updated_at).toLocaleDateString('de-DE')}</td>
-          `;
-          
-          // Add click handler
-          const link = row.querySelector('a');
-          link.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.openChecklist(module.id);
-          });
-          
-          tbody.appendChild(row);
-        });
-      }
-    }
-
-    // Auto-Start
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => {
-        window.blueprintsManager = new BlueprintsManager();
+    async function loadMods(){
+      const r = await fetch('/api/modules'); if (!r.ok) return;
+      const rows = await r.json();
+      const tb = document.querySelector('#mods tbody'); tb.innerHTML='';
+      rows.forEach(m=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><a href="#" data-id="${m.id}">${m.id}</a></td><td>${m.description||''}</td><td>${new Date(m.updated_at||m.created_at).toLocaleString()}</td>`;
+        tb.appendChild(tr);
       });
-    } else {
-      window.blueprintsManager = new BlueprintsManager();
+      tb.querySelectorAll('a').forEach(a=> a.onclick = (e)=> { e.preventDefault(); openChecklist(a.getAttribute('data-id')); } );
     }
+
+    async function openChecklist(id){
+      const r = await fetch(`/api/modules/${id}/checklist`); if (!r.ok) return;
+      const list = await r.json();
+      document.getElementById('curMod').textContent = id;
+      const items = document.getElementById('items'); items.innerHTML='';
+      list.forEach(c=>{
+        const div = document.createElement('div');
+        div.style.marginBottom = '8px';
+        div.innerHTML = `<label><input type="checkbox" ${c.status? 'checked':''} data-id="${c.id}"> ${c.item}</label>`;
+        const cb = div.querySelector('input');
+        cb.onchange = async ()=>{
+          await fetch(`/api/modules/${id}/checklist`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id: c.id, status: cb.checked?1:0 }) });
+        };
+        items.appendChild(div);
+      });
+      document.getElementById('checklistSec').style.display='block';
+    }
+
+    document.getElementById('reg').onclick = async ()=>{
+      const txt = document.getElementById('bp').value;
+      try {
+        const json = JSON.parse(txt);
+        const r = await fetch('/api/modules/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(json) });
+        const out = document.getElementById('regMsg');
+        if (r.ok){ out.textContent = 'Registriert.'; loadMods(); }
+        else { const j = await r.json().catch(()=>({})); out.textContent = 'Fehler: '+(j.error||''); }
+      } catch(e){ document.getElementById('regMsg').textContent = 'Ungültiges JSON'; }
+    };
+
+    loadMods();
   </script>
   
   <!-- ECHTE API-IMPLEMENTATION -->
-  <script src="./api-stub.js"></script>
+  <script src="../api-stub.js"></script>
 </body>
 </html>
+

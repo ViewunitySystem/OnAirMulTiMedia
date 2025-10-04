@@ -1,45 +1,35 @@
 <!doctype html>
 <html lang="de">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>OnAirMulTiMedia – Start</title>
-  <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; upgrade-insecure-requests">
   <link rel="stylesheet" href="./assets/landing.css" />
-  <script src="./js/error-handler.js"></script>
   <!-- Keine Meta‑Refresh/JS‑Redirects mehr -->
   <!-- Keine X-Frame-Options im <meta> (nur per Header wirksam) -->
   <!-- Links RELATIV halten (./...), damit Pages‑Subpfad funktioniert -->
-
+  
 </head>
-
 <body>
   <header class="top">
     <h1>OnAirMulTiMedia</h1>
-    <nav>
-      <a href="./info.html">Info</a>
-      <a href="./blueprints.html">Blueprints</a>
-      <a href="./manifest.html">Manifest</a>
-      <a href="./regulatory.html">Regulatory</a>
-      <a href="./webui/user-studio.html">User‑Studio</a>
-      <a href="./docs/audit-manifest.html">Audit‑Manifest</a>
-      <a href="./investor-charging.html">Investor Charging</a>
-      <a href="./client.html">Test Client</a>
-      <a href="./overlay.html">Audit Overlay</a>
-    </nav>
+            <nav>
+              <a href="./info.html">Info</a>
+              <a href="./blueprints.html">Blueprints</a>
+              <a href="./manifest.html">Manifest</a>
+              <a href="./regulatory.html">Regulatory</a>
+              <a href="./serverfarm-dashboard.html">Serverfarm</a>
+            </nav>
   </header>
 
   <main class="hero">
     <section class="panel">
       <h2>Info‑Dashboard (eingebettet)</h2>
       <div class="frame-wrap">
-        <iframe src="./info.html" title="Info‑Dashboard" loading="lazy" referrerpolicy="no-referrer"
-          sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+        <iframe src="./info.html" title="Info‑Dashboard" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
       </div>
     </section>
   </main>
 </body>
-
 </html>

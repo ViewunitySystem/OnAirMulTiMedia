@@ -1,17 +1,41 @@
-# Cloudflare Pages Configuration für OAMTM Serverfarm
-# 1100% FEHLERFREIE KONFIGURATION
-
+# Cloudflare Pages Configuration für Serverfarm
 name = "oamtm-serverfarm"
 compatibility_date = "2025-10-03"
 
-# Pages-spezifische Konfiguration (korrekte Syntax)
-[pages]
-build_output_dir = "."
-build_command = "echo 'Static site - no build step needed'"
-
-# Environment-spezifische Konfiguration
 [env.production]
 name = "oamtm-serverfarm-prod"
 
 [env.staging]
 name = "oamtm-serverfarm-staging"
+
+# Pages Build Settings
+[build]
+command = "echo 'Static build - no build step needed'"
+publish = "."
+
+# Custom Headers für Security
+[[headers]]
+for = "/*"
+[headers.values]
+X-Frame-Options = "SAMEORIGIN"
+X-Content-Type-Options = "nosniff"
+X-XSS-Protection = "1; mode=block"
+Referrer-Policy = "strict-origin-when-cross-origin"
+Content-Security-Policy = "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; upgrade-insecure-requests"
+
+# Cache Rules
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "*.html"
+[headers.values]
+Cache-Control = "public, max-age=300"
+
+# Redirects für bessere SEO
+[[redirects]]
+from = "/"
+to = "/index.html"
+status = 200

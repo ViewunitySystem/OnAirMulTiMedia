@@ -3,771 +3,247 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>📊 OnAirMulTiMedia Live Dashboard</title>
+  <title>Serverfarm Dashboard - OnAirMulTiMedia</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; frame-src 'self' blob:; base-uri 'self'">
   <link rel="stylesheet" href="./assets/landing.css" />
   <style>
-    :root { --primary: #93c5fd; --success: #10b981; --warning: #f59e0b; --error: #ef4444; --bg: #0b1020; --card: #111827; --border: #1f2a52; }
-    body { background: var(--bg); color: #e5e7eb; font-family: system-ui, -apple-system, sans-serif; margin: 0; }
-    .top { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #121a34; border-bottom: 1px solid var(--border); }
-    .top h1 { margin: 0; color: var(--primary); }
-    .top nav { display: flex; gap: 16px; }
-    .top a { color: var(--primary); text-decoration: none; }
-    .hero { max-width: 1200px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
-    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
-    .panel h2 { margin: 0 0 16px 0; color: var(--primary); }
-    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-    .metric-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
-    .metric-value { font-size: 2rem; font-weight: bold; color: var(--success); }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .metric-card { background: #111827; border: 1px solid #1f2a52; border-radius: 12px; padding: 16px; text-align: center; }
+    .metric-value { font-size: 2rem; font-weight: bold; color: #10b981; }
     .metric-label { font-size: 0.9rem; opacity: 0.8; margin-top: 8px; }
     .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
-    .status-online { background: var(--success); }
-    .status-offline { background: var(--error); }
-    .status-warning { background: var(--warning); }
-    .live-indicator { color: var(--success); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    .error-card { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); }
-    .warning-card { background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); }
-    .success-card { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); }
-    .table { width: 100%; border-collapse: collapse; }
-    .table th, .table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
-    .table th { background: var(--card); color: var(--primary); }
-    .refresh-btn { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
-    .refresh-btn:hover { opacity: 0.8; }
-    .loading { opacity: 0.6; }
+    .status-online { background: #10b981; }
+    .status-offline { background: #ef4444; }
+    .status-warning { background: #f59e0b; }
+    .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .app-card { background: #1f2a52; border-radius: 8px; padding: 12px; text-align: center; }
+    .app-card a { color: #93c5fd; text-decoration: none; }
+    .app-card a:hover { color: #bfdbfe; }
   </style>
 </head>
 <body>
   <header class="top">
-    <h1>📊 OnAirMulTiMedia Live Dashboard</h1>
-    <div>
-      <span class="live-indicator">● LIVE</span>
-      <span id="lastUpdate">Letzte Aktualisierung: --</span>
-    </div>
+    <h1>🏭 Serverfarm Dashboard</h1>
     <nav>
       <a href="./index.html">Home</a>
-      <a href="./webui/user-studio.html">User Studio</a>
-      <a href="./docs/audit-manifest.html">Audit</a>
+      <a href="./backup/backup-ui.html">Backup System</a>
+      <a href="./modules/rf/loopback-node/ui/security-status.html">RF Module</a>
     </nav>
   </header>
 
   <main class="hero">
-    <!-- System Status -->
+    <!-- System Metrics -->
     <section class="panel">
-      <h2>🔴 Echtzeit-Statistiken • <span id="currentDate"></span> • <span class="live-indicator">● LIVE</span></h2>
-      <div style="margin-bottom: 16px;">
-        <button class="refresh-btn" onclick="dashboard.refreshAll()">🔄 Aktualisieren</button>
-        <span style="margin-left: 16px;">Branch: <strong id="currentBranch">gh-pages</strong> (Live) • Deployment: <strong id="deploymentStatus">Aktiv</strong></span>
-      </div>
-      
+      <h2>System Status</h2>
       <div class="dashboard-grid">
-        <div class="metric-card" id="appsCard">
-          <div class="metric-value" id="appsCount">--</div>
-          <div class="metric-label">Haupt-Apps</div>
-          <div style="font-size: 0.8rem; margin-top: 4px;" id="appsStatus">Live & dokumentiert</div>
-        </div>
-        <div class="metric-card" id="modulesCard">
-          <div class="metric-value" id="modulesCount">--</div>
-          <div class="metric-label">Blueprint-Module</div>
-          <div style="font-size: 0.8rem; margin-top: 4px;" id="modulesStatus">Module</div>
-        </div>
-        <div class="metric-card" id="enginesCard">
-          <div class="metric-value" id="enginesCount">--</div>
-          <div class="metric-label">Discovery-Engines</div>
-          <div style="font-size: 0.8rem; margin-top: 4px;" id="enginesStatus">Engines</div>
-        </div>
-        <div class="metric-card" id="rulesCard">
-          <div class="metric-value" id="rulesCount">--</div>
-          <div class="metric-label">Self-Healing-Regeln</div>
-          <div style="font-size: 0.8rem; margin-top: 4px;" id="rulesStatus">Regeln</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- System Health -->
-    <section class="panel">
-      <h2>🏥 System Health</h2>
-      <div class="dashboard-grid">
-        <div class="metric-card" id="uptimeCard">
+        <div class="metric-card">
           <div class="metric-value" id="uptime">--</div>
           <div class="metric-label">Uptime</div>
         </div>
-        <div class="metric-card" id="errorsCard">
-          <div class="metric-value" id="errorCount">0</div>
-          <div class="metric-label">Aktuelle Fehler</div>
+        <div class="metric-card">
+          <div class="metric-value" id="appsCount">--</div>
+          <div class="metric-label">Apps Online</div>
         </div>
-        <div class="metric-card" id="warningsCard">
-          <div class="metric-value" id="warningCount">0</div>
-          <div class="metric-label">Warnungen</div>
+        <div class="metric-card">
+          <div class="metric-value" id="modulesCount">--</div>
+          <div class="metric-label">Module Loaded</div>
         </div>
-        <div class="metric-card" id="lastDeployCard">
+        <div class="metric-card">
           <div class="metric-value" id="lastDeploy">--</div>
           <div class="metric-label">Letztes Deploy</div>
         </div>
       </div>
     </section>
 
-    <!-- Live Data Overview -->
+    <!-- Infrastructure Status -->
     <section class="panel">
-      <h2>📊 Live-Daten Übersicht</h2>
-      <table class="table" id="liveDataTable">
-        <thead>
-          <tr>
-            <th>Kategorie</th>
-            <th>Anzahl</th>
-            <th>Status</th>
-            <th>Letzte Aktivität</th>
-            <th>Health</th>
-          </tr>
-        </thead>
-        <tbody id="liveDataBody">
-          <tr><td colspan="5" style="text-align: center;">Lade Live-Daten...</td></tr>
-        </tbody>
-      </table>
+      <h2>Infrastructure Status</h2>
+      <div id="infrastructureStatus">
+        <div class="dashboard-grid">
+          <div class="metric-card">
+            <div class="status-indicator status-online"></div>
+            <strong>Cloudflare Pages</strong>
+            <div class="metric-label">Primary CDN</div>
+          </div>
+          <div class="metric-card">
+            <div class="status-indicator status-online"></div>
+            <strong>Firebase Hosting</strong>
+            <div class="metric-label">Backup System</div>
+          </div>
+          <div class="metric-card">
+            <div class="status-indicator status-online"></div>
+            <strong>GitHub Pages</strong>
+            <div class="metric-label">Development</div>
+          </div>
+          <div class="metric-card">
+            <div class="status-indicator status-warning"></div>
+            <strong>Backup Mirror</strong>
+            <div class="metric-label">Real-time Sync</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- Error Detection -->
-    <section class="panel" id="errorPanel" style="display: none;">
-      <h2>🚨 System-Fehler erkannt</h2>
-      <div id="errorList"></div>
+    <!-- Available Apps -->
+    <section class="panel">
+      <h2>Available Apps</h2>
+      <div class="apps-grid">
+        <div class="app-card">
+          <a href="./index.html">
+            <h3>🏠 Main App</h3>
+            <p>Hauptanwendung</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./info.html">
+            <h3>📊 Info Dashboard</h3>
+            <p>System Information</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./blueprints.html">
+            <h3>📋 Blueprints</h3>
+            <p>Module Blueprints</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./regulatory.html">
+            <h3>🏛️ Regulatory</h3>
+            <p>Compliance Info</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./manifest.html">
+            <h3>📄 Manifest</h3>
+            <p>Open Core Manifest</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./overlay.html">
+            <h3>📺 Overlay</h3>
+            <p>Audit Overlay</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./client.html">
+            <h3>🧪 Test Client</h3>
+            <p>Development Tools</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./backup/backup-ui.html">
+            <h3>🔄 Backup System</h3>
+            <p>Backup & Restore</p>
+          </a>
+        </div>
+      </div>
     </section>
 
-    <!-- Live Audit Logs -->
+    <!-- RF Modules -->
     <section class="panel">
-      <h2>📋 Live Audit-Logs</h2>
-      <div id="auditLogs">Lade Audit-Logs...</div>
+      <h2>RF Modules</h2>
+      <div class="apps-grid">
+        <div class="app-card">
+          <a href="./modules/rf/loopback-node/ui/security-status.html">
+            <h3>🔄 Loopback-Node</h3>
+            <p>RF Loopback Module</p>
+          </a>
+        </div>
+        <div class="app-card">
+          <a href="./modules/rf/loopback-node/ui/hackathon-canvas.html">
+            <h3>🎨 Hackathon Canvas</h3>
+            <p>Development Canvas</p>
+          </a>
+        </div>
+      </div>
     </section>
 
-    <!-- Platform Status -->
+    <!-- System Information -->
     <section class="panel">
-      <h2>🌐 Platform Status</h2>
-      <div class="dashboard-grid">
-        <div class="metric-card" id="webCard">
-          <div class="status-indicator status-online"></div>
-          <strong>Web Platform</strong>
-          <div class="metric-label" id="webStatus">Cloudflare Pages</div>
-        </div>
-        <div class="metric-card" id="mobileCard">
-          <div class="status-indicator status-warning"></div>
-          <strong>Mobile Apps</strong>
-          <div class="metric-label" id="mobileStatus">Capacitor Ready</div>
-        </div>
-        <div class="metric-card" id="desktopCard">
-          <div class="status-indicator status-warning"></div>
-          <strong>Desktop Apps</strong>
-          <div class="metric-label" id="desktopStatus">Electron Ready</div>
-        </div>
-        <div class="metric-card" id="apiCard">
-          <div class="status-indicator status-warning"></div>
-          <strong>API Backend</strong>
-          <div class="metric-label" id="apiStatus">Cloudflare Workers</div>
-        </div>
+      <h2>System Information</h2>
+      <div style="background: #0a0f1a; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+        <div><strong>Build:</strong> <span id="buildInfo">Loading...</span></div>
+        <div><strong>Last Deploy:</strong> <span id="deployInfo">Loading...</span></div>
+        <div><strong>Environment:</strong> Production</div>
+        <div><strong>CDN:</strong> Cloudflare Pages</div>
+        <div><strong>Backup:</strong> Firebase Hosting</div>
+        <div><strong>Version Control:</strong> GitHub</div>
       </div>
     </section>
   </main>
 
-  <footer style="text-align: center; padding: 16px; opacity: 0.7; font-size: 0.9rem;">
-    © 2025 OnAirMulTiMedia • Live Dashboard • WebTrit Swipe Technology • Echtzeit-Daten<br>
-    GitHub Pages • Firebase • Self-Healing • Discovery Engine
-  </footer>
-
-  <script src="./webui/system-error-detector.js"></script>
-  <script src="./webui/live-data-integration.js"></script>
-  <script src="./webui/platform-auto-sync.js"></script>
   <script>
-    class LiveDashboard {
+    // Dashboard Controller
+    class ServerfarmDashboard {
       constructor() {
         this.startTime = Date.now();
-        this.errorCount = 0;
-        this.warningCount = 0;
-        this.lastUpdate = new Date();
-        this.platforms = {
-          web: { url: 'https://viewunitysystem.github.io/OnAirMulTiMedia/', status: 'unknown' },
-          mobile: { url: 'capacitor://localhost', status: 'unknown' },
-          desktop: { url: 'electron://localhost', status: 'unknown' },
-          api: { url: '/api', status: 'ready' }
-        };
         this.init();
       }
 
       async init() {
-        console.log('📊 Live Dashboard initialisiert');
-        this.updateCurrentDate();
-        await this.loadSystemData();
-        await this.checkAllPlatforms();
-        await this.loadAuditLogs();
-        this.startRealTimeUpdates();
-        this.startErrorDetection();
-        
-        // Warte auf alle System-Komponenten
-        this.waitForErrorDetector();
-        this.waitForLiveDataIntegration();
-        this.waitForPlatformAutoSync();
+        console.log('🏭 Serverfarm Dashboard initialisiert');
+        await this.loadSystemInfo();
+        await this.updateMetrics();
+        this.startAutoUpdate();
       }
 
-      updateCurrentDate() {
-        const now = new Date();
-        document.getElementById('currentDate').textContent = now.toLocaleDateString('de-DE');
-        document.getElementById('lastUpdate').textContent = `Letzte Aktualisierung: ${now.toLocaleTimeString('de-DE')}`;
-      }
-
-      async loadSystemData() {
+      async loadSystemInfo() {
         try {
-          // Lade echte System-Daten
-          const systemData = await this.fetchSystemData();
-          this.updateSystemMetrics(systemData);
-          
-          // Lade Audit-Daten
-          const auditData = await this.fetchAuditData();
-          this.updateAuditMetrics(auditData);
-          
-        } catch (error) {
-          console.error('Fehler beim Laden der System-Daten:', error);
-          this.recordError('System Data Load', error.message);
-        }
-      }
-
-      async fetchSystemData() {
-        // Simuliere echte API-Aufrufe
-        const mockData = {
-          apps: {
-            count: 8,
-            status: 'active',
-            lastActivity: new Date().toISOString()
-          },
-          modules: {
-            count: 5,
-            status: 'active',
-            lastActivity: new Date().toISOString()
-          },
-          engines: {
-            count: 3,
-            status: 'active',
-            lastActivity: new Date().toISOString()
-          },
-          rules: {
-            count: 12,
-            status: 'active',
-            lastActivity: new Date().toISOString()
-          }
-        };
-        
-        return mockData;
-      }
-
-      async fetchAuditData() {
-        try {
-          // Versuche echte Audit-Daten zu laden
-          const response = await fetch('./docs/audit-run.json');
-          if (response.ok) {
-            return await response.json();
+          // Lade Build-Info
+          const buildResponse = await fetch('./backup/build-info.json');
+          if (buildResponse.ok) {
+            const buildInfo = await buildResponse.json();
+            document.getElementById('buildInfo').textContent = buildInfo.build || 'Unknown';
+            document.getElementById('deployInfo').textContent = new Date(buildInfo.timestamp).toLocaleString();
           }
         } catch (error) {
-          console.warn('Audit-Daten nicht verfügbar, verwende Fallback');
-        }
-        
-        // Fallback-Daten
-        return {
-          ts: new Date().toISOString(),
-          modules: [
-            { name: 'User-Studio', status: 'Aktiv', audit: true, cert: true },
-            { name: 'Audit-Manifest', status: 'Aktiv', audit: true, cert: true },
-            { name: 'Cloudflare Worker API', status: 'Aktiv', audit: true, cert: true },
-            { name: 'Mobile Setup', status: 'Aktiv', audit: true, cert: true },
-            { name: 'Desktop Electron', status: 'Aktiv', audit: true, cert: true }
-          ]
-        };
-      }
-
-      updateSystemMetrics(data) {
-        document.getElementById('appsCount').textContent = data.apps.count;
-        document.getElementById('modulesCount').textContent = data.modules.count;
-        document.getElementById('enginesCount').textContent = data.engines.count;
-        document.getElementById('rulesCount').textContent = data.rules.count;
-        
-        // Update Status
-        document.getElementById('appsStatus').textContent = data.apps.status;
-        document.getElementById('modulesStatus').textContent = data.modules.status;
-        document.getElementById('enginesStatus').textContent = data.engines.status;
-        document.getElementById('rulesStatus').textContent = data.rules.status;
-      }
-
-      updateAuditMetrics(data) {
-        const modules = data.modules || [];
-        const activeModules = modules.filter(m => m.status === 'Aktiv').length;
-        
-        // Update Live Data Table
-        const tbody = document.getElementById('liveDataBody');
-        tbody.innerHTML = '';
-        
-        const categories = [
-          { name: 'Apps', count: 8, status: 'Aktiv', lastActivity: 'Gerade eben', health: 'success' },
-          { name: 'Module', count: modules.length, status: 'Aktiv', lastActivity: 'Gerade eben', health: 'success' },
-          { name: 'Engines', count: 3, status: 'Aktiv', lastActivity: 'Gerade eben', health: 'success' },
-          { name: 'Rules', count: 12, status: 'Aktiv', lastActivity: 'Gerade eben', health: 'success' },
-          { name: 'APIs', count: 1, status: 'Aktiv', lastActivity: 'Gerade eben', health: 'warning' }
-        ];
-        
-        categories.forEach(cat => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${cat.name}</td>
-            <td>${cat.count}</td>
-            <td>${cat.status}</td>
-            <td>${cat.lastActivity}</td>
-            <td><span class="status-indicator status-${cat.health}"></span>${cat.health}</td>
-          `;
-          tbody.appendChild(row);
-        });
-      }
-
-      async checkAllPlatforms() {
-        for (const [platform, config] of Object.entries(this.platforms)) {
-          try {
-            const status = await this.checkPlatformHealth(config.url);
-            this.updatePlatformStatus(platform, status);
-          } catch (error) {
-            this.updatePlatformStatus(platform, 'offline');
-            this.recordError(`Platform ${platform}`, error.message);
-          }
+          console.warn('Build info nicht verfügbar:', error);
+          document.getElementById('buildInfo').textContent = 'Unknown';
+          document.getElementById('deployInfo').textContent = 'Unknown';
         }
       }
 
-      async checkPlatformHealth(url) {
+      async updateMetrics() {
+        // Uptime
+        const uptime = Date.now() - this.startTime;
+        const uptimeMinutes = Math.floor(uptime / 60000);
+        document.getElementById('uptime').textContent = `${uptimeMinutes}m`;
+
+        // Apps Count (statisch für jetzt)
+        document.getElementById('appsCount').textContent = '8';
+
+        // Modules Count
+        document.getElementById('modulesCount').textContent = '1';
+
+        // Last Deploy
+        const lastDeploy = document.getElementById('deployInfo').textContent;
+        document.getElementById('lastDeploy').textContent = lastDeploy !== 'Unknown' ? 'Live' : 'Unknown';
+      }
+
+      startAutoUpdate() {
+        // Update alle 30 Sekunden
+        setInterval(() => {
+          this.updateMetrics();
+        }, 30000);
+      }
+
+      async checkAppHealth(appUrl) {
         try {
-          // Für lokale URLs verwende HEAD-Request
-          if (url.includes('localhost') || url.includes('capacitor://') || url.includes('electron://')) {
-            return 'ready'; // Lokale Plattformen sind "ready" wenn sie geladen werden können
-          }
-          
-          const response = await fetch(url, { 
-            method: 'HEAD', 
-            mode: 'no-cors',
-            cache: 'no-cache'
-          });
+          const response = await fetch(appUrl, { method: 'HEAD', mode: 'no-cors' });
           return 'online';
         } catch (error) {
           return 'offline';
         }
-      }
-
-      updatePlatformStatus(platform, status) {
-        const card = document.getElementById(`${platform}Card`);
-        const indicator = card?.querySelector('.status-indicator');
-        const statusEl = document.getElementById(`${platform}Status`);
-        
-        if (indicator) {
-          indicator.className = `status-indicator status-${status === 'online' ? 'online' : status === 'ready' ? 'warning' : 'offline'}`;
-        }
-        
-        if (statusEl) {
-          const statusText = {
-            'online': 'Online',
-            'ready': 'Ready',
-            'offline': 'Offline'
-          };
-          statusEl.textContent = statusText[status] || 'Unknown';
-        }
-        
-        this.platforms[platform].status = status;
-      }
-
-      async loadAuditLogs() {
-        try {
-          const logs = await this.fetchAuditLogs();
-          this.displayAuditLogs(logs);
-        } catch (error) {
-          document.getElementById('auditLogs').innerHTML = '<p style="color: var(--error);">Fehler beim Laden der Audit-Logs</p>';
-          this.recordError('Audit Logs', error.message);
-        }
-      }
-
-      async fetchAuditLogs() {
-        // Simuliere Audit-Logs
-        return [
-          { timestamp: new Date().toISOString(), action: 'Dashboard Update', status: 'success', details: 'Live-Daten aktualisiert' },
-          { timestamp: new Date(Date.now() - 60000).toISOString(), action: 'Platform Check', status: 'success', details: 'Alle Plattformen geprüft' },
-          { timestamp: new Date(Date.now() - 120000).toISOString(), action: 'System Health', status: 'success', details: 'System gesund' },
-          { timestamp: new Date(Date.now() - 180000).toISOString(), action: 'Error Detection', status: 'warning', details: 'Keine kritischen Fehler' }
-        ];
-      }
-
-      displayAuditLogs(logs) {
-        const container = document.getElementById('auditLogs');
-        container.innerHTML = '';
-        
-        logs.forEach(log => {
-          const logEl = document.createElement('div');
-          logEl.style.cssText = 'padding: 8px; margin: 4px 0; border-radius: 4px; font-size: 0.9rem;';
-          logEl.style.backgroundColor = log.status === 'success' ? 'rgba(16, 185, 129, 0.1)' : 
-                                       log.status === 'warning' ? 'rgba(245, 158, 11, 0.1)' : 
-                                       'rgba(239, 68, 68, 0.1)';
-          
-          logEl.innerHTML = `
-            <strong>${new Date(log.timestamp).toLocaleTimeString('de-DE')}</strong> 
-            ${log.action} - ${log.details}
-          `;
-          container.appendChild(logEl);
-        });
-      }
-
-      startRealTimeUpdates() {
-        // Update alle 10 Sekunden
-        setInterval(() => {
-          this.refreshAll();
-        }, 10000);
-        
-        // Update Uptime alle Sekunde
-        setInterval(() => {
-          this.updateUptime();
-        }, 1000);
-      }
-
-      updateUptime() {
-        const uptime = Date.now() - this.startTime;
-        const hours = Math.floor(uptime / 3600000);
-        const minutes = Math.floor((uptime % 3600000) / 60000);
-        const seconds = Math.floor((uptime % 60000) / 1000);
-        
-        document.getElementById('uptime').textContent = `${hours}h ${minutes}m ${seconds}s`;
-      }
-
-      startErrorDetection() {
-        // System-weite Fehlererkennung
-        setInterval(() => {
-          this.detectSystemErrors();
-        }, 5000);
-      }
-
-      detectSystemErrors() {
-        const errors = [];
-        const warnings = [];
-        
-        // Prüfe Platform-Status
-        Object.entries(this.platforms).forEach(([platform, config]) => {
-          if (config.status === 'offline') {
-            errors.push(`${platform} platform ist offline`);
-          } else if (config.status === 'ready') {
-            warnings.push(`${platform} platform ist bereit aber nicht online`);
-          }
-        });
-        
-        // Prüfe System-Metriken
-        const appsCount = parseInt(document.getElementById('appsCount').textContent);
-        if (appsCount === 0) {
-          errors.push('Keine Apps verfügbar');
-        }
-        
-        // Update Error/Warning Counts
-        this.errorCount = errors.length;
-        this.warningCount = warnings.length;
-        
-        document.getElementById('errorCount').textContent = this.errorCount;
-        document.getElementById('warningCount').textContent = this.warningCount;
-        
-        // Zeige Errors an
-        if (errors.length > 0) {
-          this.showErrors(errors, warnings);
-        } else {
-          this.hideErrors();
-        }
-      }
-
-      showErrors(errors, warnings) {
-        const panel = document.getElementById('errorPanel');
-        const list = document.getElementById('errorList');
-        
-        list.innerHTML = '';
-        
-        errors.forEach(error => {
-          const errorEl = document.createElement('div');
-          errorEl.className = 'error-card';
-          errorEl.style.cssText = 'padding: 12px; margin: 8px 0; border-radius: 6px;';
-          errorEl.innerHTML = `<strong>🚨 Fehler:</strong> ${error}`;
-          list.appendChild(errorEl);
-        });
-        
-        warnings.forEach(warning => {
-          const warningEl = document.createElement('div');
-          warningEl.className = 'warning-card';
-          warningEl.style.cssText = 'padding: 12px; margin: 8px 0; border-radius: 6px;';
-          warningEl.innerHTML = `<strong>⚠️ Warnung:</strong> ${warning}`;
-          list.appendChild(warningEl);
-        });
-        
-        panel.style.display = 'block';
-      }
-
-      hideErrors() {
-        document.getElementById('errorPanel').style.display = 'none';
-      }
-
-      recordError(source, message) {
-        console.error(`[${source}] ${message}`);
-        this.errorCount++;
-        document.getElementById('errorCount').textContent = this.errorCount;
-      }
-
-      async refreshAll() {
-        console.log('🔄 Aktualisiere alle Daten...');
-        this.updateCurrentDate();
-        await this.loadSystemData();
-        await this.checkAllPlatforms();
-        await this.loadAuditLogs();
-        this.detectSystemErrors();
-      }
-
-      waitForErrorDetector() {
-        // Warte auf Error Detector und integriere ihn
-        const checkErrorDetector = () => {
-          if (window.systemErrorDetector) {
-            console.log('🔍 Error Detector integriert');
-            this.integrateErrorDetector();
-          } else {
-            setTimeout(checkErrorDetector, 1000);
-          }
-        };
-        checkErrorDetector();
-      }
-
-      integrateErrorDetector() {
-        // Integriere Error Detector Status
-        setInterval(() => {
-          if (window.systemErrorDetector) {
-            const status = window.systemErrorDetector.getSystemStatus();
-            this.updateErrorDetectorStatus(status);
-          }
-        }, 5000);
-      }
-
-      updateErrorDetectorStatus(status) {
-        // Update Error/Warning Counts vom Error Detector
-        this.errorCount = status.errors.length;
-        this.warningCount = status.warnings.length;
-        
-        document.getElementById('errorCount').textContent = this.errorCount;
-        document.getElementById('warningCount').textContent = this.warningCount;
-        
-        // Update Error Panel
-        if (status.errors.length > 0 || status.warnings.length > 0) {
-          this.showErrorDetectorErrors(status.errors, status.warnings);
-        } else {
-          this.hideErrors();
-        }
-      }
-
-      showErrorDetectorErrors(errors, warnings) {
-        const panel = document.getElementById('errorPanel');
-        const list = document.getElementById('errorList');
-        
-        list.innerHTML = '';
-        
-        errors.forEach(error => {
-          const errorEl = document.createElement('div');
-          errorEl.className = 'error-card';
-          errorEl.style.cssText = 'padding: 12px; margin: 8px 0; border-radius: 6px;';
-          errorEl.innerHTML = `
-            <strong>🚨 ${error.component}:</strong> ${error.message}
-            <br><small>Zeit: ${new Date(error.timestamp).toLocaleTimeString('de-DE')}</small>
-            ${error.critical ? '<br><span style="color: var(--error);">⚠️ KRITISCH</span>' : ''}
-          `;
-          list.appendChild(errorEl);
-        });
-        
-        warnings.forEach(warning => {
-          const warningEl = document.createElement('div');
-          warningEl.className = 'warning-card';
-          warningEl.style.cssText = 'padding: 12px; margin: 8px 0; border-radius: 6px;';
-          warningEl.innerHTML = `
-            <strong>⚠️ ${warning.component}:</strong> ${warning.message}
-            <br><small>Zeit: ${new Date(warning.timestamp).toLocaleTimeString('de-DE')}</small>
-          `;
-          list.appendChild(warningEl);
-        });
-        
-        panel.style.display = 'block';
-      }
-
-      updateErrorStatus(errorData) {
-        // Wird vom Error Detector aufgerufen
-        this.updateErrorDetectorStatus(errorData);
-      }
-
-      waitForLiveDataIntegration() {
-        // Warte auf Live Data Integration und integriere sie
-        const checkLiveDataIntegration = () => {
-          if (window.liveDataIntegration) {
-            console.log('📊 Live Data Integration integriert');
-            this.integrateLiveDataIntegration();
-          } else {
-            setTimeout(checkLiveDataIntegration, 1000);
-          }
-        };
-        checkLiveDataIntegration();
-      }
-
-      integrateLiveDataIntegration() {
-        // Subscribe zu Live Data Updates
-        if (window.liveDataIntegration) {
-          // Subscribe zu allen relevanten Datenquellen
-          window.liveDataIntegration.subscribe('github', (data, timestamp) => {
-            this.updateGitHubData(data, timestamp);
-          });
-
-          window.liveDataIntegration.subscribe('audit', (data, timestamp) => {
-            this.updateAuditData(data, timestamp);
-          });
-
-          window.liveDataIntegration.subscribe('system-health', (data, timestamp) => {
-            this.updateSystemHealthData(data, timestamp);
-          });
-
-          window.liveDataIntegration.subscribe('platform-status', (data, timestamp) => {
-            this.updatePlatformStatusData(data, timestamp);
-          });
-
-          // Initiale Daten laden
-          this.updateLiveData(window.liveDataIntegration.getAllLiveData());
-        }
-      }
-
-      updateGitHubData(data, timestamp) {
-        // Update GitHub-spezifische Metriken
-        if (data.stars !== undefined) {
-          // Update Stars Count falls vorhanden
-          console.log(`⭐ GitHub Stars: ${data.stars}`);
-        }
-      }
-
-      updateAuditData(data, timestamp) {
-        // Update Audit-spezifische Metriken
-        if (data.modules) {
-          const activeModules = data.modules.filter(m => m.status === 'Aktiv').length;
-          document.getElementById('modulesCount').textContent = activeModules;
-          document.getElementById('modulesStatus').textContent = `${activeModules}/${data.modules.length} aktiv`;
-        }
-      }
-
-      updateSystemHealthData(data, timestamp) {
-        // Update System Health Metriken
-        if (data.uptime) {
-          const hours = Math.floor(data.uptime / 3600000);
-          const minutes = Math.floor((data.uptime % 3600000) / 60000);
-          document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
-        }
-
-        if (data.errors) {
-          document.getElementById('errorCount').textContent = data.errors.total || 0;
-        }
-
-        if (data.memory) {
-          // Update Memory Usage falls gewünscht
-          console.log(`💾 Memory: ${data.memory.used}MB / ${data.memory.total}MB`);
-        }
-      }
-
-      updatePlatformStatusData(data, timestamp) {
-        // Update Platform Status
-        Object.entries(data).forEach(([platform, status]) => {
-          if (platform !== 'lastCheck') {
-            this.updatePlatformStatus(platform, status.status);
-          }
-        });
-      }
-
-      updateLiveData(liveData) {
-        // Update Dashboard mit allen Live-Daten
-        console.log('📊 Live-Daten aktualisiert:', liveData);
-        
-        // Update Last Deploy
-        const auditData = liveData.audit;
-        if (auditData && auditData.timestamp) {
-          const deployTime = new Date(auditData.timestamp);
-          document.getElementById('lastDeploy').textContent = deployTime.toLocaleTimeString('de-DE');
-        }
-
-        // Update Apps Count basierend auf verfügbaren Daten
-        const totalApps = Object.keys(liveData).length;
-        document.getElementById('appsCount').textContent = totalApps;
-        document.getElementById('appsStatus').textContent = 'Live & synchronisiert';
-      }
-
-      waitForPlatformAutoSync() {
-        // Warte auf Platform Auto-Sync und integriere sie
-        const checkPlatformAutoSync = () => {
-          if (window.platformAutoSync) {
-            console.log('🔄 Platform Auto-Sync integriert');
-            this.integratePlatformAutoSync();
-          } else {
-            setTimeout(checkPlatformAutoSync, 1000);
-          }
-        };
-        checkPlatformAutoSync();
-      }
-
-      integratePlatformAutoSync() {
-        // Integriere Platform Auto-Sync Status
-        if (window.platformAutoSync) {
-          // Update Platform Status alle 30 Sekunden
-          setInterval(() => {
-            const syncStatus = window.platformAutoSync.getSyncStatus();
-            this.updatePlatformSyncStatus(syncStatus);
-          }, 30000);
-          
-          // Initiale Status-Update
-          const initialStatus = window.platformAutoSync.getSyncStatus();
-          this.updatePlatformSyncStatus(initialStatus);
-        }
-      }
-
-      updatePlatformSyncStatus(syncStatus) {
-        // Update Platform Status Cards
-        Object.entries(syncStatus.platforms).forEach(([platformKey, platform]) => {
-          const card = document.getElementById(`${platformKey}Card`);
-          const indicator = card?.querySelector('.status-indicator');
-          const statusEl = document.getElementById(`${platformKey}Status`);
-          
-          if (indicator) {
-            const statusClass = platform.status === 'synced' ? 'online' : 
-                               platform.status === 'error' ? 'offline' : 'warning';
-            indicator.className = `status-indicator status-${statusClass}`;
-          }
-          
-          if (statusEl) {
-            const statusText = platform.status === 'synced' ? 'Synchronisiert' :
-                              platform.status === 'error' ? 'Fehler' :
-                              platform.status === 'ready' ? 'Bereit' : 'Unbekannt';
-            statusEl.textContent = `${statusText} • ${platform.capabilities.length} Features`;
-          }
-        });
-        
-        // Update Sync Summary
-        const totalPlatforms = syncStatus.totalPlatforms;
-        const syncedPlatforms = syncStatus.syncedPlatforms;
-        
-        document.getElementById('enginesCount').textContent = syncedPlatforms;
-        document.getElementById('enginesStatus').textContent = `${syncedPlatforms}/${totalPlatforms} synchronisiert`;
-        
-        // Update Rules Count mit Sync-Regeln
-        document.getElementById('rulesCount').textContent = syncStatus.totalPlatforms;
-        document.getElementById('rulesStatus').textContent = 'Auto-Sync aktiv';
-        
-        console.log(`🔄 Platform Sync Status: ${syncedPlatforms}/${totalPlatforms} synchronisiert`);
-      }
-
-      updateSyncStatus(syncStatus) {
-        // Wird von Platform Auto-Sync aufgerufen
-        this.updatePlatformSyncStatus(syncStatus);
       }
     }
 
     // Auto-Start Dashboard
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        window.dashboard = new LiveDashboard();
+        window.serverfarmDashboard = new ServerfarmDashboard();
       });
     } else {
-      window.dashboard = new LiveDashboard();
+      window.serverfarmDashboard = new ServerfarmDashboard();
     }
   </script>
 </body>
