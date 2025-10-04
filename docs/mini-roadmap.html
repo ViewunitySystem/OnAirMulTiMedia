@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM - Mini Roadmap</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 1.2rem;
+        }
+        
+        .roadmap-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .roadmap-phase {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .roadmap-phase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+        }
+        
+        .phase-7days::before {
+            background: var(--success);
+        }
+        
+        .phase-14days::before {
+            background: var(--warning);
+        }
+        
+        .phase-30days::before {
+            background: var(--primary);
+        }
+        
+        .roadmap-phase:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .phase-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .phase-icon {
+            font-size: 2.5rem;
+            margin-right: 15px;
+        }
+        
+        .phase-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .phase-duration {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+        
+        .milestones {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .milestone {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        
+        .milestone:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .milestone-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .milestone-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+        
+        .milestone-title {
+            font-weight: bold;
+            color: var(--dark);
+            flex: 1;
+        }
+        
+        .milestone-status {
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .status-completed {
+            background: var(--success);
+            color: white;
+        }
+        
+        .status-in-progress {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .status-pending {
+            background: #e5e7eb;
+            color: var(--dark);
+        }
+        
+        .milestone-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.3s ease;
+        }
+        
+        .progress-fill.warning {
+            background: var(--warning);
+        }
+        
+        .progress-fill.primary {
+            background: var(--primary);
+        }
+        
+        .summary-section {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .summary-title {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--dark);
+            margin-bottom: 30px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .summary-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .summary-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛣️ OAMTM Mini Roadmap</h1>
+            <p>7/14/30 Tage Meilensteine für maximale Produktivität</p>
+        </div>
+        
+        <div class="roadmap-container">
+            <!-- 7 Tage Phase -->
+            <div class="roadmap-phase phase-7days">
+                <div class="phase-header">
+                    <span class="phase-icon">🚀</span>
+                    <div class="phase-title">Sprint 1: Foundation</div>
+                    <div class="phase-duration">7 Tage</div>
+                </div>
+                
+                <div class="milestones">
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">✅</span>
+                            <div class="milestone-title">System Setup</div>
+                            <div class="milestone-status status-completed">ABGESCHLOSSEN</div>
+                        </div>
+                        <div class="milestone-description">
+                            Vollständige System-Installation und Konfiguration aller Komponenten.
+                        </div>
+                    </div>
+                    
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">🔄</span>
+                            <div class="milestone-title">CI/CD Pipeline</div>
+                            <div class="milestone-status status-in-progress">IN BEARBEITUNG</div>
+                        </div>
+                        <div class="milestone-description">
+                            Automatisierte Build-, Test- und Deployment-Pipeline einrichten.
+                        </div>
+                    </div>
+                    
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">📊</span>
+                            <div class="milestone-title">Monitoring Setup</div>
+                            <div class="milestone-status status-pending">AUSSTEHEND</div>
+                        </div>
+                        <div class="milestone-description">
+                            Real-time Monitoring und Alerting-System konfigurieren.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 60%"></div>
+                </div>
+            </div>
+            
+            <!-- 14 Tage Phase -->
+            <div class="roadmap-phase phase-14days">
+                <div class="phase-header">
+                    <span class="phase-icon">⚡</span>
+                    <div class="phase-title">Sprint 2: Optimization</div>
+                    <div class="phase-duration">14 Tage</div>
+                </div>
+                
+                <div class="milestones">
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">🏥</span>
+                            <div class="milestone-title">Self-Healing</div>
+                            <div class="milestone-status status-pending">AUSSTEHEND</div>
+                        </div>
+                        <div class="milestone-description">
+                            1100% Performance Self-Healing System vollständig implementieren.
+                        </div>
+                    </div>
+                    
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">🛡️</span>
+                            <div class="milestone-title">Security Hardening</div>
+                            <div class="milestone-status status-pending">AUSSTEHEND</div>
+                        </div>
+                        <div class="milestone-description">
+                            Umfassende Sicherheitsmaßnahmen und Vulnerability-Scans.
+                        </div>
+                    </div>
+                    
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">📈</span>
+                            <div class="milestone-title">Performance Boost</div>
+                            <div class="milestone-status status-pending">AUSSTEHEND</div>
+                        </div>
+                        <div class="milestone-description">
+                            Performance-Optimierungen für alle kritischen Pfade.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill warning" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- 30 Tage Phase -->
+            <div class="roadmap-phase phase-30days">
+                <div class="phase-header">
+                    <span class="phase-icon">🎯</span>
+                    <div class="phase-title">Sprint 3: Excellence</div>
+                    <div class="phase-duration">30 Tage</div>
+                </div>
+                
+                <div class="milestones">
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">🌉</span>
+                            <div class="milestone-title">Hackathon Bridge</div>
+                            <div class="milestone-status status-pending">AUSSTEHEND</div>
+                        </div>
+                        <div class="milestone-description">
+                            Vollständige Real-time Collaboration Platform mit WebRTC.
+                        </div>
+                    </div>
+                    
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">📊</span>
+                            <div class="milestone-title">Advanced Analytics</div>
+                            <div class="milestone-status status-pending">AUSSTEHEND</div>
+                        </div>
+                        <div class="milestone-description">
+                            KI-gestützte Analytics und Predictive Maintenance.
+                        </div>
+                    </div>
+                    
+                    <div class="milestone">
+                        <div class="milestone-header">
+                            <span class="milestone-icon">🚀</span>
+                            <div class="milestone-title">Production Ready</div>
+                            <div class="milestone-status status-pending">AUSSTEHEND</div>
+                        </div>
+                        <div class="milestone-description">
+                            Vollständig produktionsreife Plattform mit 99.9% Uptime.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill primary" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="summary-section">
+            <div class="summary-title">📊 Roadmap Summary</div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-number">3</div>
+                    <div class="summary-label">Sprints</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">9</div>
+                    <div class="summary-label">Meilensteine</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">51</div>
+                    <div class="summary-label">Tage Total</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">1100%</div>
+                    <div class="summary-label">Performance Ziel</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">99.9%</div>
+                    <div class="summary-label">Uptime Ziel</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">95%</div>
+                    <div class="summary-label">Test Coverage</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Raymond Demitrio Dr. Tel - OAMTM Mini Roadmap</p>
+            <p>Letzte Aktualisierung: <span id="last-update"></span></p>
+        </div>
+    </div>
+    
+    <script>
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('last-update').textContent = now.toLocaleString('de-DE');
+        }
+        
+        function updateProgress() {
+            // Simuliere Fortschritt-Updates
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach((bar, index) => {
+                const currentWidth = parseInt(bar.style.width) || 0;
+                const increment = Math.random() * 5;
+                const newWidth = Math.min(currentWidth + increment, 100);
+                bar.style.width = newWidth + '%';
+            });
+        }
+        
+        // Initial load
+        updateTimestamp();
+        
+        // Update alle 10 Sekunden
+        setInterval(() => {
+            updateTimestamp();
+            updateProgress();
+        }, 10000);
+        
+        // Simuliere Meilenstein-Updates
+        setTimeout(() => {
+            const pendingStatuses = document.querySelectorAll('.status-pending');
+            if (pendingStatuses.length > 0) {
+                const randomIndex = Math.floor(Math.random() * pendingStatuses.length);
+                const status = pendingStatuses[randomIndex];
+                status.className = 'milestone-status status-in-progress';
+                status.textContent = 'IN BEARBEITUNG';
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

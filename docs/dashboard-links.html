@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM - Dashboard Links Hub</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #6b7280;
+            font-size: 1.2rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .dashboard-card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+        }
+        
+        .dashboard-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .dashboard-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .dashboard-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--dark);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-link:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .link-icon {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .status-indicator {
+            margin-left: auto;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        
+        .status-indicator.warning {
+            background: var(--warning);
+        }
+        
+        .status-indicator.error {
+            background: var(--error);
+        }
+        
+        .quick-access {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        
+        .quick-access h2 {
+            text-align: center;
+            color: var(--dark);
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .quick-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+        
+        .quick-btn:hover {
+            background: #2563eb;
+            transform: translateY(-3px);
+        }
+        
+        .quick-btn.secondary {
+            background: var(--secondary);
+        }
+        
+        .quick-btn.secondary:hover {
+            background: #7c3aed;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 OAMTM Dashboard Hub</h1>
+            <p>Zentraler Zugang zu allen System-Dashboards und Monitoring-Tools</p>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Self-Healing Dashboard -->
+            <div class="dashboard-card">
+                <span class="dashboard-icon">🏥</span>
+                <div class="dashboard-title">Self-Healing System</div>
+                <div class="dashboard-description">
+                    Real-time Monitoring des 1100% Performance Self-Healing Systems mit automatischer Fehlererkennung und -behebung.
+                </div>
+                <div class="dashboard-links">
+                    <a href="/docs/selfheal-dashboard.html" class="dashboard-link">
+                        <span class="link-icon">📊</span>
+                        Self-Heal Dashboard
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/health-gates.html" class="dashboard-link">
+                        <span class="link-icon">🚪</span>
+                        Health Gates
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/recovery-map.html" class="dashboard-link">
+                        <span class="link-icon">🗺️</span>
+                        Recovery Map
+                        <span class="status-indicator"></span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Audit System -->
+            <div class="dashboard-card">
+                <span class="dashboard-icon">📊</span>
+                <div class="dashboard-title">Audit & Compliance</div>
+                <div class="dashboard-description">
+                    Blockchain-inspirierte Audit-Trails für Regulatory Compliance (BNetzA, FCC, AT) mit Real-time Monitoring.
+                </div>
+                <div class="dashboard-links">
+                    <a href="/docs/audit-score.html" class="dashboard-link">
+                        <span class="link-icon">📈</span>
+                        Audit Score
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/compliance-report.html" class="dashboard-link">
+                        <span class="link-icon">📋</span>
+                        Compliance Report
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/regulatory-export.html" class="dashboard-link">
+                        <span class="link-icon">📤</span>
+                        Regulatory Export
+                        <span class="status-indicator"></span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Hackathon Bridge -->
+            <div class="dashboard-card">
+                <span class="dashboard-icon">🌉</span>
+                <div class="dashboard-title">Hackathon Bridge</div>
+                <div class="dashboard-description">
+                    Real-time Collaboration Hub mit Socket.IO, WebRTC, File-Sharing und schwebendem Inlay-Player.
+                </div>
+                <div class="dashboard-links">
+                    <a href="/hackathon-bridge/client.html" class="dashboard-link">
+                        <span class="link-icon">💬</span>
+                        Live Chat Client
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/hackathon-bridge/overlay.html" class="dashboard-link">
+                        <span class="link-icon">📡</span>
+                        Audit Overlay
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/hackathon-bridge/info.html" class="dashboard-link">
+                        <span class="link-icon">ℹ️</span>
+                        Info Dashboard
+                        <span class="status-indicator"></span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Monitoring & Analytics -->
+            <div class="dashboard-card">
+                <span class="dashboard-icon">📈</span>
+                <div class="dashboard-title">Monitoring & Analytics</div>
+                <div class="dashboard-description">
+                    Umfassendes System-Monitoring mit Performance-Metriken, GitHub-Integration und Community-Statistiken.
+                </div>
+                <div class="dashboard-links">
+                    <a href="/docs/monitoring-dashboard.html" class="dashboard-link">
+                        <span class="link-icon">📊</span>
+                        System Monitoring
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/github-stats.html" class="dashboard-link">
+                        <span class="link-icon">⭐</span>
+                        GitHub Statistics
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/performance-metrics.html" class="dashboard-link">
+                        <span class="link-icon">⚡</span>
+                        Performance Metrics
+                        <span class="status-indicator"></span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Bug Symphony -->
+            <div class="dashboard-card">
+                <span class="dashboard-icon">🎵</span>
+                <div class="dashboard-title">Bug Symphony</div>
+                <div class="dashboard-description">
+                    Kreative Bug-Tracking und Error-Management mit musikalischen Metaphern und visueller Darstellung.
+                </div>
+                <div class="dashboard-links">
+                    <a href="/docs/bug-symphony.html" class="dashboard-link">
+                        <span class="link-icon">🎼</span>
+                        Bug Symphony
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/bug-symphony-integration.html" class="dashboard-link">
+                        <span class="link-icon">🔗</span>
+                        Integration Dashboard
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/error-atlas.html" class="dashboard-link">
+                        <span class="link-icon">🗺️</span>
+                        Error Atlas
+                        <span class="status-indicator"></span>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Mission Control -->
+            <div class="dashboard-card">
+                <span class="dashboard-icon">🚀</span>
+                <div class="dashboard-title">Mission Control</div>
+                <div class="dashboard-description">
+                    Projekt-Management und Mission-Planning mit visueller Darstellung der Projekt-Roadmap und Meilensteine.
+                </div>
+                <div class="dashboard-links">
+                    <a href="/docs/mission-plan.html" class="dashboard-link">
+                        <span class="link-icon">📋</span>
+                        Mission Plan
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/mission-visualizer.html" class="dashboard-link">
+                        <span class="link-icon">🎯</span>
+                        Mission Visualizer
+                        <span class="status-indicator"></span>
+                    </a>
+                    <a href="/docs/roadmap.html" class="dashboard-link">
+                        <span class="link-icon">🛣️</span>
+                        Project Roadmap
+                        <span class="status-indicator"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quick-access">
+            <h2>⚡ Quick Access</h2>
+            <div class="quick-buttons">
+                <a href="/docs/live-status-badges.html" class="quick-btn">🔄 Live Status</a>
+                <a href="/docs/selfheal-dashboard.html" class="quick-btn">🏥 Self-Heal</a>
+                <a href="/hackathon-bridge/client.html" class="quick-btn">🌉 Bridge</a>
+                <a href="/docs/audit-score.html" class="quick-btn secondary">📊 Audit</a>
+                <a href="/docs/monitoring-dashboard.html" class="quick-btn secondary">📈 Monitor</a>
+                <a href="/docs/bug-symphony.html" class="quick-btn secondary">🎵 Symphony</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 Raymond Demitrio Dr. Tel - OAMTM Dashboard Hub</p>
+            <p>Letzte Aktualisierung: <span id="last-update"></span></p>
+        </div>
+    </div>
+    
+    <script>
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('last-update').textContent = now.toLocaleString('de-DE');
+        }
+        
+        // Simuliere Status-Updates
+        function updateStatusIndicators() {
+            const indicators = document.querySelectorAll('.status-indicator');
+            indicators.forEach(indicator => {
+                const random = Math.random();
+                if (random < 0.8) {
+                    indicator.style.background = '#10b981'; // Success
+                } else if (random < 0.95) {
+                    indicator.style.background = '#f59e0b'; // Warning
+                } else {
+                    indicator.style.background = '#ef4444'; // Error
+                }
+            });
+        }
+        
+        // Initial load
+        updateTimestamp();
+        updateStatusIndicators();
+        
+        // Update alle 30 Sekunden
+        setInterval(() => {
+            updateTimestamp();
+            updateStatusIndicators();
+        }, 30000);
+    </script>
+</body>
+</html>
