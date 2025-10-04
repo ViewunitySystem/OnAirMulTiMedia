@@ -27,6 +27,9 @@
     .alert-success{background:#065f46;border:1px solid #10b981;}
     .alert-error{background:#7f1d1d;border:1px solid #ef4444;}
     .alert-warning{background:#78350f;border:1px solid #f59e0b;}
+    .investment-card{background:linear-gradient(135deg, #111827 0%, #1e293b 100%);border:2px solid #3b82f6;padding:20px;border-radius:12px;margin:16px 0;}
+    .investment-highlight{color:#00ff88;font-size:1.5rem;font-weight:bold;margin:8px 0;}
+    .contact-info{background:#0b1020;padding:16px;border-radius:8px;border-left:4px solid #3b82f6;margin:16px 0;}
     @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -37,6 +40,29 @@
   </header>
 
   <main>
+    <!-- Investment Opportunity -->
+    <section class="investment-card">
+      <h2>💰 Series A Investment Opportunity</h2>
+      <div class="grid">
+        <div class="metric">
+          <span>💵 Series A Amount:</span>
+          <span class="investment-highlight">€5,000,000</span>
+        </div>
+        <div class="metric">
+          <span>📈 Pre-Money Valuation:</span>
+          <span class="investment-highlight">€15,000,000</span>
+        </div>
+        <div class="metric">
+          <span>🎯 Post-Money Valuation:</span>
+          <span class="investment-highlight">€20,000,000</span>
+        </div>
+        <div class="metric">
+          <span>👥 Investor Share:</span>
+          <span class="investment-highlight">25%</span>
+        </div>
+      </div>
+    </section>
+
     <!-- System Overview -->
     <section class="card">
       <h2>🌐 System Overview</h2>
@@ -60,34 +86,6 @@
         </div>
       </div>
       <button onclick="refreshSystemOverview()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">🔄 Refresh</button>
-    </section>
-
-    <!-- Live Data Feeds -->
-    <section class="card">
-      <h2>📊 Live Data Feeds</h2>
-      <div id="liveFeeds" class="status-loading">Loading feed status...</div>
-      <div class="grid" style="margin-top:16px;">
-        <div class="metric">
-          <span>🌤️ Weather Nowcast:</span>
-          <span id="weatherStatus" class="status-loading">Checking...</span>
-        </div>
-        <div class="metric">
-          <span>🚀 Space Alerts:</span>
-          <span id="spaceStatus" class="status-loading">Checking...</span>
-        </div>
-        <div class="metric">
-          <span>🗺️ Geo Layers:</span>
-          <span id="geoStatus" class="status-loading">Checking...</span>
-        </div>
-        <div class="metric">
-          <span>👥 Community Data:</span>
-          <span id="communityStatus" class="status-loading">Checking...</span>
-        </div>
-      </div>
-      <div class="progress-bar">
-        <div id="feedHealthProgress" class="progress-fill" style="width:0%"></div>
-      </div>
-      <button onclick="refreshLiveFeeds()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">📊 Refresh Feeds</button>
     </section>
 
     <!-- Financial Metrics -->
@@ -119,6 +117,60 @@
         </div>
       </div>
       <button onclick="refreshFinancialMetrics()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">💰 Refresh Financials</button>
+    </section>
+
+    <!-- Revenue Streams -->
+    <section class="card">
+      <h2>💼 Revenue Streams</h2>
+      <div class="grid">
+        <div class="metric">
+          <span>🏢 SaaS Enterprise:</span>
+          <span class="metric-value">€48,000 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>📊 Data Subscriptions:</span>
+          <span class="metric-value">€12,000 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>🔧 Professional Services:</span>
+          <span class="metric-value">€60,000 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>📡 SDR License System:</span>
+          <span class="metric-value">€2,400 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>🎓 Training & Certification:</span>
+          <span class="metric-value">€1,800 ARPU</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Financial Projections -->
+    <section class="card">
+      <h2>📈 5-Year Financial Projections</h2>
+      <div class="grid">
+        <div class="metric">
+          <span>2025 Revenue:</span>
+          <span class="metric-value">€900K</span>
+        </div>
+        <div class="metric">
+          <span>2026 Revenue:</span>
+          <span class="metric-value">€1.7M</span>
+        </div>
+        <div class="metric">
+          <span>2027 Revenue:</span>
+          <span class="metric-value">€3.2M (Break-even)</span>
+        </div>
+        <div class="metric">
+          <span>2028 Revenue:</span>
+          <span class="metric-value">€6.2M</span>
+        </div>
+        <div class="metric">
+          <span>2029 Revenue:</span>
+          <span class="metric-value">€11.7M</span>
+        </div>
+      </div>
     </section>
 
     <!-- Technical Performance -->
@@ -174,54 +226,14 @@
       <button onclick="refreshCompliance()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">🔒 Refresh Compliance</button>
     </section>
 
-    <!-- Market Position -->
-    <section class="card">
-      <h2>📈 Market Position</h2>
-      <div id="marketPosition" class="status-loading">Loading market data...</div>
-      <div class="grid" style="margin-top:16px;">
-        <div class="metric">
-          <span>🎯 Market Share:</span>
-          <span id="marketShare" class="metric-value">-</span>
-        </div>
-        <div class="metric">
-          <span>🏆 Competitive Position:</span>
-          <span id="competitivePosition" class="metric-value">-</span>
-        </div>
-        <div class="metric">
-          <span>📊 Customer Satisfaction:</span>
-          <span id="customerSatisfaction" class="metric-value">-</span>
-        </div>
-        <div class="metric">
-          <span>🚀 Innovation Index:</span>
-          <span id="innovationIndex" class="metric-value">-</span>
-        </div>
-      </div>
-      <button onclick="refreshMarketPosition()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">📈 Refresh Market Data</button>
-    </section>
-
-    <!-- Risk Assessment -->
-    <section class="card">
-      <h2>⚠️ Risk Assessment</h2>
-      <div id="riskAssessment" class="status-loading">Loading risk data...</div>
-      <div class="grid" style="margin-top:16px;">
-        <div class="metric">
-          <span>🔴 High Risks:</span>
-          <span id="highRisks" class="metric-value">0</span>
-        </div>
-        <div class="metric">
-          <span>🟡 Medium Risks:</span>
-          <span id="mediumRisks" class="metric-value">0</span>
-        </div>
-        <div class="metric">
-          <span>🟢 Low Risks:</span>
-          <span id="lowRisks" class="metric-value">0</span>
-        </div>
-        <div class="metric">
-          <span>📊 Overall Risk Score:</span>
-          <span id="overallRiskScore" class="metric-value">-</span>
-        </div>
-      </div>
-      <button onclick="refreshRiskAssessment()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">⚠️ Refresh Risk Data</button>
+    <!-- Contact Information -->
+    <section class="contact-info">
+      <h2>📞 Investment Contact</h2>
+      <p><strong>Raymond Demitrio Dr. Tel (DD5BE)</strong></p>
+      <p><strong>Founder & CEO</strong></p>
+      <p>📧 Email: <a href="mailto:gentlyoverdone@outlook.com" style="color:#93c5fd;">gentlyoverdone@outlook.com</a></p>
+      <p>🌐 Website: <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/" style="color:#93c5fd;">https://viewunitysystem.github.io/OnAirMulTiMedia/</a></p>
+      <p>📡 Amateurfunk: DD5BE</p>
     </section>
   </main>
 
@@ -245,12 +257,9 @@
       async refreshAll() {
         await Promise.all([
           this.refreshSystemOverview(),
-          this.refreshLiveFeeds(),
           this.refreshFinancialMetrics(),
           this.refreshTechPerformance(),
-          this.refreshCompliance(),
-          this.refreshMarketPosition(),
-          this.refreshRiskAssessment()
+          this.refreshCompliance()
         ]);
         
         document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
@@ -293,48 +302,6 @@
         } catch (error) {
           overviewDiv.className = 'alert alert-error';
           overviewDiv.innerHTML = '❌ System Check Failed: ' + error.message;
-        }
-      }
-
-      async refreshLiveFeeds() {
-        const feedsDiv = document.getElementById('liveFeeds');
-        
-        try {
-          const feeds = {
-            weather: Math.random() > 0.05 ? 'healthy' : 'degraded',
-            space: Math.random() > 0.03 ? 'healthy' : 'degraded',
-            geo: Math.random() > 0.08 ? 'healthy' : 'degraded',
-            community: Math.random() > 0.1 ? 'healthy' : 'degraded'
-          };
-          
-          const healthyFeeds = Object.values(feeds).filter(status => status === 'healthy').length;
-          const totalFeeds = Object.keys(feeds).length;
-          const healthPercentage = Math.round((healthyFeeds / totalFeeds) * 100);
-          
-          if (healthPercentage >= 90) {
-            feedsDiv.className = 'alert alert-success';
-            feedsDiv.innerHTML = `✅ Feeds Healthy (${healthPercentage}%)`;
-          } else if (healthPercentage >= 70) {
-            feedsDiv.className = 'alert alert-warning';
-            feedsDiv.innerHTML = `⚠️ Some Feed Issues (${healthPercentage}%)`;
-          } else {
-            feedsDiv.className = 'alert alert-error';
-            feedsDiv.innerHTML = `❌ Multiple Feed Issues (${healthPercentage}%)`;
-          }
-          
-          // Update individual feed statuses
-          Object.entries(feeds).forEach(([feed, status]) => {
-            const statusElement = document.getElementById(feed + 'Status');
-            statusElement.className = status === 'healthy' ? 'ok' : 'warn';
-            statusElement.textContent = status === 'healthy' ? '✅ Online' : '⚠️ Issues';
-          });
-          
-          // Update progress bar
-          document.getElementById('feedHealthProgress').style.width = healthPercentage + '%';
-          
-        } catch (error) {
-          feedsDiv.className = 'alert alert-error';
-          feedsDiv.innerHTML = '❌ Feed Check Failed: ' + error.message;
         }
       }
 
@@ -427,59 +394,6 @@
         }
       }
 
-      async refreshMarketPosition() {
-        const marketDiv = document.getElementById('marketPosition');
-        
-        try {
-          const market = {
-            share: (Math.random() * 5).toFixed(2),
-            position: Math.random() > 0.3 ? 'leading' : 'competitive',
-            satisfaction: Math.floor(Math.random() * 20) + 80,
-            innovation: Math.floor(Math.random() * 30) + 70
-          };
-          
-          marketDiv.className = 'alert alert-success';
-          marketDiv.innerHTML = '✅ Market Data Updated';
-          
-          document.getElementById('marketShare').textContent = market.share + '%';
-          document.getElementById('competitivePosition').textContent = market.position;
-          document.getElementById('customerSatisfaction').textContent = market.satisfaction + '%';
-          document.getElementById('innovationIndex').textContent = market.innovation + '%';
-          
-        } catch (error) {
-          marketDiv.className = 'alert alert-error';
-          marketDiv.innerHTML = '❌ Market Data Failed: ' + error.message;
-        }
-      }
-
-      async refreshRiskAssessment() {
-        const riskDiv = document.getElementById('riskAssessment');
-        
-        try {
-          const risks = {
-            high: Math.floor(Math.random() * 3),
-            medium: Math.floor(Math.random() * 5) + 2,
-            low: Math.floor(Math.random() * 10) + 5
-          };
-          
-          const totalRisks = risks.high + risks.medium + risks.low;
-          const riskScore = Math.max(0, 100 - (risks.high * 20) - (risks.medium * 10) - (risks.low * 2));
-          
-          riskDiv.className = riskScore >= 70 ? 'alert alert-success' : 
-                             riskScore >= 50 ? 'alert alert-warning' : 'alert alert-error';
-          riskDiv.innerHTML = `Risk Assessment Updated (Score: ${riskScore}%)`;
-          
-          document.getElementById('highRisks').textContent = risks.high;
-          document.getElementById('mediumRisks').textContent = risks.medium;
-          document.getElementById('lowRisks').textContent = risks.low;
-          document.getElementById('overallRiskScore').textContent = riskScore + '%';
-          
-        } catch (error) {
-          riskDiv.className = 'alert alert-error';
-          riskDiv.innerHTML = '❌ Risk Assessment Failed: ' + error.message;
-        }
-      }
-
       updateRevenueChart(financials) {
         const chartDiv = document.getElementById('revenueChart');
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
@@ -504,10 +418,6 @@
       await window.investorDashboard.refreshSystemOverview();
     }
 
-    async function refreshLiveFeeds() {
-      await window.investorDashboard.refreshLiveFeeds();
-    }
-
     async function refreshFinancialMetrics() {
       await window.investorDashboard.refreshFinancialMetrics();
     }
@@ -518,14 +428,6 @@
 
     async function refreshCompliance() {
       await window.investorDashboard.refreshCompliance();
-    }
-
-    async function refreshMarketPosition() {
-      await window.investorDashboard.refreshMarketPosition();
-    }
-
-    async function refreshRiskAssessment() {
-      await window.investorDashboard.refreshRiskAssessment();
     }
 
     // Initialize Dashboard
