@@ -6,6 +6,7 @@
   <title>OnAirMulTiMedia – Info & Monitoring</title>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
   <script src="./js/error-handler.js"></script>
+  <script src="./js/cloud-sql-api.js"></script>
   <style>
     :root { color-scheme: dark; }
     body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
@@ -85,6 +86,13 @@
 
     <section class="card">
       <h3>🚀 Alle Apps & Tools (18 Apps)</h3>
+      <div class="card" style="margin-bottom: 16px; background: linear-gradient(135deg, #111827 0%, #1e293b 100%); border: 1px solid #10b981;">
+        <h4>🔥 Cloud SQL API Status:</h4>
+        <div id="cloudSqlStatus" class="status-loading">Initializing...</div>
+        <button onclick="testCloudSQLAPI()" style="margin-top: 8px;">🧪 Test API</button>
+        <a href="./test-api.html" style="color: #93c5fd; margin-left: 12px;">📊 API Test →</a>
+        <a href="./cloud-sql-dashboard.html" style="color: #93c5fd; margin-left: 12px;">🔥 Cloud SQL Dashboard →</a>
+      </div>
       <div class="grid">
         <div class="card">
           <h4>🎯 Haupt-Apps</h4>
@@ -447,15 +455,57 @@ ${stats.ts},${stats.stars},${stats.forks},${stats.watchers},${stats.issues},${st
       }
     }
 
+    // Cloud SQL API Integration
+    class CloudSQLIntegration {
+      constructor() {
+        this.init();
+      }
+
+      async init() {
+        console.log('🔥 Cloud SQL API Integration initialisiert');
+        await this.updateStatus();
+      }
+
+      async updateStatus() {
+        const statusDiv = document.getElementById('cloudSqlStatus');
+        
+        try {
+          if (window.cloudSQLAPI) {
+            const health = await window.cloudSQLAPI.healthCheck();
+            
+            if (health.status === 'healthy') {
+              statusDiv.className = 'status-online';
+              statusDiv.innerHTML = '✅ Cloud SQL API Online<br>' + 
+                `Services: ${Object.keys(health.services).length}<br>` +
+                `<small>${new Date().toLocaleTimeString()}</small>`;
+            } else {
+              statusDiv.className = 'status-offline';
+              statusDiv.innerHTML = '⚠️ Cloud SQL API Issues<br>' + 
+                `<small>Status: ${health.status}</small>`;
+            }
+          } else {
+            statusDiv.className = 'status-loading';
+            statusDiv.textContent = '🔄 API Loading...';
+          }
+        } catch (error) {
+          statusDiv.className = 'status-offline';
+          statusDiv.innerHTML = '❌ API Connection Failed<br>' + 
+            `<small>${error.message}</small>`;
+        }
+      }
+    }
+
     // Auto-Start
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
         window.githubMonitor = new GitHubMonitor();
         window.communityHandler = new CommunityHandler();
+        window.cloudSQLIntegration = new CloudSQLIntegration();
       });
     } else {
       window.githubMonitor = new GitHubMonitor();
       window.communityHandler = new CommunityHandler();
+      window.cloudSQLIntegration = new CloudSQLIntegration();
     }
   </script>
   

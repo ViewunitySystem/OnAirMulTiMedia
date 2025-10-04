@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OAMTM Cloud SQL Dashboard - Raymond Demitrio Dr. Tel</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <script src="./js/error-handler.js"></script>
+  <script src="./js/cloud-sql-api.js"></script>
+  <style>
+    :root { color-scheme: dark; }
+    body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
+    header { background:#121a34; padding:16px; position:sticky; top:0; z-index:10; }
+    main { padding:16px; display:grid; gap:16px; max-width:1400px; margin:0 auto; }
+    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px; }
+    .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:16px; }
+    .big { font-size:28px; font-weight:700; }
+    .muted { opacity:.8; font-size:12px; }
+    .hero { display:flex; align-items:center; gap:12px; }
+    a { color:#93c5fd; text-decoration: none; }
+    a:hover { color: #bfdbfe; }
+    button { padding:8px 16px; border-radius:8px; border:1px solid #374151; background:#3b82f6; color:white; cursor:pointer; }
+    button:hover { opacity: 0.8; }
+    .status-online { color: #10b981; }
+    .status-offline { color: #ef4444; }
+    .status-loading { color: #f59e0b; }
+    pre { background:#0b1020; padding:12px; border-radius:8px; overflow-x:auto; font-size:12px; }
+    .metric { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #1f2a52; }
+    .metric:last-child { border-bottom:none; }
+    .metric-value { font-weight:600; color:#93c5fd; }
+    .alert { padding:12px; border-radius:8px; margin:8px 0; }
+    .alert-success { background:#065f46; border:1px solid #10b981; }
+    .alert-error { background:#7f1d1d; border:1px solid #ef4444; }
+    .alert-warning { background:#78350f; border:1px solid #f59e0b; }
+    .alert-info { background:#1e3a8a; border:1px solid #3b82f6; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <div style="font-weight:800; font-size:20px;">🔥 OAMTM Cloud SQL Dashboard</div>
+      <a href="./info.html" style="margin-left:12px;">← Zurück zu Info</a>
+      <a href="./test-api.html" style="margin-left:12px;">🧪 API Test →</a>
+      <a href="https://github.com/ViewunitySystem/OnAirMulTiMedia" target="_blank">GitHub Repo ↗</a>
+    </div>
+    <div class="muted">Real-time Cloud SQL Monitoring für OAMTM Audit Events - Raymond Demitrio Dr. Tel</div>
+  </header>
+
+  <main>
+    <!-- System Status -->
+    <section class="card">
+      <h3>🏥 System Health Status</h3>
+      <div id="systemHealth" class="status-loading">Checking system health...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>Cloud SQL Connection:</span>
+          <span id="dbStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>API Endpoints:</span>
+          <span id="apiStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>Environment Variables:</span>
+          <span id="envStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>Last Check:</span>
+          <span id="lastCheck" class="muted">Never</span>
+        </div>
+      </div>
+      <button onclick="runHealthCheck()" style="margin-top:12px;">🔄 Refresh Health</button>
+    </section>
+
+    <!-- Audit Events Overview -->
+    <section class="card">
+      <h3>📊 Audit Events Overview</h3>
+      <div id="eventsOverview" class="status-loading">Loading events...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>Total Events:</span>
+          <span id="totalEvents" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>Last 24 Hours:</span>
+          <span id="events24h" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>Last 7 Days:</span>
+          <span id="events7d" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>Last 30 Days:</span>
+          <span id="events30d" class="metric-value">-</span>
+        </div>
+      </div>
+      <button onclick="loadEventsOverview()" style="margin-top:12px;">📈 Load Events</button>
+    </section>
+
+    <!-- Recent Events -->
+    <section class="card">
+      <h3>🕒 Recent Audit Events</h3>
+      <div id="recentEvents" class="status-loading">Loading recent events...</div>
+      <button onclick="loadRecentEvents()" style="margin-top:12px;">🕒 Load Recent</button>
+      <button onclick="addTestEvent()" style="margin-top:12px;">➕ Add Test Event</button>
+    </section>
+
+    <!-- Statistics -->
+    <section class="card">
+      <h3>📈 Detailed Statistics</h3>
+      <div id="detailedStats" class="status-loading">Loading statistics...</div>
+      <button onclick="loadDetailedStats()" style="margin-top:12px;">📊 Load Stats</button>
+    </section>
+
+    <!-- API Configuration -->
+    <section class="card">
+      <h3>⚙️ API Configuration</h3>
+      <div id="apiConfig">
+        <div class="metric">
+          <span>Base URL:</span>
+          <span id="baseURL" class="metric-value">Loading...</span>
+        </div>
+        <div class="metric">
+          <span>Database Host:</span>
+          <span id="dbHost" class="metric-value">Loading...</span>
+        </div>
+        <div class="metric">
+          <span>Database Name:</span>
+          <span id="dbName" class="metric-value">Loading...</span>
+        </div>
+        <div class="metric">
+          <span>API Version:</span>
+          <span id="apiVersion" class="metric-value">1.0.0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Test Results -->
+    <section class="card">
+      <h3>🧪 Test Results & Logs</h3>
+      <pre id="testLogs">Waiting for tests...</pre>
+      <button onclick="runFullTest()" style="margin-top:12px;">🧪 Run Full Test</button>
+      <button onclick="clearLogs()" style="margin-top:12px;">🗑️ Clear Logs</button>
+    </section>
+  </main>
+
+  <script>
+    // Cloud SQL Dashboard Manager
+    class CloudSQLDashboard {
+      constructor() {
+        this.init();
+      }
+
+      async init() {
+        console.log('🔥 Cloud SQL Dashboard initialisiert');
+        this.updateConfig();
+        await this.runInitialChecks();
+        
+        // Auto-refresh alle 30 Sekunden
+        setInterval(() => {
+          this.runInitialChecks();
+        }, 30000);
+      }
+
+      updateConfig() {
+        if (window.cloudSQLAPI) {
+          document.getElementById('baseURL').textContent = window.cloudSQLAPI.baseURL;
+          document.getElementById('dbHost').textContent = 'Cloud SQL Instance';
+          document.getElementById('dbName').textContent = 'oamtm_audit';
+        }
+      }
+
+      async runInitialChecks() {
+        await Promise.all([
+          this.checkSystemHealth(),
+          this.loadEventsOverview(),
+          this.loadRecentEvents()
+        ]);
+      }
+
+      async checkSystemHealth() {
+        const healthDiv = document.getElementById('systemHealth');
+        const dbStatus = document.getElementById('dbStatus');
+        const apiStatus = document.getElementById('apiStatus');
+        const envStatus = document.getElementById('envStatus');
+        const lastCheck = document.getElementById('lastCheck');
+
+        try {
+          if (!window.cloudSQLAPI) {
+            throw new Error('Cloud SQL API not loaded');
+          }
+
+          const health = await window.cloudSQLAPI.healthCheck();
+          
+          if (health.status === 'healthy') {
+            healthDiv.className = 'alert alert-success';
+            healthDiv.innerHTML = '✅ System Healthy<br>' + 
+              `Services: ${Object.keys(health.services).length}<br>` +
+              `Uptime: ${Math.floor(health.services?.system?.uptime || 0)}s`;
+            
+            dbStatus.className = 'status-online';
+            dbStatus.textContent = '✅ Connected';
+            
+            apiStatus.className = 'status-online';
+            apiStatus.textContent = '✅ Available';
+            
+            envStatus.className = 'status-online';
+            envStatus.textContent = '✅ Configured';
+            
+          } else {
+            healthDiv.className = 'alert alert-warning';
+            healthDiv.innerHTML = '⚠️ System Issues<br>' + 
+              `Status: ${health.status}<br>` +
+              `Error: ${health.error || 'Unknown'}`;
+            
+            dbStatus.className = 'status-offline';
+            dbStatus.textContent = '❌ Failed';
+            
+            apiStatus.className = 'status-offline';
+            apiStatus.textContent = '❌ Failed';
+            
+            envStatus.className = 'status-offline';
+            envStatus.textContent = '❌ Failed';
+          }
+          
+          lastCheck.textContent = new Date().toLocaleTimeString();
+          
+        } catch (error) {
+          healthDiv.className = 'alert alert-error';
+          healthDiv.innerHTML = '❌ Health Check Failed<br>' + error.message;
+          
+          dbStatus.className = 'status-offline';
+          dbStatus.textContent = '❌ Error';
+          
+          apiStatus.className = 'status-offline';
+          apiStatus.textContent = '❌ Error';
+          
+          envStatus.className = 'status-offline';
+          envStatus.textContent = '❌ Error';
+          
+          lastCheck.textContent = new Date().toLocaleTimeString();
+        }
+      }
+
+      async loadEventsOverview() {
+        const overviewDiv = document.getElementById('eventsOverview');
+        
+        try {
+          const stats = await window.cloudSQLAPI.getAuditStats();
+          
+          if (stats.success !== false) {
+            overviewDiv.className = 'alert alert-success';
+            overviewDiv.innerHTML = '✅ Events Loaded Successfully';
+            
+            document.getElementById('totalEvents').textContent = stats.overview?.total_events || 0;
+            document.getElementById('events24h').textContent = stats.overview?.last_24_hours || 0;
+            document.getElementById('events7d').textContent = stats.overview?.last_7_days || 0;
+            document.getElementById('events30d').textContent = stats.overview?.last_30_days || 0;
+            
+          } else {
+            overviewDiv.className = 'alert alert-warning';
+            overviewDiv.innerHTML = '⚠️ Statistics Load Failed<br>' + stats.error;
+          }
+          
+        } catch (error) {
+          overviewDiv.className = 'alert alert-error';
+          overviewDiv.innerHTML = '❌ Load Failed<br>' + error.message;
+        }
+      }
+
+      async loadRecentEvents() {
+        const eventsDiv = document.getElementById('recentEvents');
+        
+        try {
+          const events = await window.cloudSQLAPI.getAuditEvents(5);
+          
+          if (events.success) {
+            eventsDiv.className = 'alert alert-success';
+            
+            if (events.data.length > 0) {
+              eventsDiv.innerHTML = '✅ Recent Events Loaded<br>' +
+                events.data.map(event => 
+                  `<div style="margin:4px 0; padding:4px; background:#0b1020; border-radius:4px;">
+                    ${event.event_type} - ${new Date(event.timestamp).toLocaleString()}
+                  </div>`
+                ).join('');
+            } else {
+              eventsDiv.innerHTML = 'ℹ️ No recent events found';
+            }
+            
+          } else {
+            eventsDiv.className = 'alert alert-warning';
+            eventsDiv.innerHTML = '⚠️ Events Load Failed<br>' + events.error;
+          }
+          
+        } catch (error) {
+          eventsDiv.className = 'alert alert-error';
+          eventsDiv.innerHTML = '❌ Load Failed<br>' + error.message;
+        }
+      }
+
+      async loadDetailedStats() {
+        const statsDiv = document.getElementById('detailedStats');
+        
+        try {
+          const stats = await window.cloudSQLAPI.getAuditStats();
+          
+          if (stats.success !== false) {
+            statsDiv.className = 'alert alert-success';
+            statsDiv.innerHTML = '✅ Detailed Statistics Loaded';
+            
+            document.getElementById('testLogs').textContent = 
+              'Detailed Statistics:\n' + JSON.stringify(stats, null, 2);
+            
+          } else {
+            statsDiv.className = 'alert alert-warning';
+            statsDiv.innerHTML = '⚠️ Statistics Load Failed<br>' + stats.error;
+          }
+          
+        } catch (error) {
+          statsDiv.className = 'alert alert-error';
+          statsDiv.innerHTML = '❌ Load Failed<br>' + error.message;
+        }
+      }
+
+      log(message) {
+        const logsDiv = document.getElementById('testLogs');
+        const timestamp = new Date().toLocaleTimeString();
+        logsDiv.textContent += `[${timestamp}] ${message}\n`;
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+      }
+
+      clearLogs() {
+        document.getElementById('testLogs').textContent = 'Logs cleared.\n';
+      }
+    }
+
+    // Global Functions
+    async function runHealthCheck() {
+      window.dashboard.log('Running health check...');
+      await window.dashboard.checkSystemHealth();
+      window.dashboard.log('Health check completed.');
+    }
+
+    async function loadEventsOverview() {
+      window.dashboard.log('Loading events overview...');
+      await window.dashboard.loadEventsOverview();
+      window.dashboard.log('Events overview loaded.');
+    }
+
+    async function loadRecentEvents() {
+      window.dashboard.log('Loading recent events...');
+      await window.dashboard.loadRecentEvents();
+      window.dashboard.log('Recent events loaded.');
+    }
+
+    async function loadDetailedStats() {
+      window.dashboard.log('Loading detailed statistics...');
+      await window.dashboard.loadDetailedStats();
+      window.dashboard.log('Detailed statistics loaded.');
+    }
+
+    async function addTestEvent() {
+      window.dashboard.log('Adding test event...');
+      
+      try {
+        const testEvent = {
+          event_type: 'dashboard_test',
+          event_data: {
+            message: 'Test event from Cloud SQL Dashboard',
+            timestamp: new Date().toISOString(),
+            source: 'cloud-sql-dashboard.html'
+          },
+          user_id: 'dashboard_user',
+          timestamp: new Date().toISOString()
+        };
+        
+        const result = await window.cloudSQLAPI.addAuditEvent(testEvent);
+        
+        if (result.success) {
+          window.dashboard.log('✅ Test event added successfully: ID ' + result.id);
+          setTimeout(loadRecentEvents, 1000);
+        } else {
+          window.dashboard.log('❌ Failed to add test event: ' + result.error);
+        }
+        
+      } catch (error) {
+        window.dashboard.log('❌ Error adding test event: ' + error.message);
+      }
+    }
+
+    async function runFullTest() {
+      window.dashboard.log('🧪 Starting full API test...');
+      
+      try {
+        const api = window.cloudSQLAPI;
+        const results = await api.getStatusDashboard();
+        
+        window.dashboard.log('🎉 Full test completed successfully!');
+        document.getElementById('testLogs').textContent = 
+          'Full Test Results:\n' + JSON.stringify(results, null, 2);
+        
+        // Refresh all displays
+        await window.dashboard.runInitialChecks();
+        
+      } catch (error) {
+        window.dashboard.log('❌ Full test failed: ' + error.message);
+      }
+    }
+
+    function clearLogs() {
+      window.dashboard.clearLogs();
+    }
+
+    // Initialize Dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      window.dashboard = new CloudSQLDashboard();
+      window.dashboard.log('🔥 Cloud SQL Dashboard initialized');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "version": 2,
+  "name": "oamtm-cloud-sql-api",
+  "builds": [
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/audit-events",
+      "dest": "/api/audit-events.js"
+    },
+    {
+      "src": "/api/health-check",
+      "dest": "/api/health-check.js"
+    },
+    {
+      "src": "/api/audit-stats",
+      "dest": "/api/audit-stats.js"
+    }
+  ],
+  "env": {
+    "DB_HOST": "@db_host",
+    "DB_PORT": "@db_port",
+    "DB_USER": "@db_user",
+    "DB_PASSWORD": "@db_password",
+    "DB_NAME": "@db_name"
+  },
+  "functions": {
+    "api/audit-events.js": {
+      "maxDuration": 30
+    },
+    "api/health-check.js": {
+      "maxDuration": 10
+    },
+    "api/audit-stats.js": {
+      "maxDuration": 30
+    }
+  }
+}

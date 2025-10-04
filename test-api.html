@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMTM Cloud SQL API Test</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 20px; background: #0b1020; color: #e5e7eb; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: #111827; border: 1px solid #1f2a52; border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin: 5px; }
+        button:hover { opacity: 0.8; }
+        pre { background: #0b1020; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        .status { padding: 10px; border-radius: 8px; margin: 10px 0; }
+        .status.online { background: #065f46; border: 1px solid #10b981; }
+        .status.offline { background: #7f1d1d; border: 1px solid #ef4444; }
+        .status.loading { background: #78350f; border: 1px solid #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 OAMTM Cloud SQL API Test Dashboard</h1>
+        
+        <div class="card">
+            <h2>📊 System Status</h2>
+            <div id="systemStatus" class="status loading">Loading...</div>
+            <button onclick="runHealthCheck()">🏥 Health Check</button>
+            <button onclick="runFullTest()">🧪 Full API Test</button>
+        </div>
+
+        <div class="card">
+            <h2>📈 Audit Events</h2>
+            <div id="auditEvents" class="status loading">Loading...</div>
+            <button onclick="loadAuditEvents()">📊 Load Events</button>
+            <button onclick="addTestEvent()">➕ Add Test Event</button>
+        </div>
+
+        <div class="card">
+            <h2>📊 Statistics</h2>
+            <div id="statistics" class="status loading">Loading...</div>
+            <button onclick="loadStatistics()">📈 Load Stats</button>
+        </div>
+
+        <div class="card">
+            <h2>🔧 API Configuration</h2>
+            <div id="apiConfig">
+                <p><strong>Base URL:</strong> <span id="baseURL">Loading...</span></p>
+                <p><strong>Endpoints:</strong></p>
+                <ul>
+                    <li>/api/audit-events - CRUD Operations</li>
+                    <li>/api/health-check - System Status</li>
+                    <li>/api/audit-stats - Statistics & Analytics</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 Test Results</h2>
+            <pre id="testResults">Waiting for tests...</pre>
+        </div>
+    </div>
+
+    <script src="js/cloud-sql-api.js"></script>
+    <script>
+        // API Test Functions
+        async function runHealthCheck() {
+            const statusDiv = document.getElementById('systemStatus');
+            const resultsDiv = document.getElementById('testResults');
+            
+            statusDiv.className = 'status loading';
+            statusDiv.textContent = 'Running health check...';
+            
+            try {
+                const api = new CloudSQLAPI();
+                const health = await api.healthCheck();
+                
+                if (health.status === 'healthy') {
+                    statusDiv.className = 'status online';
+                    statusDiv.innerHTML = '✅ System Healthy<br>' + 
+                        `Services: ${Object.keys(health.services).length}<br>` +
+                        `Timestamp: ${health.timestamp}`;
+                } else {
+                    statusDiv.className = 'status offline';
+                    statusDiv.innerHTML = '❌ System Issues<br>' + 
+                        `Status: ${health.status}<br>` +
+                        `Error: ${health.error || 'Unknown'}`;
+                }
+                
+                resultsDiv.textContent = JSON.stringify(health, null, 2);
+                
+            } catch (error) {
+                statusDiv.className = 'status offline';
+                statusDiv.textContent = '❌ Health Check Failed: ' + error.message;
+                resultsDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function loadAuditEvents() {
+            const eventsDiv = document.getElementById('auditEvents');
+            const resultsDiv = document.getElementById('testResults');
+            
+            eventsDiv.className = 'status loading';
+            eventsDiv.textContent = 'Loading audit events...';
+            
+            try {
+                const api = new CloudSQLAPI();
+                const events = await api.getAuditEvents(10);
+                
+                if (events.success) {
+                    eventsDiv.className = 'status online';
+                    eventsDiv.innerHTML = `✅ ${events.count} Events Loaded<br>` +
+                        `Data: ${events.data.length} records`;
+                } else {
+                    eventsDiv.className = 'status offline';
+                    eventsDiv.innerHTML = '❌ Failed to Load Events<br>' + 
+                        `Error: ${events.error}`;
+                }
+                
+                resultsDiv.textContent = JSON.stringify(events, null, 2);
+                
+            } catch (error) {
+                eventsDiv.className = 'status offline';
+                eventsDiv.textContent = '❌ Load Failed: ' + error.message;
+                resultsDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function loadStatistics() {
+            const statsDiv = document.getElementById('statistics');
+            const resultsDiv = document.getElementById('testResults');
+            
+            statsDiv.className = 'status loading';
+            statsDiv.textContent = 'Loading statistics...';
+            
+            try {
+                const api = new CloudSQLAPI();
+                const stats = await api.getAuditStats();
+                
+                if (stats.success !== false) {
+                    statsDiv.className = 'status online';
+                    statsDiv.innerHTML = `✅ Statistics Loaded<br>` +
+                        `Total Events: ${stats.overview?.total_events || 0}<br>` +
+                        `Last 24h: ${stats.overview?.last_24_hours || 0}`;
+                } else {
+                    statsDiv.className = 'status offline';
+                    statsDiv.innerHTML = '❌ Failed to Load Stats<br>' + 
+                        `Error: ${stats.error}`;
+                }
+                
+                resultsDiv.textContent = JSON.stringify(stats, null, 2);
+                
+            } catch (error) {
+                statsDiv.className = 'status offline';
+                statsDiv.textContent = '❌ Load Failed: ' + error.message;
+                resultsDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+
+        async function addTestEvent() {
+            const resultsDiv = document.getElementById('testResults');
+            
+            try {
+                const api = new CloudSQLAPI();
+                const testEvent = {
+                    event_type: 'test_event',
+                    event_data: {
+                        message: 'Test event from OAMTM API',
+                        timestamp: new Date().toISOString(),
+                        source: 'test-api.html'
+                    },
+                    user_id: 'test_user',
+                    timestamp: new Date().toISOString()
+                };
+                
+                const result = await api.addAuditEvent(testEvent);
+                resultsDiv.textContent = 'Test Event Added:\n' + JSON.stringify(result, null, 2);
+                
+                // Reload events to show the new one
+                setTimeout(loadAuditEvents, 1000);
+                
+            } catch (error) {
+                resultsDiv.textContent = 'Error adding test event: ' + error.message;
+            }
+        }
+
+        async function runFullTest() {
+            const resultsDiv = document.getElementById('testResults');
+            resultsDiv.textContent = '🧪 Running full API test...\n';
+            
+            try {
+                const api = new CloudSQLAPI();
+                const dashboard = await api.getStatusDashboard();
+                
+                resultsDiv.textContent = '🎉 Full Test Completed:\n' + 
+                    JSON.stringify(dashboard, null, 2);
+                
+                // Update all status displays
+                runHealthCheck();
+                loadAuditEvents();
+                loadStatistics();
+                
+            } catch (error) {
+                resultsDiv.textContent = '❌ Full Test Failed: ' + error.message;
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set API configuration
+            document.getElementById('baseURL').textContent = window.cloudSQLAPI.baseURL;
+            
+            // Run initial health check
+            setTimeout(runHealthCheck, 1000);
+        });
+    </script>
+</body>
+</html>
