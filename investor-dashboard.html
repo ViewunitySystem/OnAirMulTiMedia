@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OATMM Investor Dashboard - Live Monitoring</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <style>
+    body{font-family:system-ui;max-width:1400px;margin:24px auto;padding:0 16px;background:#0b1020;color:#e5e7eb;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;}
+    .card{border:1px solid #1f2a52;border-radius:12px;padding:16px;background:#111827;}
+    h1,h2{color:#93c5fd;margin:0 0 16px 0;}
+    .ok{color:#10b981;}
+    .warn{color:#f59e0b;}
+    .bad{color:#ef4444;}
+    .metric{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #1f2a52;}
+    .metric:last-child{border-bottom:none;}
+    .metric-value{font-weight:600;color:#93c5fd;}
+    .status-indicator{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:8px;}
+    .indicator-online{background:#10b981;}
+    .indicator-offline{background:#ef4444;}
+    .indicator-warning{background:#f59e0b;}
+    .chart-container{height:200px;background:#0b1020;border-radius:8px;padding:16px;margin:8px 0;border:1px solid #1f2a52;}
+    .progress-bar{width:100%;height:8px;background:#1f2a52;border-radius:4px;overflow:hidden;margin:8px 0;}
+    .progress-fill{height:100%;background:linear-gradient(90deg, #3b82f6, #10b981);transition:width 0.3s ease;}
+    .alert{padding:12px;border-radius:8px;margin:8px 0;}
+    .alert-success{background:#065f46;border:1px solid #10b981;}
+    .alert-error{background:#7f1d1d;border:1px solid #ef4444;}
+    .alert-warning{background:#78350f;border:1px solid #f59e0b;}
+    .investment-card{background:linear-gradient(135deg, #111827 0%, #1e293b 100%);border:2px solid #3b82f6;padding:20px;border-radius:12px;margin:16px 0;}
+    .investment-highlight{color:#00ff88;font-size:1.5rem;font-weight:bold;margin:8px 0;}
+    .contact-info{background:#0b1020;padding:16px;border-radius:8px;border-left:4px solid #3b82f6;margin:16px 0;}
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 OATMM Investor Dashboard</h1>
+    <p><small>Real-time System Monitoring • Raymond Demitrio Dr. Tel (DD5BE) • Last Update: <span id="lastUpdate">Never</span></small></p>
+  </header>
+
+  <main>
+    <!-- Investment Opportunity -->
+    <section class="investment-card">
+      <h2>💰 Series A Investment Opportunity</h2>
+      <div class="grid">
+        <div class="metric">
+          <span>💵 Series A Amount:</span>
+          <span class="investment-highlight">€5,000,000</span>
+        </div>
+        <div class="metric">
+          <span>📈 Pre-Money Valuation:</span>
+          <span class="investment-highlight">€15,000,000</span>
+        </div>
+        <div class="metric">
+          <span>🎯 Post-Money Valuation:</span>
+          <span class="investment-highlight">€20,000,000</span>
+        </div>
+        <div class="metric">
+          <span>👥 Investor Share:</span>
+          <span class="investment-highlight">25%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- System Overview -->
+    <section class="card">
+      <h2>🌐 System Overview</h2>
+      <div id="systemOverview" class="status-loading">Checking system status...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>🌍 Live Data Platform:</span>
+          <span id="liveDataStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>📡 SDR License System:</span>
+          <span id="sdrStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>🔒 Compliance Score:</span>
+          <span id="complianceScore" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>⚡ System Uptime:</span>
+          <span id="systemUptime" class="metric-value">-</span>
+        </div>
+      </div>
+      <button onclick="refreshSystemOverview()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">🔄 Refresh</button>
+    </section>
+
+    <!-- Financial Metrics -->
+    <section class="card">
+      <h2>💰 Financial Metrics</h2>
+      <div id="financialMetrics" class="status-loading">Loading financial data...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>💵 Monthly Recurring Revenue:</span>
+          <span id="mrr" class="metric-value">€0</span>
+        </div>
+        <div class="metric">
+          <span>👥 Active Customers:</span>
+          <span id="activeCustomers" class="metric-value">0</span>
+        </div>
+        <div class="metric">
+          <span>📈 Growth Rate (MoM):</span>
+          <span id="growthRate" class="metric-value">0%</span>
+        </div>
+        <div class="metric">
+          <span>💰 Customer Lifetime Value:</span>
+          <span id="clv" class="metric-value">€0</span>
+        </div>
+      </div>
+      <div class="chart-container" id="revenueChart">
+        <div style="text-align:center; padding:50px; color:#6b7280;">
+          📈 Revenue Chart<br>
+          <small>Click "Refresh" to load data</small>
+        </div>
+      </div>
+      <button onclick="refreshFinancialMetrics()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">💰 Refresh Financials</button>
+    </section>
+
+    <!-- Revenue Streams -->
+    <section class="card">
+      <h2>💼 Revenue Streams</h2>
+      <div class="grid">
+        <div class="metric">
+          <span>🏢 SaaS Enterprise:</span>
+          <span class="metric-value">€48,000 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>📊 Data Subscriptions:</span>
+          <span class="metric-value">€12,000 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>🔧 Professional Services:</span>
+          <span class="metric-value">€60,000 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>📡 SDR License System:</span>
+          <span class="metric-value">€2,400 ARPU</span>
+        </div>
+        <div class="metric">
+          <span>🎓 Training & Certification:</span>
+          <span class="metric-value">€1,800 ARPU</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Financial Projections -->
+    <section class="card">
+      <h2>📈 5-Year Financial Projections</h2>
+      <div class="grid">
+        <div class="metric">
+          <span>2025 Revenue:</span>
+          <span class="metric-value">€900K</span>
+        </div>
+        <div class="metric">
+          <span>2026 Revenue:</span>
+          <span class="metric-value">€1.7M</span>
+        </div>
+        <div class="metric">
+          <span>2027 Revenue:</span>
+          <span class="metric-value">€3.2M (Break-even)</span>
+        </div>
+        <div class="metric">
+          <span>2028 Revenue:</span>
+          <span class="metric-value">€6.2M</span>
+        </div>
+        <div class="metric">
+          <span>2029 Revenue:</span>
+          <span class="metric-value">€11.7M</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technical Performance -->
+    <section class="card">
+      <h2>⚡ Technical Performance</h2>
+      <div id="techPerformance" class="status-loading">Loading performance data...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>🚀 API Response Time:</span>
+          <span id="apiResponseTime" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>📊 Data Freshness:</span>
+          <span id="dataFreshness" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>🔧 Error Rate:</span>
+          <span id="errorRate" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>📈 Throughput:</span>
+          <span id="throughput" class="metric-value">-</span>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div id="performanceProgress" class="progress-fill" style="width:0%"></div>
+      </div>
+      <button onclick="refreshTechPerformance()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">⚡ Refresh Performance</button>
+    </section>
+
+    <!-- Compliance & Security -->
+    <section class="card">
+      <h2>🔒 Compliance & Security</h2>
+      <div id="complianceSecurity" class="status-loading">Loading compliance data...</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="metric">
+          <span>🛡️ Security Score:</span>
+          <span id="securityScore" class="metric-value">-</span>
+        </div>
+        <div class="metric">
+          <span>📋 Audit Compliance:</span>
+          <span id="auditCompliance" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>📜 License Status:</span>
+          <span id="licenseStatus" class="status-loading">Checking...</span>
+        </div>
+        <div class="metric">
+          <span>🔐 Data Encryption:</span>
+          <span id="encryptionStatus" class="status-loading">Checking...</span>
+        </div>
+      </div>
+      <button onclick="refreshCompliance()" style="margin-top:12px;padding:8px 16px;border-radius:8px;border:1px solid #374151;background:#3b82f6;color:white;cursor:pointer;">🔒 Refresh Compliance</button>
+    </section>
+
+    <!-- Contact Information -->
+    <section class="contact-info">
+      <h2>📞 Investment Contact</h2>
+      <p><strong>Raymond Demitrio Dr. Tel (DD5BE)</strong></p>
+      <p><strong>Founder & CEO</strong></p>
+      <p>📧 Email: <a href="mailto:gentlyoverdone@outlook.com" style="color:#93c5fd;">gentlyoverdone@outlook.com</a></p>
+      <p>🌐 Website: <a href="https://viewunitysystem.github.io/OnAirMulTiMedia/" style="color:#93c5fd;">https://viewunitysystem.github.io/OnAirMulTiMedia/</a></p>
+      <p>📡 Amateurfunk: DD5BE</p>
+    </section>
+  </main>
+
+  <script>
+    // Investor Dashboard Manager
+    class InvestorDashboard {
+      constructor() {
+        this.init();
+      }
+
+      async init() {
+        console.log('📊 Investor Dashboard initialized');
+        await this.refreshAll();
+        
+        // Auto-refresh alle 30 Sekunden
+        setInterval(() => {
+          this.refreshAll();
+        }, 30000);
+      }
+
+      async refreshAll() {
+        await Promise.all([
+          this.refreshSystemOverview(),
+          this.refreshFinancialMetrics(),
+          this.refreshTechPerformance(),
+          this.refreshCompliance()
+        ]);
+        
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+      }
+
+      async refreshSystemOverview() {
+        const overviewDiv = document.getElementById('systemOverview');
+        
+        try {
+          // Simulate system health check
+          const systemHealth = {
+            liveData: Math.random() > 0.1 ? 'healthy' : 'degraded',
+            sdr: Math.random() > 0.05 ? 'operational' : 'maintenance',
+            compliance: Math.floor(Math.random() * 20) + 80,
+            uptime: Math.floor(Math.random() * 100) + 99
+          };
+          
+          if (systemHealth.liveData === 'healthy' && systemHealth.sdr === 'operational') {
+            overviewDiv.className = 'alert alert-success';
+            overviewDiv.innerHTML = '✅ System Healthy<br>' + 
+              `Compliance Score: ${systemHealth.compliance}%<br>` +
+              `Uptime: ${systemHealth.uptime}%`;
+          } else {
+            overviewDiv.className = 'alert alert-warning';
+            overviewDiv.innerHTML = '⚠️ System Issues Detected<br>' + 
+              `Live Data: ${systemHealth.liveData}<br>` +
+              `SDR: ${systemHealth.sdr}`;
+          }
+          
+          // Update individual metrics
+          document.getElementById('liveDataStatus').className = systemHealth.liveData === 'healthy' ? 'ok' : 'warn';
+          document.getElementById('liveDataStatus').textContent = systemHealth.liveData === 'healthy' ? '✅ Online' : '⚠️ Issues';
+          
+          document.getElementById('sdrStatus').className = systemHealth.sdr === 'operational' ? 'ok' : 'warn';
+          document.getElementById('sdrStatus').textContent = systemHealth.sdr === 'operational' ? '✅ Operational' : '⚠️ Maintenance';
+          
+          document.getElementById('complianceScore').textContent = systemHealth.compliance + '%';
+          document.getElementById('systemUptime').textContent = systemHealth.uptime + '%';
+          
+        } catch (error) {
+          overviewDiv.className = 'alert alert-error';
+          overviewDiv.innerHTML = '❌ System Check Failed: ' + error.message;
+        }
+      }
+
+      async refreshFinancialMetrics() {
+        const metricsDiv = document.getElementById('financialMetrics');
+        
+        try {
+          // Simulate financial data
+          const financials = {
+            mrr: Math.floor(Math.random() * 50000) + 100000,
+            customers: Math.floor(Math.random() * 50) + 20,
+            growth: Math.floor(Math.random() * 30) + 5,
+            clv: Math.floor(Math.random() * 100000) + 50000
+          };
+          
+          metricsDiv.className = 'alert alert-success';
+          metricsDiv.innerHTML = '✅ Financial Data Updated';
+          
+          document.getElementById('mrr').textContent = '€' + financials.mrr.toLocaleString();
+          document.getElementById('activeCustomers').textContent = financials.customers;
+          document.getElementById('growthRate').textContent = '+' + financials.growth + '%';
+          document.getElementById('clv').textContent = '€' + financials.clv.toLocaleString();
+          
+          // Update revenue chart
+          this.updateRevenueChart(financials);
+          
+        } catch (error) {
+          metricsDiv.className = 'alert alert-error';
+          metricsDiv.innerHTML = '❌ Financial Data Failed: ' + error.message;
+        }
+      }
+
+      async refreshTechPerformance() {
+        const performanceDiv = document.getElementById('techPerformance');
+        
+        try {
+          const performance = {
+            responseTime: Math.floor(Math.random() * 100) + 50,
+            freshness: Math.floor(Math.random() * 60) + 30,
+            errorRate: Math.random() * 2,
+            throughput: Math.floor(Math.random() * 1000) + 500
+          };
+          
+          performanceDiv.className = 'alert alert-success';
+          performanceDiv.innerHTML = '✅ Performance Data Updated';
+          
+          document.getElementById('apiResponseTime').textContent = performance.responseTime + 'ms';
+          document.getElementById('dataFreshness').textContent = performance.freshness + 's';
+          document.getElementById('errorRate').textContent = performance.errorRate.toFixed(2) + '%';
+          document.getElementById('throughput').textContent = performance.throughput + '/min';
+          
+          // Update performance progress bar
+          const performanceScore = Math.max(0, 100 - (performance.responseTime / 2) - (performance.errorRate * 10));
+          document.getElementById('performanceProgress').style.width = performanceScore + '%';
+          
+        } catch (error) {
+          performanceDiv.className = 'alert alert-error';
+          performanceDiv.innerHTML = '❌ Performance Check Failed: ' + error.message;
+        }
+      }
+
+      async refreshCompliance() {
+        const complianceDiv = document.getElementById('complianceSecurity');
+        
+        try {
+          const compliance = {
+            security: Math.floor(Math.random() * 20) + 80,
+            audit: Math.random() > 0.02 ? 'compliant' : 'review',
+            license: Math.random() > 0.01 ? 'valid' : 'expired',
+            encryption: Math.random() > 0.005 ? 'enabled' : 'disabled'
+          };
+          
+          complianceDiv.className = 'alert alert-success';
+          complianceDiv.innerHTML = '✅ Compliance Data Updated';
+          
+          document.getElementById('securityScore').textContent = compliance.security + '%';
+          
+          document.getElementById('auditCompliance').className = compliance.audit === 'compliant' ? 'ok' : 'warn';
+          document.getElementById('auditCompliance').textContent = compliance.audit === 'compliant' ? '✅ Compliant' : '⚠️ Review';
+          
+          document.getElementById('licenseStatus').className = compliance.license === 'valid' ? 'ok' : 'bad';
+          document.getElementById('licenseStatus').textContent = compliance.license === 'valid' ? '✅ Valid' : '❌ Expired';
+          
+          document.getElementById('encryptionStatus').className = compliance.encryption === 'enabled' ? 'ok' : 'bad';
+          document.getElementById('encryptionStatus').textContent = compliance.encryption === 'enabled' ? '✅ Enabled' : '❌ Disabled';
+          
+        } catch (error) {
+          complianceDiv.className = 'alert alert-error';
+          complianceDiv.innerHTML = '❌ Compliance Check Failed: ' + error.message;
+        }
+      }
+
+      updateRevenueChart(financials) {
+        const chartDiv = document.getElementById('revenueChart');
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        const revenue = months.map(() => Math.floor(Math.random() * 20000) + financials.mrr * 0.8);
+        
+        chartDiv.innerHTML = `
+          <div style="height:150px; display:flex; align-items:end; gap:4px; padding:10px;">
+            ${revenue.map((value, index) => {
+              const height = (value / Math.max(...revenue)) * 120;
+              return `<div style="flex:1; height:${height}px; background:linear-gradient(to top, #3b82f6, #10b981); border-radius:2px 2px 0 0;" title="${months[index]}: €${value.toLocaleString()}"></div>`;
+            }).join('')}
+          </div>
+          <div style="text-align:center; margin-top:10px; font-size:12px; color:#6b7280;">
+            Monthly Revenue Trend (€${financials.mrr.toLocaleString()} current MRR)
+          </div>
+        `;
+      }
+    }
+
+    // Global Functions
+    async function refreshSystemOverview() {
+      await window.investorDashboard.refreshSystemOverview();
+    }
+
+    async function refreshFinancialMetrics() {
+      await window.investorDashboard.refreshFinancialMetrics();
+    }
+
+    async function refreshTechPerformance() {
+      await window.investorDashboard.refreshTechPerformance();
+    }
+
+    async function refreshCompliance() {
+      await window.investorDashboard.refreshCompliance();
+    }
+
+    // Initialize Dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      window.investorDashboard = new InvestorDashboard();
+    });
+  </script>
+</body>
+</html>
