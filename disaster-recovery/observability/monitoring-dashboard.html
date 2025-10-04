@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DR Monitoring Dashboard</title>
+    <style>
+        :root {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --border-color: #374151;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar h2 {
+            color: var(--accent-blue);
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status-healthy {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow);
+        }
+
+        .status-critical {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-trend {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .trend-up {
+            color: var(--accent-green);
+        }
+
+        .trend-down {
+            color: var(--accent-red);
+        }
+
+        .trend-stable {
+            color: var(--text-secondary);
+        }
+
+        .incident-timeline {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .timeline-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .timeline-status.completed {
+            background: var(--accent-green);
+        }
+
+        .timeline-status.running {
+            background: var(--accent-blue);
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-status.failed {
+            background: var(--accent-red);
+        }
+
+        .timeline-status.pending {
+            background: var(--text-secondary);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .timeline-description {
+            flex: 1;
+        }
+
+        .policy-gates {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .gate-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .gate-item:last-child {
+            border-bottom: none;
+        }
+
+        .gate-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .gate-status.pass {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .gate-status.fail {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .gate-status.running {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .gate-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .gate-duration {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .refresh-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #2563eb;
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .auto-refresh input[type="checkbox"] {
+            accent-color: var(--accent-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <nav class="sidebar">
+            <h2>🚨 DR Monitor</h2>
+            <a href="#" class="nav-item active">📊 Dashboard</a>
+            <a href="#" class="nav-item">📈 Metrics</a>
+            <a href="#" class="nav-item">🔍 Incidents</a>
+            <a href="#" class="nav-item">🛡️ Policy Gates</a>
+            <a href="#" class="nav-item">📡 SDR Status</a>
+            <a href="#" class="nav-item">🔐 Security</a>
+            <a href="#" class="nav-item">📋 Audit Log</a>
+            <a href="#" class="nav-item">⚙️ Settings</a>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <div>
+                    <h1>Disaster Recovery Monitoring</h1>
+                    <p>Real-time status and health monitoring</p>
+                </div>
+                <div>
+                    <span class="status-indicator status-healthy" id="overall-status">
+                        ✅ System Healthy
+                    </span>
+                    <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+                    <div class="auto-refresh">
+                        <input type="checkbox" id="auto-refresh" checked>
+                        <label for="auto-refresh">Auto-refresh</label>
+                    </div>
+                </div>
+            </header>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-title">RPO (Recovery Point Objective)</div>
+                    <div class="metric-value" id="rpo-value">0s</div>
+                    <div class="metric-trend trend-stable">
+                        📍 Within target (≤60s)
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">RTO (Recovery Time Objective)</div>
+                    <div class="metric-value" id="rto-value">45m</div>
+                    <div class="metric-trend trend-up">
+                        ⬆️ 15m better than target
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Active Incidents</div>
+                    <div class="metric-value" id="incidents-value">0</div>
+                    <div class="metric-trend trend-stable">
+                        📍 No active incidents
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-title">Policy Gate Success Rate</div>
+                    <div class="metric-value" id="gates-value">100%</div>
+                    <div class="metric-trend trend-up">
+                        ⬆️ All gates passing
+                    </div>
+                </div>
+            </div>
+
+            <div class="incident-timeline">
+                <h3>📋 Current Incident Timeline</h3>
+                <div id="timeline-container">
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:32:15</div>
+                        <div class="timeline-status completed"></div>
+                        <div class="timeline-description">
+                            <strong>Pre-Gates Completed</strong><br>
+                            All policy gates passed successfully
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:35:42</div>
+                        <div class="timeline-status completed"></div>
+                        <div class="timeline-description">
+                            <strong>Infrastructure Provisioned</strong><br>
+                            Target region resources allocated
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">14:42:18</div>
+                        <div class="timeline-status running"></div>
+                        <div class="timeline-description">
+                            <strong>Data Restore in Progress</strong><br>
+                            Restoring from backup point 2025-10-04T14:00:00Z
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">--:--:--</div>
+                        <div class="timeline-status pending"></div>
+                        <div class="timeline-description">
+                            <strong>Application Startup</strong><br>
+                            Waiting for data restore completion
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">--:--:--</div>
+                        <div class="timeline-status pending"></div>
+                        <div class="timeline-description">
+                            <strong>DNS Cutover</strong><br>
+                            Traffic routing update pending
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="policy-gates">
+                <h3>🛡️ Policy Gates Status</h3>
+                <div id="gates-container">
+                    <div class="gate-item">
+                        <div class="gate-status pass">✓</div>
+                        <div class="gate-name">Artifact Integrity</div>
+                        <div class="gate-duration">2.3s</div>
+                    </div>
+                    <div class="gate-item">
+                        <div class="gate-status pass">✓</div>
+                        <div class="gate-name">SBOM Conformity</div>
+                        <div class="gate-duration">1.8s</div>
+                    </div>
+                    <div class="gate-item">
+                        <div class="gate-status pass">✓</div>
+                        <div class="gate-name">Capacity Ready</div>
+                        <div class="gate-duration">4.1s</div>
+                    </div>
+                    <div class="gate-item">
+                        <div class="gate-status pass">✓</div>
+                        <div class="gate-name">KMS Boundaries</div>
+                        <div class="gate-duration">3.2s</div>
+                    </div>
+                    <div class="gate-item">
+                        <div class="gate-status pass">✓</div>
+                        <div class="gate-name">Data Restore Safe</div>
+                        <div class="gate-duration">5.7s</div>
+                    </div>
+                    <div class="gate-item">
+                        <div class="gate-status running">⟳</div>
+                        <div class="gate-name">SDR TX Policy Validation</div>
+                        <div class="gate-duration">--</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Real-time monitoring simulation
+        let autoRefreshInterval;
+        let isAutoRefresh = true;
+
+        function refreshData() {
+            // Simulate data refresh
+            console.log('Refreshing monitoring data...');
+            
+            // Update metrics with slight variations
+            updateMetrics();
+            
+            // Update timeline status
+            updateTimeline();
+            
+            // Update policy gates
+            updatePolicyGates();
+        }
+
+        function updateMetrics() {
+            // Simulate RPO/RTO updates
+            const rpoElement = document.getElementById('rpo-value');
+            const rtoElement = document.getElementById('rto-value');
+            
+            // Add slight random variation
+            const rpoVariation = Math.floor(Math.random() * 5);
+            const rtoVariation = Math.floor(Math.random() * 10);
+            
+            rpoElement.textContent = `${rpoVariation}s`;
+            rtoElement.textContent = `${45 - rtoVariation}m`;
+        }
+
+        function updateTimeline() {
+            // Simulate timeline progression
+            const runningItems = document.querySelectorAll('.timeline-status.running');
+            const pendingItems = document.querySelectorAll('.timeline-status.pending');
+            
+            // Randomly complete a running item
+            if (runningItems.length > 0 && Math.random() < 0.1) {
+                const item = runningItems[0];
+                item.classList.remove('running');
+                item.classList.add('completed');
+                
+                // Move next pending item to running
+                if (pendingItems.length > 0) {
+                    pendingItems[0].classList.remove('pending');
+                    pendingItems[0].classList.add('running');
+                }
+            }
+        }
+
+        function updatePolicyGates() {
+            // Simulate gate status updates
+            const runningGates = document.querySelectorAll('.gate-status.running');
+            
+            if (runningGates.length > 0 && Math.random() < 0.15) {
+                const gate = runningGates[0];
+                gate.classList.remove('running');
+                gate.classList.add('pass');
+                gate.textContent = '✓';
+                
+                // Add duration
+                const duration = gate.parentElement.querySelector('.gate-duration');
+                duration.textContent = `${(Math.random() * 5 + 1).toFixed(1)}s`;
+            }
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            if (isAutoRefresh) {
+                autoRefreshInterval = setInterval(refreshData, 5000); // Refresh every 5 seconds
+            }
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('auto-refresh').addEventListener('change', function(e) {
+            isAutoRefresh = e.target.checked;
+            if (isAutoRefresh) {
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            startAutoRefresh();
+            
+            // Initial data load
+            refreshData();
+            
+            // Simulate some initial activity
+            setTimeout(() => {
+                const statusIndicator = document.getElementById('overall-status');
+                statusIndicator.className = 'status-indicator status-warning';
+                statusIndicator.innerHTML = '⚠️ DR in Progress';
+            }, 2000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            stopAutoRefresh();
+        });
+    </script>
+</body>
+</html>

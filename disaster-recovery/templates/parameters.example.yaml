@@ -1,0 +1,77 @@
+# Example DR Trigger Parameters (YAML)
+# Build: 2025-10-04T154900Z UTC
+
+# === KERN-PARAMETER ===
+targetRegion: eu-central-1
+restorePoint: latest
+hostType: alternate
+restoreMode: full
+configSource: original
+complianceProfile: EU-Strict
+
+# === SICHERHEITS-PARAMETER ===
+allowReplace: false
+incidentId: INC-20251004-A1B2C3
+approvalTokens:
+  - "APPROVAL-TOKEN-IC-${IC_USER_ID}"
+  - "APPROVAL-TOKEN-SECURITY-${SECURITY_USER_ID}"
+  - "APPROVAL-TOKEN-COMPLIANCE-${COMPLIANCE_USER_ID}"
+
+# === NETZWERK-PARAMETER ===
+dnsCutoverTTL: 60
+
+# === DATEN-PARAMETER ===
+pitrWindowDays: 14
+evidenceRetentionDays: 365
+
+# === SDR-SPEZIFISCHE PARAMETER ===
+sdrStartMode: rx-only
+txPolicyValidation: true
+
+# === COMPLIANCE-PARAMETER ===
+wormArchiveRequired: true
+
+# === ERWEITERTE PARAMETER ===
+# Automatische Rollback-Schwellwerte
+autoRollbackThresholds:
+  rtoMinutes: 60
+  errorRatePercent: 5
+  consistencyCheckFailures: 3
+
+# Monitoring-Parameter
+monitoringConfig:
+  healthCheckIntervalSeconds: 30
+  alertingChannels:
+    - "slack-incident-channel"
+    - "pagerduty-incident-commander"
+  escalationMinutes: 15
+
+# Ressourcen-Limits
+resourceLimits:
+  maxConcurrentRestores: 3
+  maxDataTransferGB: 1000
+  maxRestoreDurationMinutes: 120
+
+# Geografische Beschränkungen
+geographicConstraints:
+  allowedRegions:
+    - "eu-central-1"
+    - "eu-west-1"
+    - "eu-north-1"
+  restrictedCountries:
+    - "CN"
+    - "RU"
+    - "IR"
+
+# Verschlüsselungs-Parameter
+encryptionConfig:
+  kmsKeyId: "alias/onair-d r-kms-key"
+  encryptionAlgorithm: "AES-256-GCM"
+  keyRotationDays: 90
+
+# Backup-Validierung
+backupValidation:
+  checksumVerification: true
+  malwareScan: true
+  integrityTest: true
+  performanceTest: true

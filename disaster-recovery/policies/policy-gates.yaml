@@ -1,0 +1,269 @@
+# Policy-as-Code Gates für Disaster Recovery
+# Version: 1.0.0
+# Build: 2025-10-04T154900Z UTC
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dr-policy-gates
+  namespace: disaster-recovery
+data:
+  # === PRE-GATES (Vor DR-Ausführung) ===
+  pre-gates.yaml: |
+    policies:
+      - name: "ArtifactIntegrity"
+        description: "Hash/Signature muss mit vertrauenswürdigem Manifest übereinstimmen"
+        severity: "critical"
+        checks:
+          - type: "hash-verification"
+            algorithm: "sha256"
+            manifest: "/trusted/manifest.json"
+            required: true
+          - type: "signature-verification"
+            algorithm: "gpg"
+            keyring: "/trusted/keys.gpg"
+            required: true
+          - type: "sbom-verification"
+            format: "spdx"
+            allowlist: "/trusted/sbom-allowlist.json"
+            required: true
+
+      - name: "SBOMConform"
+        description: "SBOM entspricht der Allow-List"
+        severity: "critical"
+        checks:
+          - type: "component-allowlist"
+            source: "/trusted/component-allowlist.json"
+            strict: true
+          - type: "vulnerability-scan"
+            max-severity: "medium"
+            cve-database: "updated"
+            required: true
+
+      - name: "CapacityReady"
+        description: "Zielregion hat ausreichende Kapazität und Quotas"
+        severity: "critical"
+        checks:
+          - type: "resource-quota"
+            cpu: ">= 16 cores"
+            memory: ">= 64GB"
+            storage: ">= 1TB"
+          - type: "network-bandwidth"
+            min-bandwidth: "1Gbps"
+            latency-threshold: "100ms"
+          - type: "availability-zone"
+            min-azs: 2
+            required: true
+
+      - name: "KMSBoundaries"
+        description: "Schlüssel aus korrekter Domain; Cross-Account-Grants auditiert"
+        severity: "critical"
+        checks:
+          - type: "kms-domain-check"
+            allowed-domains: ["prod", "dr", "vault"]
+            cross-domain-audit: true
+          - type: "key-rotation"
+            max-age-days: 90
+            rotation-required: true
+          - type: "access-policy"
+            least-privilege: true
+            time-bound: true
+
+      - name: "DataRestoreSafe"
+        description: "PITR-Punkt innerhalb Fenster; Malware-Scan-Ergebnisse sauber"
+        severity: "critical"
+        checks:
+          - type: "pitr-window"
+            max-age-hours: 336  # 14 Tage
+            consistency-check: true
+          - type: "malware-scan"
+            engines: ["clamav", "yara"]
+            quarantine-on-find: true
+            required: true
+          - type: "backup-integrity"
+            checksum-verification: true
+            encryption-verification: true
+
+  # === POST-GATES (Nach DR-Ausführung) ===
+  post-gates.yaml: |
+    policies:
+      - name: "HealthCheckPass"
+        description: "Alle Health-Checks bestanden"
+        severity: "critical"
+        checks:
+          - type: "smoke-tests"
+            endpoints: ["/health", "/ready", "/live"]
+            timeout: 30
+            retries: 3
+          - type: "performance-tests"
+            response-time: "< 500ms"
+            throughput: "> 100 req/s"
+            error-rate: "< 1%"
+
+      - name: "DataConsistency"
+        description: "Daten-Konsistenz zwischen Regionen"
+        severity: "critical"
+        checks:
+          - type: "cross-region-sync"
+            max-lag-seconds: 60
+            consistency-level: "strong"
+          - type: "referential-integrity"
+            foreign-keys: true
+            constraints: true
+          - type: "business-logic-validation"
+            rules: "/validation/business-rules.json"
+
+      - name: "SDRPolicyPass"
+        description: "TX-Policy Re-Validierung erfolgreich; sonst RX-Only-Modus"
+        severity: "critical"
+        checks:
+          - type: "tx-policy-validation"
+            bandplan-compliance: true
+            power-limits: true
+            license-status: true
+          - type: "hardware-attestation"
+            tpm-verification: true
+            driver-compatibility: true
+          - type: "regulatory-compliance"
+            jurisdiction: "EU"
+            frequency-allocations: true
+
+      - name: "SecurityPosture"
+        description: "Sicherheitslage nach Restore"
+        severity: "high"
+        checks:
+          - type: "network-security"
+            firewall-rules: true
+            mTLS-enabled: true
+            egress-controls: true
+          - type: "access-control"
+            rbac-valid: true
+            principle-of-least-privilege: true
+          - type: "monitoring-enabled"
+            logging: true
+            metrics: true
+            alerting: true
+
+  # === SDR-SPEZIFISCHE POLICIES ===
+  sdr-policies.yaml: |
+    policies:
+      - name: "SDRHardwareValidation"
+        description: "SDR-Hardware-Kompatibilität und -Konfiguration"
+        severity: "critical"
+        checks:
+          - type: "hardware-profile"
+            profiles: ["hackrf", "rtlsdr", "limesdr", "usrp"]
+            driver-compatibility: true
+          - type: "frequency-capability"
+            min-frequency: "1MHz"
+            max-frequency: "6GHz"
+            bandwidth: ">= 20MHz"
+          - type: "power-limits"
+            max-power-dbm: 10
+            attenuation-available: true
+
+      - name: "TXPolicyCompliance"
+        description: "Transmissions-Policy-Compliance"
+        severity: "critical"
+        checks:
+          - type: "bandplan-compliance"
+            jurisdiction: "EU"
+            frequency-allocations: "/regulatory/eu-bandplan.json"
+            power-limits: "/regulatory/power-limits.json"
+          - type: "license-validation"
+            license-required: true
+            license-active: true
+            license-scope: "validated"
+          - type: "transmission-gates"
+            tx-enabled: false  # Default: RX-only
+            manual-override-required: true
+            approval-workflow: true
+
+      - name: "RFCompliance"
+        description: "RF-Regulierungs-Compliance"
+        severity: "critical"
+        checks:
+          - type: "spectrum-compliance"
+            spurious-emissions: "within-limits"
+            harmonic-distortion: "within-limits"
+          - type: "interference-prevention"
+            listen-before-talk: true
+            dynamic-frequency-selection: true
+          - type: "emergency-stop"
+            kill-switch-available: true
+            immediate-shutdown: true
+
+  # === COMPLIANCE-PROFILE ABHÄNGIGE POLICIES ===
+  compliance-profiles.yaml: |
+    profiles:
+      EU-Strict:
+        description: "Strikte EU-Compliance (DSGVO, CE, etc.)"
+        policies:
+          - "DataRetentionGDPR"
+          - "CrossBorderTransfer"
+          - "RightToErasure"
+          - "DataPortability"
+        retention-days: 1095  # 3 Jahre max
+        encryption-required: true
+        audit-logging: mandatory
+
+      US-Strict:
+        description: "US-Compliance (SOX, HIPAA, etc.)"
+        policies:
+          - "SOXCompliance"
+          - "HIPAACompliance"
+          - "FIPS140-2"
+        retention-days: 2555  # 7 Jahre
+        encryption-required: true
+        audit-logging: mandatory
+
+      Global-Standard:
+        description: "Internationale Standards"
+        policies:
+          - "ISO27001"
+          - "SOC2"
+          - "PCI-DSS"
+        retention-days: 365
+        encryption-required: true
+        audit-logging: recommended
+
+  # === POLICY DECISION OUTCOMES ===
+  decision-outcomes.yaml: |
+    outcomes:
+      allow:
+        description: "Policy erfüllt, Fortfahren erlaubt"
+        action: "continue"
+        log-level: "info"
+
+      deny:
+        description: "Policy verletzt, Fortfahren verweigert"
+        action: "abort"
+        log-level: "error"
+        escalation: "immediate"
+
+      defer:
+        description: "Manuelle Freigabe durch Incident Commander erforderlich"
+        action: "wait-for-approval"
+        log-level: "warning"
+        escalation: "ic-approval"
+        timeout-minutes: 15
+
+  # === POLICY GATE EXECUTION ===
+  gate-execution.yaml: |
+    execution:
+      parallel-execution: false  # Sequential für deterministische Ergebnisse
+      timeout-per-policy: 300    # 5 Minuten pro Policy
+      retry-attempts: 3
+      retry-delay-seconds: 10
+      
+      failure-handling:
+        critical-failure: "abort-immediately"
+        high-failure: "escalate-to-ic"
+        medium-failure: "log-and-continue"
+        low-failure: "log-only"
+
+      reporting:
+        real-time-alerts: true
+        audit-logging: mandatory
+        evidence-collection: required
+        compliance-reporting: automatic
