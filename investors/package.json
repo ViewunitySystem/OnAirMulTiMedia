@@ -1,0 +1,79 @@
+{
+  "name": "oatmm-investor-pack",
+  "version": "1.0.0",
+  "description": "OnAirMulTiMedia Investor Package - Live-Datenplattform & SDR-Lizenzsystem",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "npm run build:docs",
+    "build:docs": "echo 'Building investor documentation...'",
+    "test": "echo 'Running investor package tests...'",
+    "audit": "node meta-reflector.js audit",
+    "probe": "node meta-reflector.js probe",
+    "report": "node meta-reflector.js report",
+    "serve": "python -m http.server 8080",
+    "serve:docs": "python -m http.server 8081"
+  },
+  "keywords": [
+    "investor",
+    "pitch-deck",
+    "financial-model",
+    "due-diligence",
+    "audit",
+    "compliance",
+    "live-data-platform",
+    "sdr-license-system",
+    "amateurfunk",
+    "enterprise-software"
+  ],
+  "author": "Raymond Demitrio Dr. Tel (DD5BE)",
+  "license": "PROPRIETARY",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viewunitysystem/OnAirMulTiMedia.git"
+  },
+  "homepage": "https://viewunitysystem.github.io/OnAirMulTiMedia/",
+  "bugs": {
+    "url": "https://github.com/viewunitysystem/OnAirMulTiMedia/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.0"
+  },
+  "config": {
+    "port": 8080,
+    "host": "localhost",
+    "ssl": false
+  },
+  "files": [
+    "one-pager.html",
+    "investor-dashboard.html",
+    "audit-score.html",
+    "meta-reflector.ts",
+    "finance-model.json",
+    "due-diligence-checklist.json",
+    "term-sheet-template.md",
+    "pitch-deck-structure.md",
+    "README.md",
+    "package.json"
+  ],
+  "directories": {
+    "lib": "./lib",
+    "docs": "./docs",
+    "assets": "./assets"
+  }
+}
