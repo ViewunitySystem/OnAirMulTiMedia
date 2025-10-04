@@ -4,9 +4,9 @@
  * TypeScript Implementation für type-safe recovery operations
  */
 
-import { readFile, writeFile, appendFile, stat, mkdir } from 'node:fs/promises';
-import { join, dirname, basename } from 'node:path';
-import { fixLog, fixLoggers } from './fix-log.js';
+import { readFile, writeFile, stat } from 'node:fs/promises';
+import { join, basename } from 'node:path';
+import { fixLoggers } from './fix-log.js';
 
 export interface RecoveryAction {
   rule: string;
@@ -135,7 +135,7 @@ export class RestoreEngine {
       this.updateStats(result, rule, 'high');
 
       // Log the failure
-      await fixLoggers.recoveryFailed(rule, url, result.error);
+      await fixLoggers.recoveryFailed(rule, url, result.error || 'Unknown error');
 
       console.error(`❌ [restore-engine] Recovery failed: ${result.error}`);
       return result;
@@ -145,7 +145,7 @@ export class RestoreEngine {
   /**
    * Recover 404 errors
    */
-  private async recover404(url: string, config: any, detail?: any): Promise<RecoveryResult> {
+  private async recover404(url: string, config: any, _detail?: any): Promise<RecoveryResult> {
     try {
       // Check if file exists
       const filePath = url.startsWith('/') ? url.substring(1) : url;
@@ -197,7 +197,7 @@ export class RestoreEngine {
   /**
    * Recover CSP violations
    */
-  private async recoverCSP(url: string, config: any, detail?: any): Promise<RecoveryResult> {
+  private async recoverCSP(url: string, config: any, _detail?: any): Promise<RecoveryResult> {
     try {
       const filePath = url.startsWith('/') ? url.substring(1) : url;
       
@@ -237,7 +237,7 @@ export class RestoreEngine {
   /**
    * Recover asset loading errors
    */
-  private async recoverAssets(url: string, config: any, detail?: any): Promise<RecoveryResult> {
+  private async recoverAssets(url: string, config: any, _detail?: any): Promise<RecoveryResult> {
     try {
       const filePath = url.startsWith('/') ? url.substring(1) : url;
       
@@ -280,7 +280,7 @@ export class RestoreEngine {
   /**
    * Recover timeout errors
    */
-  private async recoverTimeout(url: string, config: any, detail?: any): Promise<RecoveryResult> {
+  private async recoverTimeout(url: string, config: any, _detail?: any): Promise<RecoveryResult> {
     try {
       const maxRetries = config.maxRetries || 3;
       const backoffMs = config.backoffMs || 1000;
@@ -316,7 +316,7 @@ export class RestoreEngine {
   /**
    * Generic recovery for unknown rules
    */
-  private async recoverGeneric(url: string, rule: string, config: any, detail?: any): Promise<RecoveryResult> {
+  private async recoverGeneric(url: string, rule: string, _config: any, _detail?: any): Promise<RecoveryResult> {
     try {
       // Generic recovery - log and continue
       console.log(`🔧 [restore-engine] Generic recovery for ${rule} on ${url}`);

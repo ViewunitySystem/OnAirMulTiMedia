@@ -151,7 +151,7 @@ class SystemErrorDetector {
   async checkApiBackend() {
     try {
       // Prüfe Cloudflare Worker API
-      const response = await fetch('/api/health', { 
+      const response = await fetch('http://localhost:8080/api/health', { 
         method: 'GET',
         cache: 'no-cache',
         mode: 'cors'
@@ -392,7 +392,7 @@ class SystemErrorDetector {
   async fixApiBackend() {
     try {
       // Versuche API-Verbindung wiederherzustellen
-      const response = await fetch('/api/health', {
+      const response = await fetch('http://localhost:8080/api/health', {
         method: 'GET',
         cache: 'no-cache'
       });

@@ -131,6 +131,20 @@ pub fn create_api_routes(
         .and(warp::path("details"))
         .and_then(handle_community_details);
 
+    // Health check endpoint
+    let health = warp::path("api")
+        .and(warp::path("health"))
+        .and(warp::get())
+        .and_then(handle_health_check);
+
+    // Sync endpoint for platform synchronization
+    let sync = warp::path("api")
+        .and(warp::path("sync"))
+        .and(warp::path("sync"))
+        .and(warp::post())
+        .and(warp::body::json())
+        .and_then(handle_sync_request);
+
     // Audit endpoint
     let audit = warp::path("api")
         .and(warp::path("audit"))
@@ -140,7 +154,9 @@ pub fn create_api_routes(
 
     warp::any()
         .and(
-            proxy
+            health
+                .or(sync)
+                .or(proxy)
                 .or(royalty)
                 .or(spectrum)
                 .or(presets)
@@ -217,7 +233,7 @@ async fn handle_royalty_event(
     event: RoyaltyEvent,
     state: Arc<Mutex<SDRState>>,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    let mut sdr_state = state.lock().await;
+    let sdr_state = state.lock().await;
     sdr_state.royalty_queue.lock().await.push(event);
     
     Ok(warp::reply::json(&json!({"status": "success"})))
@@ -380,14 +396,28 @@ async fn handle_presets_request(
 async fn handle_hardware_status(
     state: Arc<Mutex<SDRState>>,
 ) -> Result<impl warp::Reply, warp::Rejection> {
-    let sdr_state = state.lock().await;
+    let mut sdr_state = state.lock().await;
+    
+    // Get real hardware status from VodafoneSDR
+    let signal_quality = sdr_state.controller.get_signal_quality().unwrap_or((-100, -20, 0));
+    let network_info = sdr_state.controller.get_network_info().unwrap_or_else(|_| "Unknown".to_string());
+    let current_freq = sdr_state.controller.get_current_frequency();
+    let current_band = sdr_state.controller.get_current_band();
     
     let hardware_status = json!({
         "device": "HFRF-Universal-SDR",
         "status": "connected",
         "capabilities": ["RX", "TX", "Spectrum", "IQ"],
         "temperature": 45.2,
-        "power_level": -10.5
+        "power_level": -10.5,
+        "signal_quality": {
+            "rssi": signal_quality.0,
+            "snr": signal_quality.1,
+            "ber": signal_quality.2
+        },
+        "network_info": network_info,
+        "current_frequency": current_freq,
+        "current_band": current_band
     });
     
     Ok(warp::reply::json(&hardware_status))
@@ -405,9 +435,32 @@ async fn handle_transmit_request(
     
     if let Some(frequency) = request.get("frequency").and_then(|v| v.as_f64()) {
         sdr_state.current_frequency = frequency;
+        
+        // Set frequency on hardware
+        if let Err(e) = sdr_state.controller.set_frequency(frequency) {
+            return Ok(warp::reply::json(&json!({
+                "status": "error",
+                "message": format!("Failed to set frequency: {}", e)
+            })));
+        }
     }
     
-    Ok(warp::reply::json(&json!({"status": "success"})))
+    // Test transmission if data provided
+    if let Some(data) = request.get("data").and_then(|v| v.as_str()) {
+        let iq_data: Vec<f32> = data.bytes().map(|b| b as f32 / 128.0 - 1.0).collect();
+        if let Err(e) = sdr_state.controller.transmit_signal(&iq_data) {
+            return Ok(warp::reply::json(&json!({
+                "status": "error",
+                "message": format!("Transmission failed: {}", e)
+            })));
+        }
+    }
+    
+    Ok(warp::reply::json(&json!({
+        "status": "success",
+        "frequency": sdr_state.current_frequency,
+        "preset": sdr_state.current_preset
+    })))
 }
 
 async fn handle_frequency_request(
@@ -418,7 +471,23 @@ async fn handle_frequency_request(
     
     if let Some(frequency) = request.get("frequency").and_then(|v| v.as_f64()) {
         sdr_state.current_frequency = frequency;
-        Ok(warp::reply::json(&json!({"status": "success", "frequency": frequency})))
+        
+        // Set frequency on hardware
+        match sdr_state.controller.set_frequency(frequency) {
+            Ok(_) => {
+                Ok(warp::reply::json(&json!({
+                    "status": "success",
+                    "frequency": frequency,
+                    "band": sdr_state.controller.get_current_band()
+                })))
+            },
+            Err(e) => {
+                Ok(warp::reply::json(&json!({
+                    "status": "error",
+                    "message": format!("Failed to set frequency: {}", e)
+                })))
+            }
+        }
     } else {
         Ok(warp::reply::json(&json!({"error": "Invalid frequency"})))
     }
@@ -512,6 +581,32 @@ async fn handle_community_details() -> Result<impl warp::Reply, warp::Rejection>
     });
     
     Ok(warp::reply::json(&details))
+}
+
+async fn handle_health_check() -> Result<impl warp::Reply, warp::Rejection> {
+    Ok(warp::reply::json(&json!({
+        "status": "healthy",
+        "timestamp": chrono::Utc::now().timestamp(),
+        "version": "1.0.0",
+        "services": {
+            "sdr": "running",
+            "api": "running",
+            "canvas": "running"
+        }
+    })))
+}
+
+async fn handle_sync_request(
+    sync_data: serde_json::Value,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    println!("🔄 Sync request received: {:?}", sync_data);
+    
+    Ok(warp::reply::json(&json!({
+        "status": "success",
+        "message": "Platform synchronized",
+        "timestamp": chrono::Utc::now().timestamp(),
+        "synced_data": sync_data
+    })))
 }
 
 async fn handle_audit_event(

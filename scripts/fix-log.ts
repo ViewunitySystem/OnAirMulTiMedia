@@ -5,7 +5,6 @@
  */
 
 import { appendFile, readFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
 
 export interface FixLogEntry {
   rule: string;

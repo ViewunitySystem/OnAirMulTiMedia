@@ -16,7 +16,14 @@ export default defineConfig({
       'build',
       'target',
       'coverage',
-      '.nyc_output'
+      '.nyc_output',
+      'tests/e2e/**',
+      'tests/**/*.e2e.ts',
+      'tests/**/playwright/**',
+      '**/functions/**',
+      '**/node_modules/**',
+      '**/*.playwright.ts',
+      '**/*.e2e.ts'
     ],
     coverage: {
       provider: 'v8',

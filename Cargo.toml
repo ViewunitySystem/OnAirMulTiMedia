@@ -2,6 +2,7 @@
 name = "hfrf-universal-sdr"
 version = "1.0.0"
 edition = "2021"
+default-run = "canvas_server"
 
 [dependencies]
 num-complex = "0.4"

@@ -2,7 +2,6 @@
 // OAMTM musikalische Entwicklungsumgebung
 
 import { promises as fs } from 'fs';
-import path from 'path';
 
 interface BugEvent {
   timestamp: string;
@@ -95,12 +94,12 @@ export class ComposerEngine {
     }
   };
 
-  private readonly chordProgressions: { [key: string]: string[] } = {
-    'happy': ['C', 'G', 'Am', 'F'],
-    'sad': ['Am', 'F', 'C', 'G'],
-    'dramatic': ['Em', 'C', 'G', 'D'],
-    'mysterious': ['Dm', 'Bb', 'F', 'C']
-  };
+  // private readonly _chordProgressions: { [key: string]: string[] } = {
+  //   'happy': ['C', 'G', 'Am', 'F'],
+  //   'sad': ['Am', 'F', 'C', 'G'],
+  //   'dramatic': ['Em', 'C', 'G', 'D'],
+  //   'mysterious': ['Dm', 'Bb', 'F', 'C']
+  // };
 
   constructor() {
     this.loadBugEvents();
@@ -146,7 +145,7 @@ export class ComposerEngine {
   }
 
   // Bug-Typ zu Tonart-Mapping
-  private mapBugToTonality(bugType: string, severity: string): { key: string; scale: Scale; mood: string } {
+  private mapBugToTonality(bugType: string, _severity: string): { key: string; scale: Scale; mood: string } {
     const mappings = {
       'bug': { key: 'A_minor', mood: 'dramatic' },
       'error': { key: 'E_minor', mood: 'mysterious' },
@@ -157,6 +156,10 @@ export class ComposerEngine {
 
     const mapping = mappings[bugType as keyof typeof mappings] || mappings['bug'];
     const scale = this.scales[mapping.key];
+    
+    if (!scale) {
+      throw new Error(`Scale not found for key: ${mapping.key}`);
+    }
     
     return {
       key: mapping.key,
@@ -171,7 +174,7 @@ export class ComposerEngine {
     if (totalEvents === 0) return 100;
 
     const fixEvents = events.filter(e => e.type === 'fix' || e.type === 'recovery').length;
-    const bugEvents = events.filter(e => e.type === 'bug' || e.type === 'error').length;
+    // const _bugEvents = events.filter(e => e.type === 'bug' || e.type === 'error').length;
     
     const harmonyRatio = fixEvents / totalEvents;
     return Math.round(harmonyRatio * 100);
@@ -190,23 +193,23 @@ export class ComposerEngine {
     
     if (harmonyScore >= 80) {
       key = 'C_major';
-      scale = this.scales['C_major'];
+      scale = this.scales['C_major']!;
     } else if (harmonyScore >= 60) {
       key = 'G_major';
-      scale = this.scales['G_major'];
+      scale = this.scales['G_major']!;
     } else if (harmonyScore >= 40) {
       key = 'A_minor';
-      scale = this.scales['A_minor'];
+      scale = this.scales['A_minor']!;
     } else {
       key = 'E_minor';
-      scale = this.scales['E_minor'];
+      scale = this.scales['E_minor']!;
     }
 
     // Akkord-Progression basierend auf Events
     const chords: Chord[] = [];
     const melody: MusicalNote[] = [];
     
-    recentEvents.forEach((event, index) => {
+    recentEvents.forEach((event, _index) => {
       const tonality = this.mapBugToTonality(event.type, event.severity);
       const chord = this.generateChordFromEvent(event, tonality.scale);
       chords.push(chord);
@@ -239,6 +242,10 @@ export class ComposerEngine {
     const rootIndex = Math.floor(Math.random() * scale.notes.length);
     const root = scale.notes[rootIndex];
     
+    if (root === undefined) {
+      throw new Error('Root note is undefined');
+    }
+    
     let chordType: Chord['type'];
     switch (event.type) {
       case 'fix':
@@ -270,7 +277,13 @@ export class ComposerEngine {
   // Note aus Event generieren
   private generateNoteFromEvent(event: BugEvent, scale: Scale): MusicalNote {
     const noteIndex = Math.floor(Math.random() * scale.notes.length);
-    const frequency = this.noteFrequencies['A'] * Math.pow(2, scale.notes[noteIndex] / 12);
+    const noteValue = scale.notes[noteIndex];
+    
+    if (noteValue === undefined) {
+      throw new Error('Note value is undefined');
+    }
+    
+    const frequency = this.noteFrequencies['A']! * Math.pow(2, noteValue / 12);
     
     let velocity: number;
     switch (event.severity) {
@@ -317,7 +330,11 @@ export class ComposerEngine {
   // Note-Name aus Index
   private getNoteName(noteIndex: number): string {
     const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-    return noteNames[noteIndex % 12];
+    const noteName = noteNames[noteIndex % 12];
+    if (noteName === undefined) {
+      throw new Error('Note name is undefined');
+    }
+    return noteName;
   }
 
   // MIDI-Export
@@ -381,7 +398,7 @@ export class ComposerEngine {
   }
 
   // MIDI-Datei generieren (vereinfachte Implementierung)
-  private generateMIDIFile(tracks: MIDITrack[], tempo: number): Buffer {
+  private generateMIDIFile(_tracks: MIDITrack[], _tempo: number): Buffer {
     // Vereinfachte MIDI-Implementierung
     // In einer echten Implementierung würde hier eine vollständige MIDI-Bibliothek verwendet
     
@@ -433,7 +450,10 @@ export class ComposerEngine {
       
       for (let i = startSample; i < endSample; i++) {
         const t = i / sampleRate;
-        audioData[i] += Math.sin(2 * Math.PI * note.frequency * t) * (note.velocity / 127) * 0.3;
+        const audioValue = audioData[i];
+        if (audioValue !== undefined) {
+          audioData[i] = audioValue + Math.sin(2 * Math.PI * note.frequency * t) * (note.velocity / 127) * 0.3;
+        }
       }
     });
 
@@ -578,7 +598,7 @@ export class ComposerEngine {
 }
 
 // CLI-Interface
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (require.main === module) {
   const composer = new ComposerEngine();
   
   console.log('🎶 OAMTM Composer Engine');

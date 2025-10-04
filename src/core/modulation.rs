@@ -1,4 +1,3 @@
-use num_complex::Complex32;
 
 pub struct ModulationEngine {
     sample_rate: f32,
@@ -46,7 +45,7 @@ impl ModulationEngine {
     }
 
     // OFDM Modulation (simplified)
-    pub fn ofdm_modulate(&self, data: &[u8], carrier_freq: f32) -> Vec<f32> {
+    pub fn ofdm_modulate(&self, data: &[u8], _carrier_freq: f32) -> Vec<f32> {
         let mut iq_output = Vec::new();
         
         // Simplified OFDM - in reality this would involve IFFT

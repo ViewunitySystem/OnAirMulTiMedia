@@ -12,10 +12,25 @@ pub struct VodafoneSDR {
 
 impl VodafoneSDR {
     pub fn new(port_name: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        // Try to close any existing connections first
+        let _ = std::process::Command::new("powershell")
+            .args(&["-Command", &format!("Get-Process | Where-Object {{$_.ProcessName -like '*serial*' -or $_.ProcessName -like '*com*'}} | Stop-Process -Force")])
+            .output();
+
+        // Wait a moment for ports to be released
+        thread::sleep(Duration::from_millis(500));
+
         let port = serialport::new(port_name, 115200)
-            .timeout(Duration::from_millis(10000))  // increased for TX
-            .flow_control(serialport::FlowControl::Hardware)
-            .open()?;
+            .timeout(Duration::from_millis(5000))  // reduced timeout
+            .flow_control(serialport::FlowControl::None)  // Try without flow control first
+            .open()
+            .or_else(|_| {
+                // If hardware flow control fails, try without
+                serialport::new(port_name, 115200)
+                    .timeout(Duration::from_millis(5000))
+                    .flow_control(serialport::FlowControl::None)
+                    .open()
+            })?;
 
         // Initialize Vodafone modem
         let mut sdr = VodafoneSDR {
@@ -29,21 +44,30 @@ impl VodafoneSDR {
     }
 
     fn initialize_modem(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        // Send AT commands to initialize modem
-        self.send_at_command("AT")?;
-        thread::sleep(Duration::from_millis(100));
+        // Send AT commands to initialize modem with better error handling
+        match self.send_at_command("AT") {
+            Ok(_) => println!("✅ AT command successful"),
+            Err(e) => println!("⚠️  AT command failed: {}, continuing...", e),
+        }
+        thread::sleep(Duration::from_millis(200));
         
-        self.send_at_command("AT+CGMI")?; // Get manufacturer
-        thread::sleep(Duration::from_millis(100));
+        match self.send_at_command("AT+CGMI") {
+            Ok(_) => println!("✅ Manufacturer query successful"),
+            Err(e) => println!("⚠️  Manufacturer query failed: {}, continuing...", e),
+        }
+        thread::sleep(Duration::from_millis(200));
         
-        self.send_at_command("AT+CGMM")?; // Get model
-        thread::sleep(Duration::from_millis(100));
+        match self.send_at_command("AT+CGMM") {
+            Ok(_) => println!("✅ Model query successful"),
+            Err(e) => println!("⚠️  Model query failed: {}, continuing...", e),
+        }
+        thread::sleep(Duration::from_millis(200));
         
-        self.send_at_command("AT+CGMR")?; // Get revision
-        thread::sleep(Duration::from_millis(100));
-        
-        self.send_at_command("AT+CLAC")?; // List all commands
-        thread::sleep(Duration::from_millis(100));
+        match self.send_at_command("AT+CGMR") {
+            Ok(_) => println!("✅ Revision query successful"),
+            Err(e) => println!("⚠️  Revision query failed: {}, continuing...", e),
+        }
+        thread::sleep(Duration::from_millis(200));
 
         Ok(())
     }

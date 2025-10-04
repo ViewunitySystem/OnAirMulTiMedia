@@ -1,6 +1,20 @@
 // Test setup file for Vitest
 import { beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest'
 
+// Mock node:fs/promises properly
+vi.mock('node:fs/promises', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    appendFile: vi.fn().mockResolvedValue(undefined),
+    readFile: vi.fn().mockResolvedValue('{}'),
+    writeFile: vi.fn().mockResolvedValue(undefined),
+    mkdir: vi.fn().mockResolvedValue(undefined),
+    stat: vi.fn().mockResolvedValue({ isFile: () => true, isDirectory: () => false }),
+    readdir: vi.fn().mockResolvedValue([])
+  }
+})
+
 // Global test setup
 beforeAll(() => {
   console.log('🧪 Setting up test environment...')

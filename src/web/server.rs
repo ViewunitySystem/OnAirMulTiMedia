@@ -78,22 +78,23 @@ pub async fn start_canvas_server_with_config(
     // Create API routes
     let api_routes = create_api_routes(sdr_state.clone(), preset_manager.clone());
     
-    // Serve static files from configured path
+    // Serve static files from configured path - clone the path to ensure it lives long enough
+    let webui_path_static = webui_path.clone();
     let static_files = warp::path("canvas")
-        .and(warp::fs::dir(&webui_path));
+        .and(warp::fs::dir(webui_path_static));
     
-    // Serve Canvas integration HTML
-    let canvas_html_path = format!("{}/canvas-integration.html", webui_path);
+    // Serve Canvas integration HTML - clone the path to ensure it lives long enough
+    let canvas_html_path = format!("{}/canvas-integration.html", webui_path.clone());
     let canvas_html = warp::path("canvas-integration")
         .and(warp::fs::file(canvas_html_path));
     
-    // Serve Canvas app TypeScript
-    let canvas_app_path = format!("{}/canvas-app.tsx", webui_path);
+    // Serve Canvas app TypeScript - clone the path to ensure it lives long enough
+    let canvas_app_path = format!("{}/canvas-app.tsx", webui_path.clone());
     let canvas_app = warp::path("canvas-app")
         .and(warp::fs::file(canvas_app_path));
     
-    // Serve main dashboard
-    let dashboard_path = format!("{}/index.html", webui_path);
+    // Serve main dashboard - clone the path to ensure it lives long enough
+    let dashboard_path = format!("{}/index.html", webui_path.clone());
     let dashboard = warp::path::end()
         .and(warp::fs::file(dashboard_path));
     
@@ -219,24 +220,28 @@ pub async fn start_canvas_server_with_config_struct(
     // Create API routes
     let api_routes = create_api_routes(sdr_state.clone(), preset_manager.clone());
     
-    // Serve static files from configured path
+    // Serve static files from configured path - clone the path to ensure it lives long enough
+    let webui_path_static = config.webui_path.clone();
     let static_files = warp::path("canvas")
-        .and(warp::fs::dir(&config.webui_path));
+        .and(warp::fs::dir(webui_path_static));
     
-    // Serve Canvas integration HTML
+    // Serve Canvas integration HTML - clone the path to ensure it lives long enough
+    let canvas_html_path = format!("{}/canvas-integration.html", config.webui_path.clone());
     let canvas_html = warp::path("canvas-integration")
-        .and(warp::fs::file(&format!("{}/canvas-integration.html", config.webui_path)));
+        .and(warp::fs::file(canvas_html_path));
     
-    // Serve Canvas app TypeScript
+    // Serve Canvas app TypeScript - clone the path to ensure it lives long enough
+    let canvas_app_path = format!("{}/canvas-app.tsx", config.webui_path.clone());
     let canvas_app = warp::path("canvas-app")
-        .and(warp::fs::file(&format!("{}/canvas-app.tsx", config.webui_path)));
+        .and(warp::fs::file(canvas_app_path));
     
-    // Serve main dashboard
+    // Serve main dashboard - clone the path to ensure it lives long enough
+    let dashboard_path = format!("{}/index.html", config.webui_path.clone());
     let dashboard = warp::path::end()
-        .and(warp::fs::file(&format!("{}/index.html", config.webui_path)));
+        .and(warp::fs::file(dashboard_path));
     
     // Combine all routes
-    let mut routes = api_routes
+    let routes = api_routes
         .or(static_files)
         .or(canvas_html)
         .or(canvas_app)

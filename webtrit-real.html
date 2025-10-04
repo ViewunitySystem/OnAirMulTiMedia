@@ -355,6 +355,20 @@
                     <p>Signal: <span id="signal-display">--</span> dBm</p>
                     <p>Operator: <span id="operator-display">--</span></p>
                     <p>Verbindung: <span id="connection-status">--</span></p>
+                    <p>Modus: <span id="simulation-status">--</span></p>
+                </div>
+                
+                <div id="hardware-warning" style="display: none; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 12px; margin-top: 12px;">
+                    <h5 style="color: #92400e; margin: 0 0 8px 0;">⚠️ SIMULATION MODUS</h5>
+                    <p style="color: #92400e; margin: 0; font-size: 14px;">
+                        Dies ist eine Simulation! Für echte Telefonie benötigst du:<br>
+                        • Chrome/Edge Browser (Web Serial API)<br>
+                        • Echte Huawei Vodafone Hardware<br>
+                        • COM-Port-Berechtigung
+                    </p>
+                    <button onclick="enableRealHardware()" style="background: #f59e0b; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-top: 8px; cursor: pointer;">
+                        🔧 Echte Hardware aktivieren
+                    </button>
                 </div>
             </div>
         </section>

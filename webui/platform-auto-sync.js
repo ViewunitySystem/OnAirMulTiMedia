@@ -5,7 +5,7 @@ class PlatformAutoSync {
   constructor() {
     this.platforms = new Map();
     this.syncQueue = [];
-    this.syncInterval = 10000; // 10 Sekunden
+    this.syncInterval = 30000; // 30 Sekunden (reduziert von 10s)
     this.conflictResolution = 'timestamp'; // 'timestamp', 'priority', 'manual'
     this.init();
   }
@@ -51,11 +51,11 @@ class PlatformAutoSync {
       status: 'ready'
     });
 
-    // API Backend (Cloudflare Workers)
+    // API Backend (Rust Server)
     this.platforms.set('api', {
       name: 'API Backend',
       type: 'api',
-      url: '/api/sync',
+      url: 'http://localhost:8000/api/sync',
       capabilities: ['data-storage', 'user-submissions', 'audit-trail'],
       syncEnabled: true,
       lastSync: null,
@@ -185,8 +185,8 @@ class PlatformAutoSync {
 
   async syncApiPlatform(platform, data) {
     try {
-      // API Platform Sync - Cloudflare Workers
-      const response = await fetch(`${platform.url}/sync`, {
+      // API Platform Sync - Rust Server
+      const response = await fetch(platform.url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -202,7 +202,8 @@ class PlatformAutoSync {
         const result = await response.json();
         return { success: true, message: 'API Platform synchronisiert', result };
       } else {
-        return { success: false, error: `API Sync Fehler: ${response.status}` };
+        console.warn(`⚠️ API Sync Fehler: ${response.status} - Retry in 30s`);
+      return { success: false, error: `API Sync Fehler: ${response.status}`, retryAfter: 30000 };
       }
       
     } catch (error) {

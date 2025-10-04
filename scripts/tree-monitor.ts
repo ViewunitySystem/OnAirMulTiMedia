@@ -66,16 +66,16 @@ interface MonitoringConfig {
   };
 }
 
-export class TreeMonitor {
+class TreeMonitor {
   private config: MonitoringConfig;
   private treeSnapshot: Map<string, string> = new Map(); // path -> hash
   private urlHistory: URLTest[] = [];
   private healthHistory: HealthCheck[] = [];
   private learningPatterns: LearningPattern[] = [];
   private isRunning = false;
-  private scanTimer?: NodeJS.Timeout;
-  private urlTimer?: NodeJS.Timeout;
-  private healthTimer?: NodeJS.Timeout;
+  private scanTimer?: NodeJS.Timeout | null;
+  private urlTimer?: NodeJS.Timeout | null;
+  private healthTimer?: NodeJS.Timeout | null;
   private sessionId: string;
   private baseUrl: string;
 
@@ -199,17 +199,17 @@ export class TreeMonitor {
 
     if (this.scanTimer) {
       clearInterval(this.scanTimer);
-      this.scanTimer = undefined;
+      this.scanTimer = null;
     }
 
     if (this.urlTimer) {
       clearInterval(this.urlTimer);
-      this.urlTimer = undefined;
+      this.urlTimer = null;
     }
 
     if (this.healthTimer) {
       clearInterval(this.healthTimer);
-      this.healthTimer = undefined;
+      this.healthTimer = null;
     }
 
     // Save final snapshot
@@ -280,7 +280,7 @@ export class TreeMonitor {
 
     } catch (error) {
       console.error('[tree-monitor] Tree scan failed:', error);
-      await this.recordHealthCheck('critical', 'tree-scanner', `Tree scan failed: ${error.message}`);
+      await this.recordHealthCheck('critical', 'tree-scanner', `Tree scan failed: ${(error as Error).message}`);
     }
   }
 
@@ -336,7 +336,7 @@ export class TreeMonitor {
       const content = await fs.readFile(filePath);
       return crypto.createHash('sha256').update(content).digest('hex');
     } catch (error) {
-      throw new Error(`Failed to hash file ${filePath}: ${error.message}`);
+      throw new Error(`Failed to hash file ${filePath}: ${(error as Error).message}`);
     }
   }
 
@@ -349,7 +349,7 @@ export class TreeMonitor {
     }
   }
 
-  private async getFileSizeFromHash(hash: string): Promise<number> {
+  private async getFileSizeFromHash(_hash: string): Promise<number> {
     // This would need to be implemented with a hash-to-size mapping
     // For now, return 0
     return 0;
@@ -492,6 +492,8 @@ export class TreeMonitor {
         while ((match = pattern.exec(content)) !== null) {
           const url = match[1];
           
+          if (!url) continue;
+          
           // Skip external URLs
           if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//')) {
             continue;
@@ -530,6 +532,8 @@ export class TreeMonitor {
         let match;
         while ((match = pattern.exec(content)) !== null) {
           const importPath = match[1];
+          
+          if (!importPath) continue;
           
           // Skip external modules
           if (!importPath.startsWith('.') && !importPath.startsWith('/')) {
@@ -763,8 +767,7 @@ export class TreeMonitor {
     
     try {
       const response = await fetch(url, {
-        method: 'HEAD',
-        timeout: 10000
+        method: 'HEAD'
       });
 
       const responseTime = performance.now() - startTime;
@@ -776,7 +779,7 @@ export class TreeMonitor {
         timestamp: new Date().toISOString(),
         headers: Object.fromEntries(response.headers.entries()),
         contentLength: parseInt(response.headers.get('content-length') || '0'),
-        contentType: response.headers.get('content-type') || undefined
+        contentType: response.headers.get('content-type') || 'unknown'
       };
 
       this.urlHistory.push(test);
@@ -801,7 +804,7 @@ export class TreeMonitor {
         status: 0,
         responseTime,
         timestamp: new Date().toISOString(),
-        error: error.message
+        error: (error as Error).message
       };
 
       this.urlHistory.push(test);
@@ -877,7 +880,7 @@ export class TreeMonitor {
   private async checkSystemHealth(): Promise<void> {
     try {
       // Check disk space
-      const stats = await fs.stat('.');
+      await fs.stat('.');
       
       // Check if monitoring is responsive
       const responseTime = performance.now();
@@ -889,7 +892,7 @@ export class TreeMonitor {
       });
 
     } catch (error) {
-      await this.recordHealthCheck('critical', 'system', `System health check failed: ${error.message}`);
+      await this.recordHealthCheck('critical', 'system', `System health check failed: ${(error as Error).message}`);
     }
   }
 
@@ -900,7 +903,7 @@ export class TreeMonitor {
       await this.recordHealthCheck('healthy', 'github-actions', 'GitHub Actions status check passed');
       
     } catch (error) {
-      await this.recordHealthCheck('warning', 'github-actions', `GitHub Actions check failed: ${error.message}`);
+      await this.recordHealthCheck('warning', 'github-actions', `GitHub Actions check failed: ${(error as Error).message}`);
     }
   }
 
@@ -919,7 +922,7 @@ export class TreeMonitor {
       });
 
     } catch (error) {
-      await this.recordHealthCheck('warning', 'learning-patterns', `Learning patterns check failed: ${error.message}`);
+      await this.recordHealthCheck('warning', 'learning-patterns', `Learning patterns check failed: ${(error as Error).message}`);
     }
   }
 
@@ -1011,7 +1014,7 @@ export class TreeMonitor {
     };
   }
 
-  getRecentChanges(limit = 50): TreeChange[] {
+  getRecentChanges(_limit = 50): TreeChange[] {
     // This would return recent changes from storage
     return [];
   }
@@ -1115,7 +1118,8 @@ export class TreeMonitor {
 }
 
 // Export for use in other modules
-export { TreeMonitor, TreeChange, URLTest, HealthCheck, LearningPattern, MonitoringConfig };
+export { TreeMonitor };
+export type { TreeChange, URLTest, HealthCheck, LearningPattern, MonitoringConfig };
 
 // CLI usage
 if (typeof window === 'undefined') {

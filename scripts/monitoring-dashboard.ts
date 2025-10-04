@@ -3,10 +3,10 @@
  * Überwacht Change-Log und Health-Status
  */
 import { promises as fs } from 'fs';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+// import { exec } from 'child_process';
+// import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+// const execAsync = promisify(exec);
 
 interface MonitoringStatus {
   timestamp: string;

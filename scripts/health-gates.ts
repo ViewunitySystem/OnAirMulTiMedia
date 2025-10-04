@@ -39,9 +39,9 @@ export async function checkHealthGates(): Promise<HealthStatus> {
   });
 
   // 2. Response Time Gate (≤500ms average)
-  const avgResponseTime = targets.results ? 
-    Object.values(targets.results).reduce((acc: number, target: any) => 
-      acc + (target.responseTime || 0), 0) / Object.keys(targets.results).length : 0;
+  const avgResponseTime = (targets as any).results ? 
+    Object.values((targets as any).results).reduce((acc: number, target: any) => 
+      acc + (target.responseTime || 0), 0) / Object.keys((targets as any).results).length : 0;
   gates.push({
     name: 'Response Time',
     threshold: 500,

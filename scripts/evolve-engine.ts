@@ -70,16 +70,16 @@ for (const bp of meta.metaGrowth.blueprints) {
 }
 
 // ---- 2) Safety‑Checks (Tests/Doku vorhanden?)
-function safetyOk(entry:any){
-  if (meta.metaGrowth.safety.requireDocs) {
-    // mindestens README
-    // (bei dryRun nur Markierung)
-  }
-  if (meta.metaGrowth.safety.requireTests) {
-    // erwartete Testdateien pruefen (optional)
-  }
-  return true;
-}
+// function _safetyOk(_entry: any) {
+//   if (meta.metaGrowth.safety.requireDocs) {
+//     // mindestens README
+//     // (bei dryRun nur Markierung)
+//   }
+//   if (meta.metaGrowth.safety.requireTests) {
+//     // erwartete Testdateien pruefen (optional)
+//   }
+//   return true;
+// }
 
 // ---- 3) Persist Manifest + Audit‑Trail
 if (!meta.metaGrowth.safety.dryRun) await writeJson(manifestPath, manifest);

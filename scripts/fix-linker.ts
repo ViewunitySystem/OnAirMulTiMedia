@@ -5,7 +5,6 @@
  */
 
 import { readFile, appendFile, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
 
 interface UcmEvent {
   ts: string;
@@ -176,6 +175,7 @@ export class FixLinker {
       const fixActions: FixAction[] = [];
 
       for (const event of events) {
+        if (!event) continue;
         const classification = this.classifyEvent(event);
         if (!classification) continue;
 
@@ -217,7 +217,7 @@ export class FixLinker {
       return fixActions;
 
     } catch (error) {
-      console.error('❌ [fix-linker] Error processing events:', error.message);
+      console.error('❌ [fix-linker] Error processing events:', (error as Error).message);
       throw error;
     }
   }
@@ -471,7 +471,7 @@ export class FixLinker {
       console.log('📊 [fix-linker] Summary generated:', JSON.stringify(summary, null, 2));
 
     } catch (error) {
-      console.warn('⚠️ [fix-linker] Failed to generate summary:', error.message);
+      console.warn('⚠️ [fix-linker] Failed to generate summary:', (error as Error).message);
     }
   }
 
@@ -481,9 +481,9 @@ export class FixLinker {
   getClassificationStats(): Record<string, number> {
     const stats: Record<string, number> = {};
     
-    for (const [key, value] of this.classificationCache.entries()) {
+    this.classificationCache.forEach((value) => {
       stats[value] = (stats[value] || 0) + 1;
-    }
+    });
 
     return stats;
   }
@@ -506,9 +506,9 @@ export async function processEvents(): Promise<FixAction[]> {
 }
 
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (require.main === module) {
   processEvents().catch(error => {
-    console.error('❌ [fix-linker] Failed:', error.message);
+    console.error('❌ [fix-linker] Failed:', (error as Error).message);
     process.exit(1);
   });
 }

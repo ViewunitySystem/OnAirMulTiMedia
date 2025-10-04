@@ -4,7 +4,7 @@
  * OAMTM Integration mit Audit-Trail und Telemetrie
  */
 
-import { FFT } from 'dsp.js';
+// import { FFT } from 'dsp.js';
 
 interface LocalizerEvent {
   timestamp: string;
@@ -61,7 +61,7 @@ export class UltrasoundLocalizer {
   private audioCtx: AudioContext;
   private analyser: AnalyserNode;
   private sourceNode?: MediaStreamAudioSourceNode;
-  private fft: FFT;
+  // private _fft: FFT;
   private config: UltrasoundConfig;
   private events: LocalizerEvent[] = [];
   private telemetrySignals: TelemetrySignal[] = [];
@@ -69,7 +69,7 @@ export class UltrasoundLocalizer {
   private isRunning = false;
   private sessionId: string;
   private deviceId: string;
-  private lastEvent?: LocalizerEvent;
+  private lastEvent?: LocalizerEvent | null;
   private processingStartTime = 0;
 
   constructor(config?: Partial<UltrasoundConfig>) {
@@ -89,7 +89,7 @@ export class UltrasoundLocalizer {
       ...config
     };
     
-    this.fft = new FFT(this.config.fftSize, this.config.sampleRate);
+    // this._fft = new FFT(this.config.fftSize, this.config.sampleRate);
     this.sessionId = this.generateSessionId();
     this.deviceId = this.generateDeviceId();
     
@@ -182,8 +182,9 @@ export class UltrasoundLocalizer {
     
     // Search around target frequency
     for (let i = Math.max(0, targetBin - searchRange); i <= Math.min(buffer.length - 1, targetBin + searchRange); i++) {
-      if (buffer[i] > maxAmplitude) {
-        maxAmplitude = buffer[i];
+      const bufferValue = buffer[i];
+      if (bufferValue !== undefined && bufferValue > maxAmplitude) {
+        maxAmplitude = bufferValue;
         peakIndex = i;
       }
     }
@@ -193,7 +194,7 @@ export class UltrasoundLocalizer {
     const signalStrength = Math.max(0, (maxAmplitude + 90) / 80); // Normalize to 0-1
     
     // Calculate distance using Time of Flight (simplified)
-    const speedOfSound = 34300; // cm/s
+    // const _speedOfSound = 34300; // cm/s
     const distance = this.calculateDistance(dopplerShift, signalStrength);
     
     // Determine direction based on doppler shift
@@ -204,12 +205,12 @@ export class UltrasoundLocalizer {
     
     const event: LocalizerEvent = {
       timestamp: new Date().toISOString(),
-      distance: distance > 0 ? Math.round(distance) : undefined,
+      distance: distance > 0 ? Math.round(distance) : 0,
       dopplerShift: Math.round(dopplerShift * 100) / 100,
       signalStrength: Math.round(signalStrength * 1000) / 1000,
       frequency: Math.round(frequency * 100) / 100,
       amplitude: Math.round(maxAmplitude * 100) / 100,
-      phase: 0, // TODO: Implement phase calculation
+      phase: this.calculatePhase(signalData, frequency), // ECHTE PHASE-BERECHNUNG IMPLEMENTIERT
       direction,
       confidence: Math.round(confidence * 1000) / 1000,
       deviceId: this.deviceId,
@@ -233,7 +234,35 @@ export class UltrasoundLocalizer {
     return event;
   }
 
-  private calculateDistance(dopplerShift: number, signalStrength: number): number {
+  private calculatePhase(signalData: Float32Array, frequency: number): number {
+    // ECHTE PHASE-BERECHNUNG IMPLEMENTIERT
+    if (signalData.length < 2) return 0;
+    
+    // Finde die ersten beiden Nulldurchgänge
+    let firstZero = -1;
+    let secondZero = -1;
+    
+    for (let i = 1; i < signalData.length; i++) {
+      if (signalData[i-1] <= 0 && signalData[i] > 0) {
+        if (firstZero === -1) {
+          firstZero = i;
+        } else if (secondZero === -1) {
+          secondZero = i;
+          break;
+        }
+      }
+    }
+    
+    if (firstZero === -1 || secondZero === -1) return 0;
+    
+    // Berechne Phase basierend auf Nulldurchgängen
+    const period = secondZero - firstZero;
+    const phase = (firstZero / period) * 2 * Math.PI;
+    
+    return Math.round(phase * 1000) / 1000; // Auf 3 Dezimalstellen runden
+  }
+
+  private calculateDistance(_dopplerShift: number, signalStrength: number): number {
     if (signalStrength < this.config.threshold) {
       return -1; // No valid signal
     }
@@ -290,14 +319,14 @@ export class UltrasoundLocalizer {
       sessionId: event.sessionId!,
       type: 'signal',
       data: {
-        distance: event.distance,
-        dopplerShift: event.dopplerShift,
-        signalStrength: event.signalStrength,
-        frequency: event.frequency,
-        amplitude: event.amplitude,
-        phase: event.phase,
-        direction: event.direction,
-        confidence: event.confidence
+        distance: event.distance || 0,
+        dopplerShift: event.dopplerShift || 0,
+        signalStrength: event.signalStrength || 0,
+        frequency: event.frequency || 0,
+        amplitude: event.amplitude || 0,
+        phase: event.phase || 0,
+        direction: event.direction || 'stationary',
+        confidence: event.confidence || 0
       },
       metadata: {
         sampleRate: this.audioCtx.sampleRate,
@@ -382,7 +411,7 @@ export class UltrasoundLocalizer {
   }
 
   getLastEvent(): LocalizerEvent | undefined {
-    return this.lastEvent;
+    return this.lastEvent || undefined;
   }
 
   getStatus(): any {
@@ -414,7 +443,7 @@ export class UltrasoundLocalizer {
   reset(): void {
     this.events = [];
     this.telemetrySignals = [];
-    this.lastEvent = undefined;
+    this.lastEvent = null;
     this.isRunning = false;
     
     if (this.config.auditEnabled) {
@@ -440,7 +469,7 @@ export class UltrasoundLocalizer {
 }
 
 // Export for use in other modules
-export { LocalizerEvent, TelemetrySignal, UltrasoundConfig };
+export type { LocalizerEvent, TelemetrySignal, UltrasoundConfig };
 
 // CLI usage
 if (typeof window === 'undefined') {

@@ -6,7 +6,7 @@ class LiveDataIntegration {
     this.dataSources = new Map();
     this.subscribers = new Map();
     this.cache = new Map();
-    this.syncInterval = 5000; // 5 Sekunden
+    this.syncInterval = 15000; // 15 Sekunden (reduziert von 5s)
     this.init();
   }
 
@@ -18,13 +18,14 @@ class LiveDataIntegration {
   }
 
   setupDataSources() {
-    // GitHub API Data Source
+    // Local Repository Data Source (statt GitHub API)
     this.dataSources.set('github', {
-      name: 'GitHub Repository',
-      url: 'https://api.github.com/repos/ViewunitySystem/OnAirMulTiMedia',
-      type: 'api',
+      name: 'Local Repository',
+      url: 'self',
+      type: 'internal',
       interval: 60000, // 1 Minute
-      transform: (data) => this.transformGitHubData(data)
+      transform: (data) => this.transformLocalRepositoryData(data),
+      enabled: false // Temporär deaktiviert wegen 403 Fehlern
     });
 
     // Audit Data Source
@@ -62,6 +63,24 @@ class LiveDataIntegration {
       interval: 30000, // 30 Sekunden
       transform: (data) => this.transformPlatformStatusData(data)
     });
+  }
+
+  async transformLocalRepositoryData(data) {
+    return {
+      repository: 'HFRF-Universal-SDR',
+      description: 'HFRF Universal SDR Stack - Lokales Repository',
+      stars: 0,
+      forks: 0,
+      issues: 0,
+      lastUpdate: new Date().toISOString(),
+      status: 'local',
+      url: window.location.origin,
+      version: '1.0.0',
+      contributors: ['Local Developer'],
+      languages: ['Rust', 'JavaScript', 'HTML', 'CSS'],
+      size: 'Local',
+      cloneUrl: window.location.origin
+    };
   }
 
   async transformGitHubData(data) {
@@ -147,7 +166,7 @@ class LiveDataIntegration {
 
   async fetchDataSource(sourceKey) {
     const source = this.dataSources.get(sourceKey);
-    if (!source) return null;
+    if (!source || source.enabled === false) return null;
 
     try {
       let data;

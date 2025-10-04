@@ -45,7 +45,7 @@ impl DSPPipeline {
     }
 
     // Software-definierter Filter
-    pub fn apply_bandpass(&self, iq_data: &[f32], low_cutoff: f32, high_cutoff: f32, sample_rate: f32) -> Vec<f32> {
+    pub fn apply_bandpass(&self, iq_data: &[f32], _low_cutoff: f32, _high_cutoff: f32, _sample_rate: f32) -> Vec<f32> {
         // Einfacher FIR Filter - kann durch optimierte Version ersetzt werden
         iq_data.to_vec() // Placeholder - echte Filter-Implementierung
     }

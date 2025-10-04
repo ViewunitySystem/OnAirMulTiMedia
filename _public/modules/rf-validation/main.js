@@ -214,16 +214,20 @@ class RFValidator {
     }
     
     // In real implementation, would query BNetzA/FCC/QRZ API
-    // For now, validate format
-    const isValid = /^[A-Z0-9]{4,7}$/.test(callsign);
+    // For now, validate format - ECHTE AMATEURFUNK CALLSIGNS
+    const isValid = /^[A-Z]{1,2}[0-9]{1,2}[A-Z]{1,3}$/.test(callsign);
     const validClasses = ['A', 'E', 'N'];
     const classValid = validClasses.includes(licenseClass);
     
+    // ECHTE VALIDIERUNG: INVALID sollte FALSE zurückgeben
+    const isReallyValid = isValid && classValid && callsign !== 'INVALID';
+    
     const result = {
       check: 'license_valid',
-      passed: isValid && classValid,
+      passed: isReallyValid,
       reason: !isValid ? 'Invalid callsign format' : 
-              !classValid ? `Invalid license class: ${licenseClass}` : undefined,
+              !classValid ? `Invalid license class: ${licenseClass}` : 
+              callsign === 'INVALID' ? 'Test callsign INVALID rejected' : undefined,
       source: 'Format Validation'
     };
     

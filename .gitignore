@@ -187,3 +187,5 @@ deployment/
 *.swp
 *.swo
 *~
+test-results/
+playwright-report/
