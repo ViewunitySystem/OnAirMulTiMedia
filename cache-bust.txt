@@ -1,0 +1,4 @@
+# Cache-Busting für GitHub Pages
+# Diese Datei erzwingt eine Cache-Invalidierung
+# Timestamp: 2025-01-27-12-40-00
+# Alle neuen Dateien sollten jetzt verfügbar sein
