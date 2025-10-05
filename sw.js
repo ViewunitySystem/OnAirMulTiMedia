@@ -12,12 +12,8 @@ const MAX_CACHE_SIZE = 100; // Maximum number of cached responses
 const CRITICAL_RESOURCES = [
   '/',
   '/index.html',
-  '/info.html',
-  '/bug-symphony.html',
-  '/docs/selfheal-dashboard.html',
-  '/audit/recovery-map.json',
-  '/manifest.json',
-  '/sw.js'
+  '/manifest.json'
+  // Removed '/sw.js' to prevent self-caching issues
 ];
 
 // Resources that should be cached on demand
@@ -63,14 +59,35 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('📦 [sw] Caching critical resources...');
-        return cache.addAll(CRITICAL_RESOURCES);
+        // Cache resources individually to handle missing files gracefully
+        return Promise.allSettled(
+          CRITICAL_RESOURCES.map(resource => 
+            fetch(resource)
+              .then(response => {
+                if (response.ok) {
+                  return cache.put(resource, response);
+                } else {
+                  console.warn(`⚠️ [sw] Resource ${resource} returned ${response.status}`);
+                  return null;
+                }
+              })
+              .catch(error => {
+                console.warn(`⚠️ [sw] Failed to cache ${resource}:`, error);
+                return null; // Continue with other resources
+              })
+          )
+        );
       })
-      .then(() => {
-        console.log('✅ [sw] Critical resources cached');
+      .then(results => {
+        const successful = results.filter(r => r.status === 'fulfilled').length;
+        const failed = results.filter(r => r.status === 'rejected').length;
+        console.log(`✅ [sw] Caching completed: ${successful} successful, ${failed} failed`);
         return self.skipWaiting();
       })
       .catch(error => {
         console.error('❌ [sw] Installation failed:', error);
+        // Still skip waiting even if caching fails
+        return self.skipWaiting();
       })
   );
 });

@@ -267,8 +267,8 @@ class FeatureDetector {
 // Export for use in other modules
 export { FeatureDetector };
 
-// CLI usage
-if (import.meta.url === `file://${process.argv[1]}`) {
+// CLI usage (only in Node.js environment)
+if (typeof process !== 'undefined' && typeof process.argv !== 'undefined' && import.meta.url === `file://${process.argv[1]}`) {
   const detector = new FeatureDetector();
   
   console.log('🔍 OAMTM Feature Detection Report');
