@@ -892,44 +892,66 @@
           return { socket, status, connected, sendMessage };
         }
 
-        // API Hook für REST-Endpoints
+        // API Hook für statisches Deployment (ohne Server)
         function useApi() {
-          const [uiVariants, setUiVariants] = useState([]);
-          const [loading, setLoading] = useState(true);
+          const [uiVariants, setUiVariants] = useState([
+            {
+              id: 'sdr-classic',
+              name: 'SDR Classic',
+              description: 'Klassisches SDR-Interface mit Spektrum-Analyzer',
+              category: 'Professional',
+              active: true,
+              features: ['Spektrum-Analyzer', 'Frequenz-Scanner', 'Modulation-Detektor'],
+              colors: { primary: '#1e40af', secondary: '#3b82f6' }
+            },
+            {
+              id: 'modern-dark',
+              name: 'Modern Dark',
+              description: 'Modernes dunkles Theme für professionelle Nutzung',
+              category: 'Modern',
+              active: true,
+              features: ['Dark Mode', 'Touch-Optimiert', 'Responsive Design'],
+              colors: { primary: '#1f2937', secondary: '#374151' }
+            },
+            {
+              id: 'amateur-radio',
+              name: 'Amateur Radio',
+              description: 'Speziell für Amateurfunk-Operator entwickelt',
+              category: 'Amateur',
+              active: true,
+              features: ['QSO-Logging', 'APRS-Integration', 'Bandplan-Overlay'],
+              colors: { primary: '#059669', secondary: '#10b981' }
+            },
+            {
+              id: 'research-lab',
+              name: 'Research Lab',
+              description: 'Wissenschaftliches Interface für Forschung und Entwicklung',
+              category: 'Research',
+              active: true,
+              features: ['Daten-Export', 'Mess-Protokolle', 'Kalibrierung'],
+              colors: { primary: '#7c3aed', secondary: '#8b5cf6' }
+            }
+          ]);
+          const [loading, setLoading] = useState(false);
           const [error, setError] = useState(null);
 
           const fetchUiVariants = async (params = {}) => {
-            try {
-              setLoading(true);
-              const queryString = new URLSearchParams(params).toString();
-              const response = await fetch(`/api/ui-variants?${queryString}`);
-              
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              
-              const data = await response.json();
-              setUiVariants(data.data);
-              setError(null);
-            } catch (err) {
-              setError(err.message);
-              console.error('Error fetching UI variants:', err);
-            } finally {
+            // Für statisches Deployment: Simuliere API-Aufruf
+            setLoading(true);
+            setTimeout(() => {
               setLoading(false);
-            }
+              setError(null);
+            }, 500);
           };
 
           const fetchStatus = async (endpoint) => {
-            try {
-              const response = await fetch(`/api/status/${endpoint}`);
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              return await response.json();
-            } catch (err) {
-              console.error(`Error fetching ${endpoint} status:`, err);
-              return null;
-            }
+            // Für statisches Deployment: Simuliere Status-Daten
+            return {
+              feeds: { status: 'offline', lastUpdate: new Date().toISOString() },
+              freshness: { score: 85, lastCheck: new Date().toISOString() },
+              license: { compliant: true, expires: '2025-12-31' },
+              compliance: { score: 92, lastAudit: new Date().toISOString() }
+            };
           };
 
           useEffect(() => {
@@ -1196,16 +1218,9 @@
           const [showDetails, setShowDetails] = useState(null);
           
           const { uiVariants, loading, error, fetchUiVariants } = useApi();
-          // WebSocket automatisch deaktiviert wenn Server nicht verfügbar
-          const { status, connected } = useWebSocket('ws://localhost:3000/ws', {
-            onError: (error) => {
-              console.log('WebSocket deaktiviert - Server nicht verfügbar (normal für statische Deployment)');
-              return { status: null, connected: false };
-            },
-            onClose: () => {
-              return { status: null, connected: false };
-            }
-          });
+          // WebSocket für statisches Deployment deaktiviert
+          const status = null;
+          const connected = false;
 
           const handleVariantSelect = (variant) => {
             setSelectedVariant(variant);
