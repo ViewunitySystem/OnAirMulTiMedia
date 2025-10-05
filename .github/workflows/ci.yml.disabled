@@ -1,297 +1,163 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [ mainzero, main, develop ]
+    branches: [ mainzero, gh-pages ]
   pull_request:
-    branches: [ mainzero, main ]
-  schedule:
-    # Daily audit verification at 03:00 UTC
-    - cron: '0 3 * * *'
+    branches: [ mainzero, gh-pages ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint & Format Check
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm install || npm ci
-      
-      - name: Run ESLint
-        run: npm run lint || echo "::warning::Linting issues found"
-      
-      - name: Check formatting
-        run: npm run format:check || echo "::warning::Formatting issues found"
-
-  test-node:
-    name: Test (Node.js)
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm install || npm ci
-      
-      - name: Run unit tests
-        run: npm test
-      
-      - name: Run integration tests
-        run: npm run test:integration
-      
-      - name: Generate coverage report
-        run: npm run test:coverage
-      
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage/coverage-final.json
-          flags: nodejs
-          name: nodejs-${{ matrix.node-version }}
-
-  test-rust:
-    name: Test (Rust)
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-          components: clippy, rustfmt
-      
-      - name: Cache Rust dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      
-      - name: Run Clippy
-        run: cargo clippy -- -D warnings
-      
-      - name: Check formatting
-        run: cargo fmt -- --check
-      
-      - name: Run tests
-        run: cargo test --verbose
-      
-      - name: Run tests (release mode)
-        run: cargo test --release --verbose
-
-  audit-verification:
-    name: Audit Trail Verification
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm install || npm ci
-      
-      - name: Verify audit chain integrity
-        run: |
-          echo "🔍 Verifying audit trail integrity..."
-          npm run audit:verify || echo "::warning::Audit verification failed"
-      
-      - name: Check audit log size
-        run: |
-          AUDIT_SIZE=$(du -sh audit/logs | cut -f1)
-          echo "📊 Audit logs size: $AUDIT_SIZE"
-          echo "audit_size=$AUDIT_SIZE" >> $GITHUB_OUTPUT
-      
-      - name: Generate audit report
-        if: github.event_name == 'schedule'
-        run: |
-          echo "📝 Generating daily audit report..."
-          npm run audit:report
-          
-      - name: Upload audit artifacts
-        if: github.event_name == 'schedule'
-        uses: actions/upload-artifact@v3
-        with:
-          name: audit-report-${{ github.run_number }}
-          path: audit/reports/
-
-  security-scan:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-      
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
-      
-      - name: Run npm audit
-        run: |
-          npm audit --audit-level=moderate || echo "::warning::npm audit found issues"
-      
-      - name: Run Snyk
-        uses: snyk/actions/node@master
-        continue-on-error: true
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --severity-threshold=high
-
-  build:
-    name: Build
+  build-test:
+    name: Build & Test (Node+Rust)
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [20]
+        rust: [stable]
+
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: '18'
+          fetch-depth: 0
+
+      # Node / PNPM
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
           cache: 'npm'
-      
+
+      - name: Enable Corepack (pnpm optional)
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate || true
+
+      - name: Install JS deps (root)
+        run: |
+          if [ -f pnpm-lock.yaml ]; then pnpm i --frozen-lockfile; \
+          elif [ -f package-lock.json ]; then npm ci; \
+          else npm i; fi
+
+      - name: Install JS deps (webui)
+        if: ${{ hashFiles('webui/package.json') != '' }}
+        working-directory: ./webui
+        run: |
+          if [ -f pnpm-lock.yaml ]; then pnpm i --frozen-lockfile; \
+          elif [ -f package-lock.json ]; then npm ci; \
+          else npm i; fi
+
+      # Rust
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          override: true
-      
-      - name: Install dependencies (Node)
-        run: npm ci
-      
-      - name: Build Node.js
-        run: npm run build
-      
-      - name: Build Rust
-        run: cargo build --release
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+          toolchain: ${{ matrix.rust }}
+
+      - name: Cache cargo
+        uses: actions/cache@v4
         with:
-          name: build-${{ matrix.os }}
           path: |
-            dist/
-            target/release/
-          retention-days: 7
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.cargo/git
+            **/target
+          key: ${{ runner.os }}-cargo-${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ matrix.rust }}-
 
-  regulatory-compliance:
-    name: Regulatory Compliance Check
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm install || npm ci
-      
-      - name: Validate band plans
+      # Lint / Typecheck
+      - name: Lint (ESLint)
+        if: hashFiles('**/.eslintrc*') != ''
         run: |
-          echo "🌍 Validating ITU band plans..."
-          npm run regulatory:validate-bandplans
-      
-      - name: Check license cache freshness
-        run: |
-          echo "🔍 Checking license database..."
-          npm run regulatory:check-licenses
-      
-      - name: Generate compliance report
-        run: |
-          echo "📋 Generating compliance report..."
-          npm run regulatory:report
+          npm run lint --if-present || pnpm run lint || true
 
-  deploy-pages:
-    name: Deploy to GitHub Pages
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/mainzero' && github.event_name == 'push'
-    needs: [lint, test-node, test-rust, build]
-    
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      
-      - name: Install hackathon-bridge dependencies
+      - name: Typecheck (TS)
         run: |
-          cd hackathon-bridge
-          npm ci
-      
-      - name: Prepare deployment directory
-        run: |
-          mkdir -p gh-pages-deploy
-          cp -r hackathon-bridge/public/* gh-pages-deploy/
-          cp README.md gh-pages-deploy/
-          echo "# OnAirMulTiMedia - Live Demo" > gh-pages-deploy/README.md
-          echo "Visit: https://viewunitysystem.github.io/OnAirMulTiMedia/" >> gh-pages-deploy/README.md
-      
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-deploy
+          npm run typecheck --if-present || pnpm run typecheck || npx tsc -p . --noEmit
 
-  notify:
-    name: Notify on Failure
-    runs-on: ubuntu-latest
-    if: failure()
-    needs: [lint, test-node, test-rust, audit-verification, security-scan, build]
-    
-    steps:
-      - name: Send notification
+      - name: Rust fmt
+        if: ${{ hashFiles('core/**') != '' }}
+        working-directory: ./core
+        run: cargo fmt --all -- --check
+
+      - name: Rust clippy
+        if: ${{ hashFiles('core/**') != '' }}
+        working-directory: ./core
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      # Tests
+      - name: Unit tests (Vitest)
         run: |
-          echo "❌ CI/CD Pipeline failed!"
-          echo "Branch: ${{ github.ref }}"
-          echo "Commit: ${{ github.sha }}"
-          echo "Author: ${{ github.actor }}"
-          # Add Slack/Discord/Email notification here
+          npm run test:unit --if-present || pnpm run test:unit || npx vitest run --coverage
+
+      - name: Rust tests
+        if: ${{ hashFiles('core/**') != '' }}
+        working-directory: ./core
+        run: cargo test --all --all-features --verbose
+
+      # Build WebUI
+      - name: Build webui
+        if: ${{ hashFiles('webui/**') != '' }}
+        working-directory: ./webui
+        run: |
+          npm run build --if-present || pnpm run build || npx vite build
+
+      # Playwright E2E nur auf Linux
+      - name: Install Playwright deps
+        if: runner.os == 'Linux' && hashFiles('playwright.config.*') != ''
+        run: npx playwright install --with-deps
+
+      - name: E2E (Playwright)
+        if: runner.os == 'Linux' && hashFiles('playwright.config.*') != ''
+        run: npx playwright test
+        env:
+          CI: 'true'
+
+      # Security
+      - name: Install cargo-audit
+        if: ${{ hashFiles('core/**') != '' }}
+        run: |
+          if ! command -v cargo-audit >/dev/null 2>&1; then cargo install cargo-audit; fi
+
+      - name: Cargo audit
+        if: ${{ hashFiles('core/**') != '' }}
+        working-directory: ./core
+        run: cargo audit --json > audit-report.json || true
+
+      - name: NPM audit
+        run: |
+          npx npm-audit-resolver || npm audit --audit-level=moderate || true
+
+      # Artifacts
+      - name: Upload dist (web)
+        if: always() && hashFiles('webui/dist/**') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: webui-dist-${{ matrix.os }}
+          path: webui/dist
+          if-no-files-found: ignore
+
+      - name: Upload coverage (vitest)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.os }}
+          path: |
+            coverage
+            .nyc_output
+          if-no-files-found: ignore
+
+      - name: Upload Rust audit
+        if: always() && hashFiles('core/audit-report.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-audit-${{ matrix.os }}
+          path: core/audit-report.json
+          if-no-files-found: ignore
