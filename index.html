@@ -9,6 +9,7 @@
     content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://onair-edge.telcotelekom.workers.dev wss://onair-edge.telcotelekom.workers.dev; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; upgrade-insecure-requests">
   <link rel="stylesheet" href="./assets/landing.css" />
   <script src="./self-healing-system.js"></script>
+  <script src="./server-to-server-healing.js"></script>
   <!-- Keine Meta‑Refresh/JS‑Redirects mehr -->
   <!-- Keine X-Frame-Options im <meta> (nur per Header wirksam) -->
   <!-- Links RELATIV halten (./...), damit Pages‑Subpfad funktioniert -->
@@ -64,6 +65,42 @@
     </section>
 
     <section class="panel">
+      <h2>🔄 Server‑to‑Server Auto‑Healing</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <div style="background: #1e293b; padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 12px; opacity: 0.8;">Status</div>
+          <div id="server-healing-status" style="font-size: 18px; font-weight: bold; color: #93c5fd;">Initializing...</div>
+        </div>
+        <div style="background: #1e293b; padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 12px; opacity: 0.8;">Letzter Scan</div>
+          <div id="last-server-scan" style="font-size: 18px; font-weight: bold; color: #93c5fd;">--:--:--</div>
+        </div>
+        <div style="background: #1e293b; padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 12px; opacity: 0.8;">Bugs gefunden</div>
+          <div id="bugs-found-count" style="font-size: 18px; font-weight: bold; color: #ef4444;">0</div>
+        </div>
+        <div style="background: #1e293b; padding: 1rem; border-radius: 8px;">
+          <div style="font-size: 12px; opacity: 0.8;">Fixes angewendet</div>
+          <div id="fixes-applied-count" style="font-size: 18px; font-weight: bold; color: #10b981;">0</div>
+        </div>
+      </div>
+      <div style="margin-top: 1rem;">
+        <button onclick="testServerToServerHealing()" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin-right: 0.5rem;">
+          🔄 Server-Healing Test
+        </button>
+        <button onclick="showServerHealingLog()" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin-right: 0.5rem;">
+          📋 Healing-Log
+        </button>
+        <button onclick="stopServerHealing()" style="background: #ef4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin-right: 0.5rem;">
+          ⏹️ Stoppen
+        </button>
+        <button onclick="startServerHealing()" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+          ▶️ Starten
+        </button>
+      </div>
+    </section>
+
+    <section class="panel">
       <h2>Info‑Dashboard (eingebettet)</h2>
       <div class="frame-wrap">
         <iframe src="./info.html" title="Info‑Dashboard" loading="lazy" referrerpolicy="no-referrer"
@@ -73,29 +110,95 @@
   </main>
 
   <script>
-    // Self-Healing Test Functions
-    function testSelfHealing() {
-      if (window.selfHealingSystem) {
-        window.selfHealingSystem.testSelfHealing();
+    // Server-to-Server Healing Functions
+    function testServerToServerHealing() {
+      if (window.serverToServerHealing) {
+        window.serverToServerHealing.performHealing().then(results => {
+          updateServerHealingUI(results);
+          alert(`Server-to-Server Healing Test abgeschlossen!\n\nBugs gefunden: ${results.scans.reduce((sum, scan) => sum + (scan.bugs ? scan.bugs.length : 0), 0)}\nFixes angewendet: ${results.fixes.length}`);
+        });
       } else {
-        console.warn('Self-Healing System not initialized');
-        alert('Self-Healing System nicht verfügbar');
+        console.warn('Server-to-Server Healing not initialized');
+        alert('Server-to-Server Healing nicht verfügbar');
       }
     }
 
-    function showRecoveryLog() {
-      if (window.selfHealingSystem) {
-        const log = window.selfHealingSystem.getRecoveryLog();
-        const logText = log.map(entry => 
-          `${entry.timestamp}: [${entry.type.toUpperCase()}] ${entry.message}`
-        ).join('\n');
-        
-        alert(`Self-Healing Recovery Log:\n\n${logText || 'Keine Recovery-Versuche bisher'}`);
+    function showServerHealingLog() {
+      if (window.serverToServerHealing) {
+        const results = window.serverToServerHealing.getLastResults();
+        if (results) {
+          const logText = `Server-to-Server Healing Log:\n\n` +
+            `Zeitstempel: ${results.timestamp}\n` +
+            `Server: ${results.server}\n\n` +
+            `Scans: ${results.scans.length}\n` +
+            `Fixes: ${results.fixes.length}\n` +
+            `Fehler: ${results.errors.length}\n\n` +
+            `Details:\n${JSON.stringify(results, null, 2)}`;
+          
+          alert(logText);
+        } else {
+          alert('Noch keine Server-to-Server Healing-Ergebnisse verfügbar');
+        }
       } else {
-        console.warn('Self-Healing System not initialized');
-        alert('Self-Healing System nicht verfügbar');
+        console.warn('Server-to-Server Healing not initialized');
+        alert('Server-to-Server Healing nicht verfügbar');
       }
     }
+
+    function stopServerHealing() {
+      if (window.serverToServerHealing) {
+        window.serverToServerHealing.stop();
+        document.getElementById('server-healing-status').textContent = 'Gestoppt';
+        document.getElementById('server-healing-status').style.color = '#ef4444';
+        alert('Server-to-Server Healing gestoppt');
+      }
+    }
+
+    function startServerHealing() {
+      if (window.serverToServerHealing) {
+        window.serverToServerHealing.start();
+        document.getElementById('server-healing-status').textContent = 'Aktiv';
+        document.getElementById('server-healing-status').style.color = '#10b981';
+        alert('Server-to-Server Healing gestartet');
+      }
+    }
+
+    function updateServerHealingUI(results) {
+      if (!results) return;
+      
+      document.getElementById('last-server-scan').textContent = new Date().toLocaleTimeString();
+      
+      const bugsFound = results.scans.reduce((sum, scan) => sum + (scan.bugs ? scan.bugs.length : 0), 0);
+      const fixesApplied = results.fixes.filter(fix => fix.success).length;
+      
+      document.getElementById('bugs-found-count').textContent = bugsFound;
+      document.getElementById('fixes-applied-count').textContent = fixesApplied;
+      
+      if (bugsFound > 0) {
+        document.getElementById('bugs-found-count').style.color = '#ef4444';
+      } else {
+        document.getElementById('bugs-found-count').style.color = '#10b981';
+      }
+    }
+
+    // Auto-Update UI alle 30 Sekunden
+    setInterval(() => {
+      if (window.serverToServerHealing) {
+        const results = window.serverToServerHealing.getLastResults();
+        if (results) {
+          updateServerHealingUI(results);
+        }
+        
+        const status = window.serverToServerHealing.getStatus();
+        if (status.isRunning) {
+          document.getElementById('server-healing-status').textContent = 'Aktiv';
+          document.getElementById('server-healing-status').style.color = '#10b981';
+        } else {
+          document.getElementById('server-healing-status').textContent = 'Gestoppt';
+          document.getElementById('server-healing-status').style.color = '#ef4444';
+        }
+      }
+    }, 30000);
 
     // Initialize Self-Healing System when page loads
     document.addEventListener('DOMContentLoaded', () => {

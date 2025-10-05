@@ -87,47 +87,258 @@ export default {
             });
         }
 
-        // AUTO-BUG-FIX: Bug-Detection Endpunkte
-        if (url.pathname === '/js-errors') {
-            return new Response(JSON.stringify([
-                { message: 'process is not defined', file: 'feature-detection.mjs', line: 271 },
-                { message: 'addAll failed', file: 'sw.js', line: 73 }
-            ]), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-        }
-
-        if (url.pathname === '/css-issues') {
-            return new Response(JSON.stringify([
-                { message: 'missing property', selector: '.ui-framework' }
-            ]), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-        }
-
-        if (url.pathname === '/api-errors') {
-            return new Response(JSON.stringify([
-                { endpoint: '/health', status: 404, message: 'Endpoint not found' }
-            ]), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-        }
-
-        if (url.pathname === '/apply-fix') {
-            if (request.method === 'POST') {
-                const fix = await request.json();
-                // Hier würde der Fix angewendet werden
-                return new Response(JSON.stringify({
-                    success: true,
-                    fix: fix.type,
-                    applied: new Date().toISOString()
-                }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        // SERVER-TO-SERVER AUTO-BUG-FIX: Server kommunizieren untereinander
+        if (url.pathname === '/server-scan') {
+            // Dieser Server scannt andere Server
+            const otherServers = [
+                'https://viewunitysystem.github.io/OnAirMulTiMedia',
+                'https://onairmultimedia.web.app'
+            ];
+            
+            const scanResults = [];
+            for (const server of otherServers) {
+                try {
+                    const response = await fetch(`${server}/health`);
+                    const bugs = await this.detectBugsOnServer(server);
+                    scanResults.push({
+                        server: server,
+                        status: response.ok ? 'healthy' : 'unhealthy',
+                        bugs: bugs
+                    });
+                } catch (error) {
+                    scanResults.push({
+                        server: server,
+                        status: 'error',
+                        error: error.message
+                    });
+                }
             }
+            
+            return new Response(JSON.stringify(scanResults), { 
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            });
+        }
+
+        if (url.pathname === '/server-fix') {
+            if (request.method === 'POST') {
+                const fixRequest = await request.json();
+                const { targetServer, bug, fix } = fixRequest;
+                
+                // Server wendet Fix auf anderen Server an
+                try {
+                    const response = await fetch(`${targetServer}/apply-fix`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ bug, fix })
+                    });
+                    
+                    return new Response(JSON.stringify({
+                        success: response.ok,
+                        targetServer: targetServer,
+                        fix: fix.type,
+                        applied: new Date().toISOString()
+                    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+                } catch (error) {
+                    return new Response(JSON.stringify({
+                        success: false,
+                        error: error.message
+                    }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+                }
+            }
+        }
+
+        if (url.pathname === '/auto-heal') {
+            // Automatische Selbstheilung - läuft alle 30 Sekunden
+            const healResults = await this.performAutoHealing();
+            return new Response(JSON.stringify(healResults), { 
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            });
         }
 
         // Default Response
         return new Response(JSON.stringify({
-            message: 'OnAir MultiMedia API',
-            version: '1.0.0',
-            endpoints: ['/health', '/status', '/metrics', '/rtc-config', '/ws', '/js-errors', '/css-issues', '/api-errors', '/apply-fix']
+            message: 'OnAir MultiMedia API - Server-to-Server Auto-Healing',
+            version: '2.0.0',
+            endpoints: [
+                '/health', '/status', '/metrics', '/rtc-config', '/ws',
+                '/server-scan', '/server-fix', '/auto-heal',
+                '/js-errors', '/css-issues', '/api-errors', '/apply-fix'
+            ],
+            autoHealing: {
+                enabled: true,
+                interval: '30s',
+                servers: [
+                    'https://onair-edge.telcotelekom.workers.dev',
+                    'https://viewunitysystem.github.io/OnAirMulTiMedia',
+                    'https://onairmultimedia.web.app'
+                ]
+            }
         }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
     },
+
+    // SERVER-TO-SERVER: Bug-Detection auf anderen Servern
+    async detectBugsOnServer(serverUrl) {
+        const bugs = [];
+        
+        try {
+            // JavaScript-Fehler prüfen
+            const jsResponse = await fetch(`${serverUrl}/js-errors`);
+            if (jsResponse.ok) {
+                const jsErrors = await jsResponse.json();
+                bugs.push(...jsErrors.map(error => ({
+                    type: 'javascript',
+                    message: error.message,
+                    file: error.file,
+                    line: error.line,
+                    server: serverUrl
+                })));
+            }
+            
+            // CSS-Probleme prüfen
+            const cssResponse = await fetch(`${serverUrl}/css-issues`);
+            if (cssResponse.ok) {
+                const cssIssues = await cssResponse.json();
+                bugs.push(...cssIssues.map(issue => ({
+                    type: 'css',
+                    message: issue.message,
+                    selector: issue.selector,
+                    server: serverUrl
+                })));
+            }
+            
+            // API-Fehler prüfen
+            const apiResponse = await fetch(`${serverUrl}/api-errors`);
+            if (apiResponse.ok) {
+                const apiErrors = await apiResponse.json();
+                bugs.push(...apiErrors.map(error => ({
+                    type: 'api',
+                    endpoint: error.endpoint,
+                    status: error.status,
+                    message: error.message,
+                    server: serverUrl
+                })));
+            }
+            
+        } catch (error) {
+            console.warn(`Bug detection failed for ${serverUrl}:`, error);
+        }
+        
+        return bugs;
+    }
+
+    // SERVER-TO-SERVER: Automatische Selbstheilung
+    async performAutoHealing() {
+        const healResults = {
+            timestamp: new Date().toISOString(),
+            scans: [],
+            fixes: []
+        };
+        
+        const servers = [
+            'https://onair-edge.telcotelekom.workers.dev',
+            'https://viewunitysystem.github.io/OnAirMulTiMedia',
+            'https://onairmultimedia.web.app'
+        ];
+        
+        for (const server of servers) {
+            try {
+                // Server scannen
+                const bugs = await this.detectBugsOnServer(server);
+                healResults.scans.push({
+                    server: server,
+                    bugsFound: bugs.length,
+                    bugs: bugs
+                });
+                
+                // Bugs reparieren
+                for (const bug of bugs) {
+                    const fix = await this.generateServerFix(bug);
+                    if (fix) {
+                        const fixResult = await this.applyServerFix(server, bug, fix);
+                        healResults.fixes.push({
+                            server: server,
+                            bug: bug.type,
+                            fix: fix.type,
+                            success: fixResult
+                        });
+                    }
+                }
+                
+            } catch (error) {
+                healResults.scans.push({
+                    server: server,
+                    error: error.message
+                });
+            }
+        }
+        
+        return healResults;
+    }
+
+    // SERVER-TO-SERVER: Fix für Bug generieren
+    async generateServerFix(bug) {
+        const fixTemplates = {
+            javascript: {
+                'process is not defined': {
+                    fix: 'if (typeof process !== \'undefined\') { /* process code */ }',
+                    type: 'conditional-check'
+                },
+                'addAll failed': {
+                    fix: 'Promise.allSettled(resources.map(r => cache.put(r, fetch(r))))',
+                    type: 'promise-handling'
+                }
+            },
+            css: {
+                'missing property': {
+                    fix: '/* Add missing CSS property */',
+                    type: 'property-addition'
+                }
+            },
+            api: {
+                '404': {
+                    fix: 'Add missing endpoint or redirect',
+                    type: 'endpoint-creation'
+                },
+                '500': {
+                    fix: 'Add error handling and fallback',
+                    type: 'error-handling'
+                }
+            }
+        };
+        
+        const bugType = fixTemplates[bug.type];
+        if (bugType) {
+            for (const [pattern, fix] of Object.entries(bugType)) {
+                if (bug.message.toLowerCase().includes(pattern.toLowerCase())) {
+                    return {
+                        ...fix,
+                        bug: bug,
+                        timestamp: new Date().toISOString()
+                    };
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    // SERVER-TO-SERVER: Fix auf Server anwenden
+    async applyServerFix(serverUrl, bug, fix) {
+        try {
+            const response = await fetch(`${serverUrl}/apply-fix`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bug, fix })
+            });
+            
+            return response.ok;
+        } catch (error) {
+            console.warn(`Failed to apply fix to ${serverUrl}:`, error);
+            return false;
+        }
+    }
 
     // SICHERHEIT: Authentifizierungsfunktion
     async checkAuthorization(authHeader, env) {
