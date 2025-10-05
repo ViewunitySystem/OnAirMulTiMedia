@@ -1,1 +1,267 @@
-INVESTOR CHARGING SYSTEM FIX
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Charging System - OnAirMulTiMedia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            color: #e5e7eb;
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(26, 31, 46, 0.8);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #f59e0b;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+        .investment-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .investment-card {
+            background: #2d3748;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .investment-card:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+        }
+        .investment-card h3 {
+            color: #f59e0b;
+            margin-top: 0;
+        }
+        .investment-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #10b981;
+            margin: 1rem 0;
+        }
+        .investment-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+        .revenue-streams {
+            background: #2d3748;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .revenue-streams h3 {
+            color: #f59e0b;
+            margin-top: 0;
+        }
+        .revenue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #374151;
+        }
+        .revenue-item:last-child {
+            border-bottom: none;
+        }
+        .revenue-name {
+            color: #e5e7eb;
+        }
+        .revenue-value {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .metric {
+            background: #374151;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .metric-label {
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .cta-section h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1.5rem;
+        }
+        .cta-button {
+            background: white;
+            color: #f59e0b;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            background: #f3f4f6;
+            transform: translateY(-2px);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-live { background: #10b981; }
+        .status-deploying { background: #f59e0b; }
+        .status-offline { background: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Investor Charging System</h1>
+        
+        <div class="investment-overview">
+            <div class="investment-card">
+                <h3>Series A Target</h3>
+                <div class="investment-value">€5M</div>
+                <div class="investment-label">Investment Goal</div>
+            </div>
+            <div class="investment-card">
+                <h3>Pre-Money Valuation</h3>
+                <div class="investment-value">€15M</div>
+                <div class="investment-label">Company Value</div>
+            </div>
+            <div class="investment-card">
+                <h3>Post-Money Valuation</h3>
+                <div class="investment-value">€20M</div>
+                <div class="investment-label">After Investment</div>
+            </div>
+            <div class="investment-card">
+                <h3>Investor Share</h3>
+                <div class="investment-value">25%</div>
+                <div class="investment-label">Equity Offered</div>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric">
+                <div class="metric-value">1,247</div>
+                <div class="metric-label">Active Users</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">45,000</div>
+                <div class="metric-label">API Calls/Day</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">99.8%</div>
+                <div class="metric-label">Uptime</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">€45</div>
+                <div class="metric-label">CAC</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">€890</div>
+                <div class="metric-label">LTV</div>
+            </div>
+            <div class="metric">
+                <div class="metric-value">2.1%</div>
+                <div class="metric-label">Churn Rate</div>
+            </div>
+        </div>
+
+        <div class="revenue-streams">
+            <h3>🚀 Revenue Streams</h3>
+            <div class="revenue-item">
+                <span class="revenue-name">SaaS Enterprise</span>
+                <span class="revenue-value">€48,000 ARPU</span>
+            </div>
+            <div class="revenue-item">
+                <span class="revenue-name">Data Subscriptions</span>
+                <span class="revenue-value">€12,000 ARPU</span>
+            </div>
+            <div class="revenue-item">
+                <span class="revenue-name">Professional Services</span>
+                <span class="revenue-value">€60,000 ARPU</span>
+            </div>
+            <div class="revenue-item">
+                <span class="revenue-name">SDR License System</span>
+                <span class="revenue-value">€2,400 ARPU</span>
+            </div>
+            <div class="revenue-item">
+                <span class="revenue-name">Training & Certification</span>
+                <span class="revenue-value">€1,800 ARPU</span>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h3>🎯 Ready for Series A Investment</h3>
+            <p>OnAirMulTiMedia is positioned for rapid growth with proven technology, strong metrics, and clear revenue streams.</p>
+            <button class="cta-button" onclick="openInvestorDashboard()">Access Full Investor Dashboard</button>
+        </div>
+
+        <div style="background: #2d3748; border-radius: 8px; padding: 1.5rem; margin: 2rem 0;">
+            <h3 style="color: #f59e0b; margin-top: 0;">📊 System Status</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <div><span class="status-indicator status-live"></span>GitHub Pages: LIVE</div>
+                <div><span class="status-indicator status-live"></span>Firebase Hosting: LIVE</div>
+                <div><span class="status-indicator status-live"></span>CI/CD Pipeline: ACTIVE</div>
+                <div><span class="status-indicator status-deploying"></span>Investor Dashboard: DEPLOYING</div>
+                <div><span class="status-indicator status-live"></span>API Endpoints: OPERATIONAL</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem; color: #9ca3af;">
+            <p>© 2025 Raymond Demitrio Dr. Tel - TEL1.NL</p>
+            <p>Last Updated: <span id="lastUpdate"></span></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleString('de-DE');
+        
+        function openInvestorDashboard() {
+            window.open('https://viewunitysystem.github.io/OnAirMulTiMedia/investor-charging.html', '_blank');
+        }
+        
+        // Auto-refresh every 5 minutes
+        setTimeout(() => {
+            location.reload();
+        }, 300000);
+    </script>
+</body>
+</html>
