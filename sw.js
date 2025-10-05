@@ -4,7 +4,7 @@
  * Stale-While-Revalidate + Offline 404 Recovery
  */
 
-const CACHE_NAME = `oamtm-v1-${Date.now()}`;
+const CACHE_NAME = 'oamtm-v1-' + Date.now();
 const CACHE_VERSION = '1.0.0';
 const MAX_CACHE_SIZE = 100; // Maximum number of cached responses
 
@@ -351,10 +351,10 @@ function createOfflineResponse(request) {
     <p>The OAMTM System is currently offline. Please check your internet connection and try again.</p>
     <button class="retry-btn" onclick="window.location.reload()">🔄 Retry</button>
     <div class="status">
-      <div>Requested: ${url.pathname}</div>
+      <div>Requested: ' + url.pathname + '</div>
       <div>Status: Offline</div>
       <div>Service Worker: Active</div>
-      <div>Cache: ${CACHE_NAME}</div>
+      <div>Cache: ' + CACHE_NAME + '</div>
     </div>
   </div>
   <script>
@@ -369,7 +369,7 @@ function createOfflineResponse(request) {
         const status = navigator.onLine ? 'Online' : 'Offline';
         const statusElement = document.querySelector('.status div:last-child');
         if (statusElement) {
-          statusElement.textContent = `Connection: ${status}`;
+          statusElement.textContent = 'Connection: ' + status;
         }
       }
       
