@@ -781,7 +781,7 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     
     <!-- Babel für JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="/scripts/auto-fix-websocket.js"></script>
     
     <!-- App Script -->
     <script type="text/babel">
@@ -1171,8 +1171,16 @@
           const [showDetails, setShowDetails] = useState(null);
           
           const { uiVariants, loading, error, fetchUiVariants } = useApi();
-          // WebSocket deaktiviert für Deployment
-          const { status, connected } = { status: null, connected: false };
+          // WebSocket automatisch deaktiviert wenn Server nicht verfügbar
+          const { status, connected } = useWebSocket('ws://localhost:3000/ws', {
+            onError: (error) => {
+              console.log('WebSocket deaktiviert - Server nicht verfügbar (normal für statische Deployment)');
+              return { status: null, connected: false };
+            },
+            onClose: () => {
+              return { status: null, connected: false };
+            }
+          });
 
           const handleVariantSelect = (variant) => {
             setSelectedVariant(variant);
