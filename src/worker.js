@@ -81,6 +81,24 @@ ${new Date(Date.now() - 172800000).toISOString()},145,23,1150,35`;
             });
         }
 
+        // Sparkline SVG Generator
+        if (url.pathname === '/api/github/history/sparkline.svg') {
+            const metric = url.searchParams.get('metric') || 'stars';
+            const points = parseInt(url.searchParams.get('points')) || 60;
+            
+            // Generiere Sparkline-Daten basierend auf Metrik
+            const data = this.generateSparklineData(metric, points);
+            const svg = this.generateSparklineSVG(data, metric);
+            
+            return new Response(svg, { 
+                headers: { 
+                    ...corsHeaders, 
+                    'Content-Type': 'image/svg+xml',
+                    'Cache-Control': 'max-age=300' // 5 Minuten Cache
+                } 
+            });
+        }
+
         // GitHub Stats Endpoint
         if (url.pathname === '/api/github/stats') {
             return new Response(JSON.stringify({
@@ -288,7 +306,7 @@ ${new Date(Date.now() - 7200000).toISOString()},upload,admin,/config,success`;
             endpoints: [
                 '/health', '/api/health', '/status', '/metrics', '/rtc-config', '/ws',
                 '/api/github/metrics', '/api/github/stats', '/api/github/history.csv', 
-                '/api/contribs', '/api/audit/export',
+                '/api/github/history/sparkline.svg', '/api/contribs', '/api/audit/export',
                 '/server-scan', '/server-fix', '/auto-heal',
                 '/js-errors', '/css-issues', '/api-errors', '/apply-fix'
             ],
@@ -312,6 +330,86 @@ ${new Date(Date.now() - 7200000).toISOString()},upload,admin,/config,success`;
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
     },
+
+    // Sparkline-Daten generieren
+    generateSparklineData(metric, points) {
+        const data = [];
+        const baseValue = this.getMetricBaseValue(metric);
+        
+        for (let i = 0; i < points; i++) {
+            // Simuliere realistische Daten mit Trend
+            const trend = Math.sin(i * 0.1) * 0.1; // Leichte Wellenbewegung
+            const noise = (Math.random() - 0.5) * 0.05; // Zufälliges Rauschen
+            const value = baseValue * (1 + trend + noise);
+            data.push(Math.max(0, Math.round(value)));
+        }
+        
+        return data;
+    }
+
+    // Basis-Werte für verschiedene Metriken
+    getMetricBaseValue(metric) {
+        const baseValues = {
+            'stars': 150,
+            'forks': 25,
+            'release_downloads': 1250,
+            'commits': 42,
+            'issues': 8,
+            'pullRequests': 12
+        };
+        return baseValues[metric] || 100;
+    }
+
+    // SVG-Sparkline generieren
+    generateSparklineSVG(data, metric) {
+        const width = 100;
+        const height = 20;
+        const padding = 2;
+        
+        // Finde Min/Max für Skalierung
+        const min = Math.min(...data);
+        const max = Math.max(...data);
+        const range = max - min || 1;
+        
+        // Konvertiere Daten zu SVG-Punkten
+        const points = data.map((value, index) => {
+            const x = padding + (index / (data.length - 1)) * (width - 2 * padding);
+            const y = height - padding - ((value - min) / range) * (height - 2 * padding);
+            return `${x},${y}`;
+        }).join(' ');
+        
+        // Farben basierend auf Metrik
+        const colors = {
+            'stars': '#f59e0b',
+            'forks': '#10b981',
+            'release_downloads': '#3b82f6',
+            'commits': '#8b5cf6',
+            'issues': '#ef4444',
+            'pullRequests': '#06b6d4'
+        };
+        const color = colors[metric] || '#6b7280';
+        
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">
+            <defs>
+                <linearGradient id="sparklineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:${color};stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:${color};stop-opacity:0.1" />
+                </linearGradient>
+            </defs>
+            <polyline
+                fill="url(#sparklineGradient)"
+                stroke="${color}"
+                stroke-width="1.5"
+                points="${points}"
+            />
+            <polyline
+                fill="none"
+                stroke="${color}"
+                stroke-width="1"
+                points="${points}"
+            />
+        </svg>`;
+    }
 
     // SERVER-TO-SERVER: Bug-Detection auf anderen Servern
     async detectBugsOnServer(serverUrl) {

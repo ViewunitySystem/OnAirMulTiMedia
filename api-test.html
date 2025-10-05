@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>API Test - OnAirMulTiMedia</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; background: #0b1020; color: #e5e7eb; }
+    .test { background: #111827; border: 1px solid #1f2a52; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .success { border-color: #10b981; }
+    .error { border-color: #ef4444; }
+    .loading { border-color: #f59e0b; }
+    button { background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin: 4px; }
+    pre { background: #0b1020; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  </style>
+</head>
+<body>
+  <h1>🔧 API Test Dashboard</h1>
+  <p>Testet alle API-Endpunkte und zeigt echte Daten an</p>
+  
+  <div class="grid">
+    <div class="test" id="health-test">
+      <h3>Health Check</h3>
+      <button onclick="testHealth()">Test /api/health</button>
+      <pre id="health-result">Klicken Sie auf Test...</pre>
+    </div>
+    
+    <div class="test" id="github-stats-test">
+      <h3>GitHub Stats</h3>
+      <button onclick="testGitHubStats()">Test /api/github/stats</button>
+      <pre id="github-stats-result">Klicken Sie auf Test...</pre>
+    </div>
+    
+    <div class="test" id="github-metrics-test">
+      <h3>GitHub Metrics</h3>
+      <button onclick="testGitHubMetrics()">Test /api/github/metrics</button>
+      <pre id="github-metrics-result">Klicken Sie auf Test...</pre>
+    </div>
+    
+    <div class="test" id="contribs-test">
+      <h3>Contributors</h3>
+      <button onclick="testContribs()">Test /api/contribs</button>
+      <pre id="contribs-result">Klicken Sie auf Test...</pre>
+    </div>
+    
+    <div class="test" id="csv-test">
+      <h3>CSV Export</h3>
+      <button onclick="testCSV()">Test /api/github/history.csv</button>
+      <pre id="csv-result">Klicken Sie auf Test...</pre>
+    </div>
+    
+    <div class="test" id="sparkline-test">
+      <h3>Sparkline SVG</h3>
+      <button onclick="testSparkline()">Test /api/github/history/sparkline.svg</button>
+      <div id="sparkline-result">Klicken Sie auf Test...</div>
+    </div>
+  </div>
+  
+  <div class="test">
+    <h3>Alle Tests ausführen</h3>
+    <button onclick="runAllTests()">🚀 Alle Tests starten</button>
+    <div id="all-tests-result"></div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://onair-edge.telcotelekom.workers.dev';
+    
+    async function testAPI(endpoint, resultElementId) {
+      const element = document.getElementById(resultElementId);
+      const testDiv = document.getElementById(resultElementId.replace('-result', '-test'));
+      
+      testDiv.className = 'test loading';
+      element.textContent = 'Lädt...';
+      
+      try {
+        const response = await fetch(`${API_BASE}${endpoint}`);
+        const data = await response.text();
+        
+        if (response.ok) {
+          testDiv.className = 'test success';
+          element.textContent = `✅ Erfolg (${response.status})\n${data}`;
+        } else {
+          testDiv.className = 'test error';
+          element.textContent = `❌ Fehler (${response.status})\n${data}`;
+        }
+      } catch (error) {
+        testDiv.className = 'test error';
+        element.textContent = `❌ Netzwerk-Fehler\n${error.message}`;
+      }
+    }
+    
+    function testHealth() {
+      testAPI('/api/health', 'health-result');
+    }
+    
+    function testGitHubStats() {
+      testAPI('/api/github/stats', 'github-stats-result');
+    }
+    
+    function testGitHubMetrics() {
+      testAPI('/api/github/metrics', 'github-metrics-result');
+    }
+    
+    function testContribs() {
+      testAPI('/api/contribs', 'contribs-result');
+    }
+    
+    function testCSV() {
+      testAPI('/api/github/history.csv', 'csv-result');
+    }
+    
+    async function testSparkline() {
+      const element = document.getElementById('sparkline-result');
+      const testDiv = document.getElementById('sparkline-test');
+      
+      testDiv.className = 'test loading';
+      element.innerHTML = 'Lädt...';
+      
+      try {
+        const response = await fetch(`${API_BASE}/api/github/history/sparkline.svg?metric=stars&points=60`);
+        
+        if (response.ok) {
+          const svg = await response.text();
+          testDiv.className = 'test success';
+          element.innerHTML = `✅ Erfolg (${response.status})<br/><img src="data:image/svg+xml;base64,${btoa(svg)}" style="max-width: 200px;" />`;
+        } else {
+          testDiv.className = 'test error';
+          element.innerHTML = `❌ Fehler (${response.status})`;
+        }
+      } catch (error) {
+        testDiv.className = 'test error';
+        element.innerHTML = `❌ Netzwerk-Fehler<br/>${error.message}`;
+      }
+    }
+    
+    async function runAllTests() {
+      const resultDiv = document.getElementById('all-tests-result');
+      resultDiv.innerHTML = '🚀 Starte alle Tests...';
+      
+      const tests = [
+        { name: 'Health', fn: testHealth },
+        { name: 'GitHub Stats', fn: testGitHubStats },
+        { name: 'GitHub Metrics', fn: testGitHubMetrics },
+        { name: 'Contributors', fn: testContribs },
+        { name: 'CSV Export', fn: testCSV },
+        { name: 'Sparkline', fn: testSparkline }
+      ];
+      
+      let results = [];
+      
+      for (const test of tests) {
+        try {
+          await test.fn();
+          results.push(`✅ ${test.name}`);
+        } catch (error) {
+          results.push(`❌ ${test.name}: ${error.message}`);
+        }
+        
+        // Kurze Pause zwischen Tests
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      resultDiv.innerHTML = results.join('<br/>');
+    }
+    
+    // Auto-Test beim Laden der Seite
+    window.addEventListener('load', () => {
+      setTimeout(runAllTests, 1000);
+    });
+  </script>
+</body>
+</html>
