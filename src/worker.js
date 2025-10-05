@@ -81,17 +81,59 @@ ${new Date(Date.now() - 172800000).toISOString()},145,23,1150,35`;
             });
         }
 
-        // GitHub Metriken JSON
-        if (url.pathname === '/api/github/metrics') {
+        // GitHub Stats Endpoint
+        if (url.pathname === '/api/github/stats') {
             return new Response(JSON.stringify({
-                stars: 150,
-                forks: 25,
-                downloads: 1250,
-                commits: 42,
-                issues: 8,
-                pullRequests: 12,
-                contributors: 5,
-                lastUpdate: new Date().toISOString()
+                totalCommits: 42,
+                totalIssues: 8,
+                totalPullRequests: 12,
+                totalContributors: 5,
+                totalStars: 150,
+                totalForks: 25,
+                totalDownloads: 1250,
+                lastCommit: new Date().toISOString(),
+                lastIssue: new Date(Date.now() - 3600000).toISOString(),
+                lastPR: new Date(Date.now() - 7200000).toISOString(),
+                repository: {
+                    name: 'OnAirMulTiMedia',
+                    fullName: 'ViewunitySystem/OnAirMulTiMedia',
+                    description: 'OnAir MultiMedia System',
+                    language: 'JavaScript',
+                    license: 'MIT',
+                    createdAt: '2024-01-01T00:00:00Z',
+                    updatedAt: new Date().toISOString()
+                }
+            }), { 
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+            });
+        }
+
+        // Contributors Endpoint
+        if (url.pathname === '/api/contribs') {
+            return new Response(JSON.stringify({
+                contributors: [
+                    {
+                        username: 'RaymondDemitrioTel',
+                        name: 'Raymond Demitrio Dr. Tel',
+                        email: 'gentlyoverdone@outlook.com',
+                        contributions: 42,
+                        avatar: 'https://avatars.githubusercontent.com/u/12345678?v=4',
+                        role: 'Maintainer',
+                        joinedAt: '2024-01-01T00:00:00Z'
+                    },
+                    {
+                        username: 'ViewunitySystem',
+                        name: 'Viewunity System',
+                        email: 'system@viewunity.com',
+                        contributions: 15,
+                        avatar: 'https://avatars.githubusercontent.com/u/87654321?v=4',
+                        role: 'Contributor',
+                        joinedAt: '2024-01-15T00:00:00Z'
+                    }
+                ],
+                totalContributors: 2,
+                totalContributions: 57,
+                lastUpdated: new Date().toISOString()
             }), { 
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
             });
@@ -245,7 +287,8 @@ ${new Date(Date.now() - 7200000).toISOString()},upload,admin,/config,success`;
             version: '2.1.0',
             endpoints: [
                 '/health', '/api/health', '/status', '/metrics', '/rtc-config', '/ws',
-                '/api/github/metrics', '/api/github/history.csv', '/api/audit/export',
+                '/api/github/metrics', '/api/github/stats', '/api/github/history.csv', 
+                '/api/contribs', '/api/audit/export',
                 '/server-scan', '/server-fix', '/auto-heal',
                 '/js-errors', '/css-issues', '/api-errors', '/apply-fix'
             ],
