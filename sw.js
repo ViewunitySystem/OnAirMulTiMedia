@@ -4,16 +4,14 @@
  * Stale-While-Revalidate + Offline 404 Recovery
  */
 
-const CACHE_NAME = 'oamtm-v1-' + Date.now();
+const CACHE_NAME = 'oamtm-v9729e1c-mgdtet46-rhl7oo';
 const CACHE_VERSION = '1.0.0';
 const MAX_CACHE_SIZE = 100; // Maximum number of cached responses
 
 // Critical resources that should be cached immediately
 const CRITICAL_RESOURCES = [
   '/',
-  '/index.html',
-  '/manifest.json'
-  // Removed '/sw.js' to prevent self-caching issues
+  '/index.html'
 ];
 
 // Resources that should be cached on demand
@@ -54,33 +52,34 @@ const OFFLINE_FALLBACKS = {
  */
 self.addEventListener('install', event => {
   console.log('🔧 [sw] Installing service worker...');
-  
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('📦 [sw] Caching critical resources...');
-        // Cache resources individually to handle missing files gracefully
-        return Promise.allSettled(
-          CRITICAL_RESOURCES.map(resource => 
-            fetch(resource)
-              .then(response => {
-                if (response.ok) {
-                  return cache.put(resource, response);
-                } else {
-                  console.warn(`⚠️ [sw] Resource ${resource} returned ${response.status}`);
-                  return null;
-                }
-              })
-              .catch(error => {
-                console.warn(`⚠️ [sw] Failed to cache ${resource}:`, error);
-                return null; // Continue with other resources
-              })
-          )
-        );
+
+        // Try to cache each resource individually
+        const cachePromises = CRITICAL_RESOURCES.map(resource => {
+          return fetch(resource)
+            .then(response => {
+              if (response.ok) {
+                return cache.put(resource, response.clone());
+              } else {
+                console.warn(`⚠️ [sw] Resource ${resource} returned ${response.status}`);
+                return null;
+              }
+            })
+            .catch(error => {
+              console.warn(`⚠️ [sw] Failed to cache ${resource}:`, error);
+              return null;
+            });
+        });
+
+        return Promise.allSettled(cachePromises);
       })
       .then(results => {
-        const successful = results.filter(r => r.status === 'fulfilled').length;
-        const failed = results.filter(r => r.status === 'rejected').length;
+        const successful = results.filter(r => r.status === 'fulfilled' && r.value !== null).length;
+        const failed = results.filter(r => r.status === 'rejected' || r.value === null).length;
         console.log(`✅ [sw] Caching completed: ${successful} successful, ${failed} failed`);
         return self.skipWaiting();
       })
@@ -97,7 +96,7 @@ self.addEventListener('install', event => {
  */
 self.addEventListener('activate', event => {
   console.log('🚀 [sw] Activating service worker...');
-  
+
   event.waitUntil(
     caches.keys()
       .then(cacheNames => {
@@ -126,22 +125,22 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
-  
+
   // Skip non-GET requests
   if (request.method !== 'GET') {
     return;
   }
-  
+
   // Skip cross-origin requests
   if (url.origin !== location.origin) {
     return;
   }
-  
+
   // Skip resources that should never be cached
   if (NO_CACHE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
     return;
   }
-  
+
   // Handle different types of requests
   if (CACHEABLE_PATTERNS.some(pattern => pattern.test(url.pathname))) {
     event.respondWith(handleCacheableRequest(request));
@@ -155,25 +154,25 @@ self.addEventListener('fetch', event => {
  */
 async function handleCacheableRequest(request) {
   const url = new URL(request.url);
-  
+
   try {
     // Try to get from cache first
     const cachedResponse = await caches.match(request);
-    
+
     if (cachedResponse) {
       console.log('📦 [sw] Serving from cache:', url.pathname);
-      
+
       // Update cache in background (stale-while-revalidate)
       updateCacheInBackground(request);
-      
+
       return cachedResponse;
     }
-    
+
     // Not in cache, fetch from network
     console.log('🌐 [sw] Fetching from network:', url.pathname);
-    
+
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       // Cache the response
       await cacheResponse(request, networkResponse.clone());
@@ -182,7 +181,7 @@ async function handleCacheableRequest(request) {
       // Network error, try offline fallback
       return handleOfflineFallback(request);
     }
-    
+
   } catch (error) {
     console.error('❌ [sw] Request failed:', error);
     return handleOfflineFallback(request);
@@ -194,18 +193,18 @@ async function handleCacheableRequest(request) {
  */
 async function handleGenericRequest(request) {
   const url = new URL(request.url);
-  
+
   try {
     // Try network first
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       return networkResponse;
     } else {
       // Network error, try offline fallback
       return handleOfflineFallback(request);
     }
-    
+
   } catch (error) {
     console.error('❌ [sw] Generic request failed:', error);
     return handleOfflineFallback(request);
@@ -218,7 +217,7 @@ async function handleGenericRequest(request) {
 async function updateCacheInBackground(request) {
   try {
     const networkResponse = await fetch(request);
-    
+
     if (networkResponse.ok) {
       await cacheResponse(request, networkResponse);
       console.log('🔄 [sw] Cache updated in background:', request.url);
@@ -234,14 +233,14 @@ async function updateCacheInBackground(request) {
 async function cacheResponse(request, response) {
   try {
     const cache = await caches.open(CACHE_NAME);
-    
+
     // Check cache size and clean up if necessary
     await cleanupCache(cache);
-    
+
     // Cache the response
     await cache.put(request, response);
     console.log('💾 [sw] Response cached:', request.url);
-    
+
   } catch (error) {
     console.error('❌ [sw] Failed to cache response:', error);
   }
@@ -253,15 +252,15 @@ async function cacheResponse(request, response) {
 async function cleanupCache(cache) {
   try {
     const keys = await cache.keys();
-    
+
     if (keys.length >= MAX_CACHE_SIZE) {
       // Remove oldest entries (simple FIFO)
       const keysToDelete = keys.slice(0, keys.length - MAX_CACHE_SIZE + 1);
-      
+
       await Promise.all(
         keysToDelete.map(key => cache.delete(key))
       );
-      
+
       console.log('🧹 [sw] Cache cleaned up:', keysToDelete.length, 'entries removed');
     }
   } catch (error) {
@@ -274,11 +273,11 @@ async function cleanupCache(cache) {
  */
 async function handleOfflineFallback(request) {
   const url = new URL(request.url);
-  
+
   try {
     // Try to find a specific offline fallback
     const fallback = OFFLINE_FALLBACKS[url.pathname];
-    
+
     if (fallback) {
       const fallbackResponse = await caches.match(fallback);
       if (fallbackResponse) {
@@ -286,17 +285,17 @@ async function handleOfflineFallback(request) {
         return fallbackResponse;
       }
     }
-    
+
     // Try generic offline page
     const offlineResponse = await caches.match('/offline.html');
     if (offlineResponse) {
       console.log('📱 [sw] Serving generic offline page');
       return offlineResponse;
     }
-    
+
     // Create a simple offline response
     return createOfflineResponse(request);
-    
+
   } catch (error) {
     console.error('❌ [sw] Offline fallback failed:', error);
     return createOfflineResponse(request);
@@ -308,7 +307,7 @@ async function handleOfflineFallback(request) {
  */
 function createOfflineResponse(request) {
   const url = new URL(request.url);
-  
+
   const offlineHTML = `
 <!DOCTYPE html>
 <html lang="en">
@@ -413,7 +412,7 @@ function createOfflineResponse(request) {
  */
 self.addEventListener('sync', event => {
   console.log('🔄 [sw] Background sync:', event.tag);
-  
+
   if (event.tag === 'background-sync') {
     event.waitUntil(doBackgroundSync());
   }
@@ -425,10 +424,10 @@ self.addEventListener('sync', event => {
 async function doBackgroundSync() {
   try {
     console.log('🔄 [sw] Performing background sync...');
-    
+
     // Sync any pending requests
     const pendingRequests = await getPendingRequests();
-    
+
     for (const request of pendingRequests) {
       try {
         await fetch(request);
@@ -438,9 +437,9 @@ async function doBackgroundSync() {
         console.warn('⚠️ [sw] Sync failed for:', request.url, error);
       }
     }
-    
+
     console.log('✅ [sw] Background sync completed');
-    
+
   } catch (error) {
     console.error('❌ [sw] Background sync failed:', error);
   }
@@ -467,10 +466,10 @@ async function removePendingRequest(request) {
  */
 self.addEventListener('push', event => {
   console.log('📱 [sw] Push notification received');
-  
+
   if (event.data) {
     const data = event.data.json();
-    
+
     event.waitUntil(
       self.registration.showNotification(data.title, {
         body: data.body,
@@ -488,9 +487,9 @@ self.addEventListener('push', event => {
  */
 self.addEventListener('notificationclick', event => {
   console.log('📱 [sw] Notification clicked');
-  
+
   event.notification.close();
-  
+
   event.waitUntil(
     clients.openWindow(event.notification.data?.url || '/')
   );
@@ -501,11 +500,11 @@ self.addEventListener('notificationclick', event => {
  */
 self.addEventListener('message', event => {
   console.log('💬 [sw] Message received:', event.data);
-  
+
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
-  
+
   if (event.data && event.data.type === 'GET_CACHE_STATUS') {
     getCacheStatus().then(status => {
       event.ports[0].postMessage(status);
@@ -520,7 +519,7 @@ async function getCacheStatus() {
   try {
     const cache = await caches.open(CACHE_NAME);
     const keys = await cache.keys();
-    
+
     return {
       cacheName: CACHE_NAME,
       cacheVersion: CACHE_VERSION,

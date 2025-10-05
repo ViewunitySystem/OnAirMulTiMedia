@@ -1,312 +1,164 @@
 <!doctype html>
-<html>
+<html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bridge Test Client</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <title>OnAir MultiMedia – Live Demo</title>
   <style>
-    body { font-family: system-ui, sans-serif; margin: 0; background:#0f172a; color:#e5e7eb; }
-    header { padding: 12px 16px; background:#111827; position: sticky; top:0; display:flex; gap:12px; align-items:center; }
-    main { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; padding:16px; }
-    section { background:#111827; border-radius:12px; padding:12px; }
-    input, button, select, textarea { background:#0b1020; color:#e5e7eb; border:1px solid #374151; border-radius:8px; padding:8px; width: 100%; }
-    button { cursor:pointer; }
-    .log { height: 40vh; overflow:auto; background:#0b1020; padding:8px; border-radius:8px; }
-    .row { margin-bottom:6px; }
-    code { font-family: ui-monospace, Menlo, monospace; font-size:12px; }
-
-    /* Inlay window */
-    .inlay-window { position: fixed; bottom: 16px; right: 16px; width: 560px; height: 320px; background:#000; border:1px solid #374151; border-radius:12px; overflow:hidden; resize: both; box-shadow: 0 10px 30px rgba(0,0,0,.5); z-index: 9999; display:none; }
-    .inlay-toolbar { height: 40px; background:#0b1020; color:#e5e7eb; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:0 8px; cursor:move; user-select:none; }
-    .inlay-title { font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width: 60%; }
-    .inlay-actions { display:flex; gap:6px; }
-    .inlay-actions button { width: 36px; height: 28px; padding:0; border-radius:8px; }
-    .inlay-iframe { width: 100%; height: calc(100% - 40px); border:0; background:#000; }
-    .badge { margin-left: 8px; font-size: 12px; opacity:.8; }
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif; }
+    body { margin: 24px; color: #0f172a; background: #f8fafc; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+    .muted { color: #475569; font-size: 12px; }
+    .big { font-size: 28px; font-weight: 700; }
+    button { padding: 10px 14px; border-radius: 12px; border: 1px solid #e2e8f0; background: #fff; cursor: pointer; }
+    button:hover { background: #f1f5f9; }
+    .row { display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
+    textarea, input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background:#0b1220; color:#e2e8f0; padding:12px; border-radius:12px; }
+    .ok { color: #16a34a; } .warn { color: #ca8a04; } .err { color: #dc2626; }
   </style>
 </head>
 <body>
-  <header>
-    <strong>Bridge Test Client</strong>
-    <span id="status">connecting…</span>
-  </header>
-  <main>
-    <section>
-      <h3>Connect</h3>
-      <div style="display:grid; gap:8px;">
-        <label>User ID <input id="userId" placeholder="alice" /></label>
-        <label>Variant <input id="variant" placeholder="web-ui" /></label>
-        <button id="btnConnect">Connect</button>
-        <button id="btnDisconnect">Disconnect</button>
-      </div>
-      <hr />
-      <h3>Room</h3>
-      <div style="display:grid; gap:8px;">
-        <label>Room ID <input id="room" placeholder="room id" /></label>
-        <button id="join">Join</button>
-        <button id="leave">Leave</button>
-      </div>
-      <hr />
-      <h3>Message</h3>
-      <div style="display:grid; gap:8px;">
-        <textarea id="msg" rows="3" placeholder="Hello world"></textarea>
-        <button id="send">Send</button>
-      </div>
-      <hr />
-      <h3>Inlay / Reference Host</h3>
-      <div style="display:grid; gap:8px;">
-        <label>URL <input id="inlayUrl" placeholder="https://example.com or YouTube URL"/></label>
-        <div style="display:flex; gap:8px;">
-          <button id="openInlay">Open Inlay</button>
-          <button id="shareInlay">Open & Share to Room</button>
-        </div>
-        <div style="display:flex; gap:8px;">
-          <button id="auroraBtn" title="Play Aurora - Diluculum">▶ Aurora – Diluculum</button>
-          <span class="badge">privacy-friendly embed</span>
-        </div>
-      </div>
-    </section>
-    <section>
-      <h3>WebRTC (signaling)</h3>
-      <div style="display:grid; gap:8px;">
-        <label>Target Session ID <input id="target" placeholder="peer session_id (optional)"/></label>
-        <button id="rtcOffer">Send Offer</button>
-        <button id="rtcAnswer">Send Answer</button>
-        <button id="rtcIce">Send ICE</button>
-      </div>
-      <hr/>
-      <h3>Upload</h3>
-      <div style="display:grid; gap:8px;">
-        <input type="file" id="file" />
-        <button id="upload">Upload to room</button>
-      </div>
-      <hr/>
-      <h3>Log</h3>
-      <div id="log" class="log"></div>
-    </section>
-  </main>
+  <h1>OnAir MultiMedia – Live System Check</h1>
+  <p class="muted">Dieses Demo lädt echte Werte von deinem Edge-Gateway (<code>/health</code>, <code>/status</code>, <code>/metrics</code>) und verbindet sich mit dem WebSocket-Room.</p>
 
-  <!-- Inlay Window -->
-  <div id="inlayWin" class="inlay-window">
-    <div class="inlay-toolbar" id="inlayToolbar">
-      <div class="inlay-title" id="inlayTitle">Inlay</div>
-      <div class="inlay-actions">
-        <button id="inlayMax" title="Maximize/Restore">⬜</button>
-        <button id="inlayClose" title="Close">✕</button>
-      </div>
+  <div class="card">
+    <div class="row">
+      <label>API Base URL</label>
+      <input id="api" placeholder="https://api.deine-domain" />
     </div>
-    <iframe id="inlayFrame" class="inlay-iframe" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-read; clipboard-write" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div class="row" style="margin-top:8px">
+      <label>WS Base URL</label>
+      <input id="ws" placeholder="wss://api.deine-domain/ws" />
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="saveCfg">Konfig setzen</button>
+      <span class="muted">(wird in LocalStorage gespeichert)</span>
+    </div>
   </div>
 
-  <script src="../webtrit-swipe.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
+  <div class="grid" style="margin-top:16px">
+    <div class="card">
+      <div class="muted">Health</div>
+      <div id="healthVal" class="big">–</div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnHealth">/health</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="muted">Status</div>
+      <div id="statusVal" class="big">–</div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnStatus">/status</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="muted">Metrics</div>
+      <div id="metricsVal" class="big">–</div>
+      <div class="row" style="margin-top:10px">
+        <button id="btnMetrics">/metrics</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="row">
+      <input id="room" placeholder="Room-Name" value="global" />
+      <button id="btnJoin">Room beitreten</button>
+      <button id="btnLeave">Verlassen</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <input id="msg" placeholder="Nachricht" />
+      <button id="btnSend">Senden</button>
+    </div>
+    <pre id="log" style="margin-top:12px; max-height:280px; overflow:auto"></pre>
+  </div>
+
   <script>
-    let socket = null; let session_id = null; let user_id = null;
-    const logDiv = document.getElementById('log');
-    function log(...args){
-      const row = document.createElement('div'); row.className='row';
-      row.innerHTML = `<code>${args.map(a=> (typeof a==='string'?a:JSON.stringify(a))).join(' ')}</code>`;
-      logDiv.prepend(row);
+    const els = {
+      api: document.getElementById('api'),
+      ws: document.getElementById('ws'),
+      saveCfg: document.getElementById('saveCfg'),
+      btnHealth: document.getElementById('btnHealth'),
+      btnStatus: document.getElementById('btnStatus'),
+      btnMetrics: document.getElementById('btnMetrics'),
+      healthVal: document.getElementById('healthVal'),
+      statusVal: document.getElementById('statusVal'),
+      metricsVal: document.getElementById('metricsVal'),
+      room: document.getElementById('room'),
+      btnJoin: document.getElementById('btnJoin'),
+      btnLeave: document.getElementById('btnLeave'),
+      msg: document.getElementById('msg'),
+      btnSend: document.getElementById('btnSend'),
+      log: document.getElementById('log'),
+    };
+
+    function loadCfg() {
+      els.api.value = localStorage.getItem('API_BASE_URL') || '';
+      els.ws.value = localStorage.getItem('WS_BASE_URL') || '';
+    }
+    function saveCfg() {
+      localStorage.setItem('API_BASE_URL', els.api.value.trim());
+      localStorage.setItem('WS_BASE_URL', els.ws.value.trim());
+      toast('Konfiguration gespeichert');
+    }
+    function toast(t) { log(`ℹ️ ${t}`); }
+
+    async function j(path) {
+      const base = (els.api.value || '').replace(/\/$/, '');
+      const r = await fetch(base + path);
+      if (!r.ok) throw new Error(path + ' → ' + r.status);
+      return r.json();
     }
 
-    function connect(){
-      user_id = document.getElementById('userId').value || `user_${Math.random().toString(36).slice(2,7)}`;
-      const variant = document.getElementById('variant').value || 'web-ui';
-      socket = io('/bridge', { auth: { userId: user_id, variant } });
-      socket.on('connect', ()=>{ document.getElementById('status').textContent='connected'; });
-      socket.on('disconnect', ()=>{ document.getElementById('status').textContent='disconnected'; });
-      socket.on('bridge:welcome', (p)=>{ session_id = p.session_id; log('welcome', p); });
-      socket.on('msg:new', (m)=> log('msg', m));
-      socket.on('typing', (t)=> log('typing', t));
-      socket.on('webrtc:offer', (d)=> log('got offer', d));
-      socket.on('webrtc:answer', (d)=> log('got answer', d));
-      socket.on('webrtc:ice', (d)=> log('got ice', d));
-
-      // Inlay instructions from server
-      socket.on('inlay:open', ({ url, title, opened_by }) => {
-        log('inlay:open', { url, title, opened_by });
-        openInlay(url, title || 'Inlay');
-      });
-      socket.on('inlay:close', ({ closed_by }) => {
-        log('inlay:close', { closed_by });
-        closeInlay();
-      });
-    }
-
-    document.getElementById('btnConnect').onclick = connect;
-    document.getElementById('btnDisconnect').onclick = ()=> socket?.disconnect();
-
-    document.getElementById('join').onclick = ()=>{
-      const room = document.getElementById('room').value.trim();
-      if (!room) return alert('room required');
-      socket.emit('room:join', { room_id: room });
-    };
-    document.getElementById('leave').onclick = ()=>{
-      const room = document.getElementById('room').value.trim();
-      if (!room) return alert('room required');
-      socket.emit('room:leave', { room_id: room });
-    };
-
-    document.getElementById('send').onclick = ()=>{
-      const room = document.getElementById('room').value.trim();
-      const body = document.getElementById('msg').value.trim();
-      if (!room || !body) return alert('room + message required');
-      socket.emit('msg:send', { room_id: room, body });
-    };
-
-    document.getElementById('rtcOffer').onclick = ()=>{
-      const room = document.getElementById('room').value.trim();
-      const target = document.getElementById('target').value.trim() || null;
-      socket.emit('webrtc:offer', { room_id: room || null, target_session_id: target, sdp: { type: 'offer', sdp: 'dummy-offer' } });
-    };
-    document.getElementById('rtcAnswer').onclick = ()=>{
-      const room = document.getElementById('room').value.trim();
-      const target = document.getElementById('target').value.trim() || null;
-      socket.emit('webrtc:answer', { room_id: room || null, target_session_id: target, sdp: { type: 'answer', sdp: 'dummy-answer' } });
-    };
-    document.getElementById('rtcIce').onclick = ()=>{
-      const room = document.getElementById('room').value.trim();
-      const target = document.getElementById('target').value.trim() || null;
-      socket.emit('webrtc:ice', { room_id: room || null, target_session_id: target, candidate: { candidate: 'candidate:1 1 udp 2122260223 192.168.0.2 54915 typ host' } });
-    };
-
-    document.getElementById('upload').onclick = async ()=>{
-      const room = document.getElementById('room').value.trim();
-      const f = document.getElementById('file').files[0];
-      if (!f) return alert('file required');
-      const fd = new FormData();
-      fd.append('file', f);
-      fd.append('room_id', room);
-      fd.append('uploader_session_id', session_id || 'unknown');
-      const res = await fetch('/api/upload', { method: 'POST', body: fd });
-      const json = await res.json();
-      log('uploaded', json);
-      socket.emit('file:shared', { room_id: room || null, file: json });
-    };
-
-    // ---------- Inlay logic ----------
-    const inlay = document.getElementById('inlayWin');
-    const inlayTitle = document.getElementById('inlayTitle');
-    const inlayFrame = document.getElementById('inlayFrame');
-    const inlayToolbar = document.getElementById('inlayToolbar');
-    const inlayMaxBtn = document.getElementById('inlayMax');
-    const inlayCloseBtn = document.getElementById('inlayClose');
-
-    let isMax = false;
-    let lastBounds = null; // {width,height,right,bottom}
-
-    function toEmbedURL(url){
+    els.saveCfg.onclick = saveCfg;
+    els.btnHealth.onclick = async () => {
       try {
-        const u = new URL(url);
-        // YouTube transforms to privacy-enhanced domain
-        if (u.hostname.includes('youtube.com') || u.hostname.includes('youtu.be')){
-          let vid = '';
-          if (u.hostname.includes('youtu.be')) vid = u.pathname.slice(1);
-          else if (u.searchParams.get('v')) vid = u.searchParams.get('v');
-          const list = u.searchParams.get('list');
-          const base = `https://www.youtube-nocookie.com/embed/${vid || ''}`;
-          const params = new URLSearchParams();
-          params.set('autoplay','1');
-          params.set('rel','0');
-          if (list) params.set('list', list);
-          return `${base}?${params.toString()}`;
-        }
-        return url;
-      } catch(e){ return url; }
-    }
-
-    function openInlay(url, title='Inlay'){
-      inlayTitle.textContent = title;
-      inlay.style.display = 'block';
-      inlay.removeAttribute('data-hidden');
-      inlayFrame.src = toEmbedURL(url);
-      // ensure defaults if previously maximized
-      if (isMax) toggleMax();
-    }
-    function closeInlay(){
-      inlayFrame.src = 'about:blank';
-      inlay.style.display = 'none';
-      inlay.setAttribute('data-hidden','1');
-    }
-    function toggleMax(){
-      if (!isMax){
-        lastBounds = { width: inlay.style.width, height: inlay.style.height, right: inlay.style.right, bottom: inlay.style.bottom };
-        inlay.style.right = '0'; inlay.style.bottom = '0'; inlay.style.width = '100vw'; inlay.style.height = '100vh';
-        inlay.style.borderRadius = '0';
-        isMax = true; inlayMaxBtn.textContent = '🗗';
-      } else {
-        inlay.style.width = lastBounds?.width || '560px';
-        inlay.style.height = lastBounds?.height || '320px';
-        inlay.style.right = lastBounds?.right || '16px';
-        inlay.style.bottom = lastBounds?.bottom || '16px';
-        inlay.style.borderRadius = '12px';
-        isMax = false; inlayMaxBtn.textContent = '⬜';
-      }
-    }
-
-    // Dragging via toolbar
-    (function enableDrag(){
-      let dragging = false; let startX=0, startY=0; let startRight=0, startBottom=0;
-      inlayToolbar.addEventListener('mousedown', (e)=>{
-        dragging = true; startX = e.clientX; startY = e.clientY;
-        startRight = parseInt(getComputedStyle(inlay).right);
-        startBottom = parseInt(getComputedStyle(inlay).bottom);
-        document.body.style.userSelect = 'none';
-      });
-      window.addEventListener('mousemove', (e)=>{
-        if (!dragging || isMax) return;
-        const dx = e.clientX - startX; const dy = e.clientY - startY;
-        inlay.style.right = (startRight - dx) + 'px';
-        inlay.style.bottom = (startBottom - dy) + 'px';
-      });
-      window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.userSelect=''; });
-    })();
-
-    inlayMaxBtn.onclick = toggleMax;
-    inlayCloseBtn.onclick = ()=>{
-      closeInlay();
-      const room = document.getElementById('room').value.trim();
-      socket.emit('inlay:close', { room_id: room || null });
+        const h = await j('/health');
+        els.healthVal.textContent = h.ok ? 'OK' : 'NOK';
+        els.healthVal.className = 'big ' + (h.ok ? 'ok' : 'err');
+        log('health: ' + JSON.stringify(h));
+      } catch (e) { error(e); }
+    };
+    els.btnStatus.onclick = async () => {
+      try { const s = await j('/status'); els.statusVal.textContent = s.appsOnline + ' apps'; log('status: ' + JSON.stringify(s)); }
+      catch (e) { error(e); }
+    };
+    els.btnMetrics.onclick = async () => {
+      try { const m = await j('/metrics'); els.metricsVal.textContent = (m.stars||0) + '★'; log('metrics: ' + JSON.stringify(m)); }
+      catch (e) { error(e); }
     };
 
-    // UI actions
-    document.getElementById('openInlay').onclick = ()=>{
-      const url = document.getElementById('inlayUrl').value.trim();
-      if (!url) return alert('URL required');
-      openInlay(url, url);
-    };
-    document.getElementById('shareInlay').onclick = ()=>{
-      const url = document.getElementById('inlayUrl').value.trim();
-      const room = document.getElementById('room').value.trim();
-      if (!url) return alert('URL required');
-      if (!room) return alert('room required to share');
-      socket.emit('inlay:open', { room_id: room, url, title: url });
-      openInlay(url, url);
+    let ws;
+    function connect(room) {
+      const u = (els.ws.value || '').replace(/\/$/, '') + '?room=' + encodeURIComponent(room);
+      ws = new WebSocket(u);
+      ws.onopen = () => { log('WS open ' + u); backoff = 500; };
+      ws.onmessage = (e) => log('WS ⇦ ' + e.data);
+      ws.onclose = () => { log('WS closed'); if (!closed) retry(); };
+      ws.onerror = () => ws.close();
+    }
+    let closed = false, backoff = 500;
+    function retry() {
+      setTimeout(() => {
+        if (closed) return; backoff = Math.min(backoff * 2, 8000);
+        connect(els.room.value);
+      }, backoff);
+    }
+
+    els.btnJoin.onclick = () => { closed = false; connect(els.room.value); };
+    els.btnLeave.onclick = () => { closed = true; try { ws && ws.close(); } catch(_){} };
+    els.btnSend.onclick = () => {
+      try { ws && ws.readyState === 1 && ws.send(JSON.stringify({ type: 'msg', text: els.msg.value, ts: Date.now() })); log('WS ⇨ ' + els.msg.value); els.msg.value=''; }
+      catch(e){ error(e); }
     };
 
-    // Aurora – Diluculum quick action
-    document.getElementById('auroraBtn').onclick = ()=>{
-      const yt = 'https://youtu.be/mNBFnZ4qi5Y?list=OLAK5uy_kq2PVRQQDGLRG4jH1a87Qr22s937BkNSk';
-      openInlay(yt, 'Aurora – Diluculum');
-      const room = document.getElementById('room').value.trim();
-      if (room) socket.emit('inlay:open', { room_id: room, url: yt, title: 'Aurora – Diluculum' });
-    };
+    function log(t) { els.log.textContent += `
+${new Date().toLocaleTimeString()}  ${t}`; els.log.scrollTop = els.log.scrollHeight; }
+    function error(e) { log('❌ ' + (e.message || e)); }
 
-    // Auto-open Aurora via query (?aurora=1)
-    (function autoAurora(){
-      const p = new URLSearchParams(location.search);
-      if (p.get('aurora')==='1'){
-        const yt = 'https://youtu.be/mNBFnZ4qi5Y?list=OLAK5uy_kq2PVRQQDGLRG4jH1a87Qr22s937BkNSk';
-        openInlay(yt, 'Aurora – Diluculum');
-      }
-    })();
-
-    // auto-connect on load
-    connect();
+    loadCfg();
   </script>
-  
-  <!-- ECHTE API-IMPLEMENTATION -->
-  <script src="../api-stub.js"></script>
 </body>
 </html>

@@ -1,0 +1,11 @@
+{
+  "buildHash": "9729e1c-mgdtet46-rhl7oo",
+  "timestamp": "2025-10-05T14:46:28.191Z",
+  "gitCommit": "9729e1c",
+  "version": "1.0.0",
+  "assets": {
+    "css": "style.9729e1c-mgdtet46-rhl7oo.css",
+    "js": "app.9729e1c-mgdtet46-rhl7oo.js",
+    "sw": "sw.js?v=9729e1c-mgdtet46-rhl7oo"
+  }
+}

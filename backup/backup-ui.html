@@ -1,22 +1,58 @@
 <!doctype html>
 <html lang="de">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Backup System - OnAirMulTiMedia</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; frame-src 'self' blob:; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; frame-src 'self' blob:; base-uri 'self'">
   <link rel="stylesheet" href="../assets/landing.css" />
   <style>
-    .backup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-    .backup-card { background: #111827; border: 1px solid #1f2a52; border-radius: 12px; padding: 16px; }
-    .status-healthy { color: #10b981; }
-    .status-error { color: #ef4444; }
-    .status-warning { color: #f59e0b; }
-    .restore-btn { background: #dc2626; border-color: #dc2626; }
-    .restore-btn:hover { background: #b91c1c; }
-    .logs { max-height: 300px; overflow-y: auto; background: #0a0f1a; padding: 12px; border-radius: 8px; }
+    .backup-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .backup-card {
+      background: #111827;
+      border: 1px solid #1f2a52;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .status-healthy {
+      color: #10b981;
+    }
+
+    .status-error {
+      color: #ef4444;
+    }
+
+    .status-warning {
+      color: #f59e0b;
+    }
+
+    .restore-btn {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+
+    .restore-btn:hover {
+      background: #b91c1c;
+    }
+
+    .logs {
+      max-height: 300px;
+      overflow-y: auto;
+      background: #0a0f1a;
+      padding: 12px;
+      border-radius: 8px;
+    }
   </style>
 </head>
+
 <body>
   <header class="top">
     <h1>🔄 Backup System</h1>
@@ -68,6 +104,46 @@
 
   <script src="./backup-system.js"></script>
   <script>
+    // 🔒 ACCESS CONTROL - Nur für gentlyoverdone@outlook.com
+    const AUTHORIZED_EMAIL = 'gentlyoverdone@outlook.com';
+
+    function checkAccessControl() {
+      // Prüfe ob Zugriff von außen erfolgt
+      const isExternalAccess = !window.location.hostname.includes('localhost') &&
+        !window.location.hostname.includes('127.0.0.1');
+
+      if (isExternalAccess) {
+        // Zeige Zugriffskontrolle für externe Zugriffe
+        const accessKey = prompt('🔒 System-Zugriff erforderlich\n\nBitte geben Sie den Zugriffsschlüssel ein:');
+
+        if (accessKey !== 'gentlyoverdone@outlook.com') {
+          document.body.innerHTML = `
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0b1020; color: #e5e7eb; font-family: system-ui;">
+              <div style="text-align: center; padding: 2rem; border: 1px solid #dc2626; border-radius: 12px; background: #111827;">
+                <h1 style="color: #dc2626; margin-bottom: 1rem;">🔒 Zugriff verweigert</h1>
+                <p>Dieses System ist nur für autorisierte Benutzer zugänglich.</p>
+                <button onclick="window.location.href='../index.html'" 
+                        style="margin-top: 1rem; padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                  Zurück zur Startseite
+                </button>
+              </div>
+            </div>
+          `;
+          return false;
+        }
+      }
+
+      // Interne Automatisierung läuft weiterhin unverändert
+      console.log('✅ Zugriff autorisiert - System läuft automatisch weiter');
+      return true;
+    }
+
+    // Zugriffskontrolle beim Laden
+    if (!checkAccessControl()) {
+      // Stoppe weitere Ausführung wenn Zugriff verweigert
+      throw new Error('Access denied');
+    }
+
     // UI Controller
     const statusElements = {
       primary: document.getElementById('primaryStatus'),
@@ -77,9 +153,9 @@
 
     function updateStatusDisplay() {
       if (!window.backupSystem) return;
-      
+
       const health = window.backupSystem.status.health;
-      
+
       // Primary Status
       if (health.primary) {
         const status = health.primary.status === 'healthy' ? 'healthy' : 'error';
@@ -112,10 +188,10 @@
 
     function updateVersionHistory() {
       if (!window.backupSystem) return;
-      
+
       const versions = window.backupSystem.status.versions;
       const container = document.getElementById('versionHistory');
-      
+
       if (versions.length === 0) {
         container.textContent = 'Keine Versionen verfügbar';
         return;
@@ -135,7 +211,7 @@
       try {
         const logs = JSON.parse(localStorage.getItem('oamtm:backup:logs') || '[]');
         const container = document.getElementById('backupLogs');
-        
+
         if (logs.length === 0) {
           container.textContent = 'Keine Logs verfügbar';
           return;
@@ -198,4 +274,5 @@
     }, 2000);
   </script>
 </body>
+
 </html>

@@ -15,10 +15,10 @@ class FeatureDetector {
     const isAndroid = /Android/i.test(ua);
     const isIOS = /iPad|iPhone|iPod/.test(ua);
     const isMobile = isAndroid || isIOS;
-    const isDesktop = !isMobile && (window.navigator.platform.includes('Win') || 
-                                   window.navigator.platform.includes('Mac') || 
-                                   window.navigator.platform.includes('Linux'));
-    
+    const isDesktop = !isMobile && (window.navigator.platform.includes('Win') ||
+      window.navigator.platform.includes('Mac') ||
+      window.navigator.platform.includes('Linux'));
+
     return {
       android: isAndroid,
       ios: isIOS,
@@ -30,10 +30,97 @@ class FeatureDetector {
   }
 
   async initialize() {
-    await this.detectWebAPIs();
-    await this.detectNativeCapabilities();
-    await this.detectOSFeatures();
-    this.generateCapabilityMatrix();
+    try {
+      await this.detectWebAPIs();
+      await this.detectNativeCapabilities();
+      await this.detectOSFeatures();
+      this.generateCapabilityMatrix();
+    } catch (error) {
+      console.warn('FeatureDetector initialization failed:', error);
+      // Fallback to basic capabilities
+      this.capabilities = this.getFallbackCapabilities();
+      this.generateCapabilityMatrix();
+    }
+  }
+
+  getFallbackCapabilities() {
+    return {
+      web: {
+        share: true,
+        contacts: false,
+        webRTC: true,
+        camera: true,
+        microphone: true,
+        screenShare: false,
+        barcodeDetector: false,
+        fileSystem: false,
+        indexedDB: true,
+        localStorage: true,
+        sessionStorage: true,
+        notifications: true,
+        pushManager: true,
+        serviceWorker: true,
+        geolocation: true,
+        vibration: true,
+        battery: false,
+        deviceOrientation: true,
+        deviceMotion: true,
+        webAssembly: true,
+        webGL: true,
+        webGL2: true,
+        webXR: false,
+        installPrompt: false,
+        standalone: false,
+        backgroundSync: false
+      },
+      native: {
+        capacitor: false,
+        cordova: false,
+        camera: false,
+        contacts: false,
+        device: false,
+        geolocation: false,
+        localNotifications: false,
+        pushNotifications: false,
+        share: false,
+        statusBar: false,
+        splashScreen: false,
+        keyboard: false,
+        haptics: false,
+        filesystem: false,
+        network: false,
+        clipboard: false,
+        browser: false,
+        app: false,
+        toast: false
+      },
+      os: {
+        android: {
+          intents: false,
+          launcher: false,
+          backgroundServices: false,
+          notificationChannels: false,
+          adaptiveIcons: false,
+          shortcuts: false
+        },
+        ios: {
+          siriShortcuts: false,
+          appClips: false,
+          urlSchemes: false,
+          backgroundAppRefresh: false,
+          pushNotifications: false,
+          hapticFeedback: false
+        },
+        desktop: {
+          systemTray: false,
+          autoUpdater: false,
+          codeSigning: false,
+          fileAssociations: false,
+          globalShortcuts: false,
+          powerMonitor: false
+        }
+      }
+    };
   }
 
   async detectWebAPIs() {
@@ -42,39 +129,39 @@ class FeatureDetector {
       share: !!navigator.share,
       contacts: 'contacts' in navigator,
       webRTC: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia),
-      
+
       // Media
       camera: !!(navigator.mediaDevices?.getUserMedia),
       microphone: !!(navigator.mediaDevices?.getUserMedia),
       screenShare: 'getDisplayMedia' in navigator.mediaDevices,
       barcodeDetector: 'BarcodeDetector' in window,
-      
+
       // Storage
       fileSystem: 'showOpenFilePicker' in window,
       indexedDB: 'indexedDB' in window,
       localStorage: 'localStorage' in window,
       sessionStorage: 'sessionStorage' in window,
-      
+
       // Notifications
       notifications: 'Notification' in window,
       pushManager: 'PushManager' in window,
       serviceWorker: 'serviceWorker' in navigator,
-      
+
       // Location
       geolocation: 'geolocation' in navigator,
-      
+
       // Device APIs
       vibration: 'vibrate' in navigator,
       battery: 'getBattery' in navigator,
       deviceOrientation: 'DeviceOrientationEvent' in window,
       deviceMotion: 'DeviceMotionEvent' in window,
-      
+
       // Advanced
       webAssembly: 'WebAssembly' in window,
       webGL: !!document.createElement('canvas').getContext('webgl'),
       webGL2: !!document.createElement('canvas').getContext('webgl2'),
       webXR: 'xr' in navigator,
-      
+
       // PWA Features
       installPrompt: 'onbeforeinstallprompt' in window,
       standalone: window.matchMedia('(display-mode: standalone)').matches,
@@ -87,7 +174,7 @@ class FeatureDetector {
     this.capabilities.native = {
       capacitor: !!(window.Capacitor),
       cordova: !!(window.cordova),
-      
+
       // Native plugins (if available)
       camera: !!(window.Capacitor?.Plugins?.Camera),
       contacts: !!(window.Capacitor?.Plugins?.Contacts),
@@ -120,7 +207,7 @@ class FeatureDetector {
         adaptiveIcons: this.platform.android,
         shortcuts: this.platform.android
       },
-      
+
       // iOS specific  
       ios: {
         siriShortcuts: this.platform.ios,
@@ -130,7 +217,7 @@ class FeatureDetector {
         pushNotifications: this.platform.ios,
         hapticFeedback: this.platform.ios
       },
-      
+
       // Desktop specific
       desktop: {
         systemTray: this.platform.desktop,
@@ -154,7 +241,7 @@ class FeatureDetector {
         videoCall: this.capabilities.web.webRTC && this.capabilities.web.camera,
         voiceCall: this.capabilities.web.webRTC && this.capabilities.web.microphone
       },
-      
+
       // Media Matrix
       media: {
         camera: this.capabilities.web.camera || this.capabilities.native.camera,
@@ -164,7 +251,7 @@ class FeatureDetector {
         fileAccess: this.capabilities.web.fileSystem || this.capabilities.native.filesystem,
         gallery: this.capabilities.web.fileSystem || this.capabilities.native.filesystem
       },
-      
+
       // Data Matrix
       data: {
         contacts: this.capabilities.web.contacts || this.capabilities.native.contacts,
@@ -174,7 +261,7 @@ class FeatureDetector {
         sync: this.capabilities.web.serviceWorker || this.capabilities.native.network,
         backup: this.capabilities.web.indexedDB || this.capabilities.native.filesystem
       },
-      
+
       // System Matrix
       system: {
         notifications: this.capabilities.web.notifications || this.capabilities.native.localNotifications,
@@ -219,7 +306,7 @@ class FeatureDetector {
         }, 0)
       }
     };
-    
+
     return report;
   }
 
@@ -237,7 +324,7 @@ class FeatureDetector {
       Object.entries(features).forEach(([feature, available]) => {
         if (available) {
           consentData.availableCapabilities[`${category}.${feature}`] = true;
-          
+
           // Map to permission requirements
           switch (feature) {
             case 'camera':
@@ -267,23 +354,3 @@ class FeatureDetector {
 // Export for use in other modules
 export { FeatureDetector };
 
-// CLI usage (only in Node.js environment)
-if (typeof process !== 'undefined' && typeof process.argv !== 'undefined' && import.meta.url === `file://${process.argv[1]}`) {
-  const detector = new FeatureDetector();
-  
-  console.log('🔍 OAMTM Feature Detection Report');
-  console.log('================================');
-  console.log('');
-  
-  const report = detector.generateReport();
-  
-  console.log('Platform:', JSON.stringify(report.platform, null, 2));
-  console.log('');
-  console.log('Capability Matrix:');
-  console.log(JSON.stringify(report.matrix, null, 2));
-  console.log('');
-  console.log('Summary:', report.summary);
-  console.log('');
-  console.log('Consent Data:');
-  console.log(JSON.stringify(detector.exportForConsent(), null, 2));
-}

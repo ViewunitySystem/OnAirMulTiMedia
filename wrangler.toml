@@ -1,41 +1,36 @@
-# Cloudflare Pages Configuration für Serverfarm
-name = "oamtm-serverfarm"
-compatibility_date = "2025-10-03"
+name = "onair-edge"
+main = "src/worker.js"
+compatibility_date = "2024-10-05"
+workers_dev = false
 
-[env.production]
-name = "oamtm-serverfarm-prod"
+# route = { pattern = "api.<deine-domain>", custom_domain = true }
 
-[env.staging]
-name = "oamtm-serverfarm-staging"
+[placement]
+mode = "smart"
 
-# Pages Build Settings
-[build]
-command = "echo 'Static build - no build step needed'"
-publish = "."
+[vars]
+ALLOWED_ORIGINS = "https://viewunitysystem.github.io,https://<deine-domain>"
+TURN_REALM = "turn.<deine-domain>"
 
-# Custom Headers für Security
-[[headers]]
-for = "/*"
-[headers.values]
-X-Frame-Options = "SAMEORIGIN"
-X-Content-Type-Options = "nosniff"
-X-XSS-Protection = "1; mode=block"
-Referrer-Policy = "strict-origin-when-cross-origin"
-Content-Security-Policy = "default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; upgrade-insecure-requests"
+# ⚠️ Diese beiden als Secrets setzen (wrangler secret put ...)
+# PRIMARY_BASE = "https://europe-west1-<project>.cloudfunctions.net/api"
+# BACKUP_BASE  = "https://us-central1-<project>.cloudfunctions.net/api"
+# TURN_SHARED_SECRET = "<coturn-static-auth-secret>"
 
-# Cache Rules
-[[headers]]
-for = "/assets/*"
-[headers.values]
-Cache-Control = "public, max-age=31536000, immutable"
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "RoomsDO"
 
-[[headers]]
-for = "*.html"
-[headers.values]
-Cache-Control = "public, max-age=300"
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RoomsDO"]
 
-# Redirects für bessere SEO
-[[redirects]]
-from = "/"
-to = "/index.html"
-status = 200
+# (Optional) KV für Edge-Caching leichter Metriken
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "<kv-id>"
+
+# (Optional) R2 für Audits/Exports
+# [[r2_buckets]]
+# binding = "AUDIT_BUCKET"
+# bucket_name = "onair-audit"

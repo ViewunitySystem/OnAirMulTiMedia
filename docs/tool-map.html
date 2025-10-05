@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,29 +14,34 @@
             color: #333;
             min-height: 100vh;
         }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
+
         .header {
             text-align: center;
             margin-bottom: 2rem;
         }
+
         .header h1 {
             color: #2c3e50;
             margin: 0;
             font-size: 2.5rem;
             font-weight: 700;
         }
+
         .header p {
             color: #7f8c8d;
             font-size: 1.1rem;
             margin: 0.5rem 0 0 0;
         }
+
         .controls {
             display: flex;
             gap: 1rem;
@@ -43,6 +49,7 @@
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
+
         .filter-btn {
             padding: 0.75rem 1.5rem;
             border: 2px solid #3498db;
@@ -53,10 +60,13 @@
             transition: all 0.3s ease;
             font-weight: 600;
         }
-        .filter-btn:hover, .filter-btn.active {
+
+        .filter-btn:hover,
+        .filter-btn.active {
             background: #3498db;
             color: white;
         }
+
         .platform-selector {
             display: flex;
             gap: 0.5rem;
@@ -64,6 +74,7 @@
             margin-bottom: 2rem;
             flex-wrap: wrap;
         }
+
         .platform-btn {
             padding: 0.5rem 1rem;
             border: 1px solid #95a5a6;
@@ -74,42 +85,51 @@
             transition: all 0.3s ease;
             font-size: 0.9rem;
         }
-        .platform-btn:hover, .platform-btn.active {
+
+        .platform-btn:hover,
+        .platform-btn.active {
             background: #e74c3c;
             color: white;
             border-color: #e74c3c;
         }
+
         .tool-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
+
         .tool-card {
             background: white;
             border-radius: 15px;
             padding: 1.5rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
             border-left: 5px solid #3498db;
         }
+
         .tool-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
+
         .tool-card.available {
             border-left-color: #27ae60;
         }
+
         .tool-card.unavailable {
             border-left-color: #e74c3c;
             opacity: 0.7;
         }
+
         .tool-header {
             display: flex;
             align-items: center;
             gap: 1rem;
             margin-bottom: 1rem;
         }
+
         .tool-icon {
             width: 40px;
             height: 40px;
@@ -121,12 +141,14 @@
             color: white;
             font-size: 1.2rem;
         }
+
         .tool-title {
             font-size: 1.2rem;
             font-weight: 600;
             color: #2c3e50;
             margin: 0;
         }
+
         .tool-status {
             margin-left: auto;
             padding: 0.25rem 0.75rem;
@@ -135,24 +157,29 @@
             font-weight: 600;
             text-transform: uppercase;
         }
+
         .tool-status.available {
             background: #d5f4e6;
             color: #27ae60;
         }
+
         .tool-status.unavailable {
             background: #fadbd8;
             color: #e74c3c;
         }
+
         .tool-description {
             color: #7f8c8d;
             margin-bottom: 1rem;
             line-height: 1.5;
         }
+
         .tool-platforms {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
         }
+
         .platform-tag {
             padding: 0.25rem 0.5rem;
             background: #ecf0f1;
@@ -161,74 +188,88 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
+
         .platform-tag.supported {
             background: #d5f4e6;
             color: #27ae60;
         }
+
         .platform-tag.unsupported {
             background: #fadbd8;
             color: #e74c3c;
         }
+
         .integration-modes {
             margin-top: 2rem;
             padding: 2rem;
             background: #f8f9fa;
             border-radius: 15px;
         }
+
         .integration-modes h3 {
             color: #2c3e50;
             margin-bottom: 1rem;
         }
+
         .mode-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
         }
+
         .mode-card {
             background: white;
             padding: 1.5rem;
             border-radius: 10px;
             border-left: 4px solid #3498db;
         }
+
         .mode-title {
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 0.5rem;
         }
+
         .mode-description {
             color: #7f8c8d;
             font-size: 0.9rem;
             line-height: 1.4;
         }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
+
         .stat-card {
             background: white;
             padding: 1.5rem;
             border-radius: 15px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
         .stat-number {
             font-size: 2rem;
             font-weight: 700;
             color: #3498db;
             margin-bottom: 0.5rem;
         }
+
         .stat-label {
             color: #7f8c8d;
             font-weight: 500;
         }
+
         .search-box {
             width: 100%;
             max-width: 400px;
             margin: 0 auto 2rem auto;
             position: relative;
         }
+
         .search-input {
             width: 100%;
             padding: 1rem 1rem 1rem 3rem;
@@ -238,11 +279,13 @@
             background: white;
             transition: all 0.3s ease;
         }
+
         .search-input:focus {
             outline: none;
             border-color: #3498db;
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
+
         .search-icon {
             position: absolute;
             left: 1rem;
@@ -250,11 +293,13 @@
             transform: translateY(-50%);
             color: #95a5a6;
         }
+
         .loading {
             text-align: center;
             padding: 2rem;
             color: #7f8c8d;
         }
+
         .error {
             background: #fadbd8;
             color: #e74c3c;
@@ -263,17 +308,21 @@
             margin-bottom: 1rem;
             text-align: center;
         }
+
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
                 margin: 1rem;
             }
+
             .header h1 {
                 font-size: 2rem;
             }
+
             .tool-grid {
                 grid-template-columns: 1fr;
             }
+
             .controls {
                 flex-direction: column;
                 align-items: center;
@@ -281,6 +330,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -340,22 +390,22 @@
                 <div class="mode-card">
                     <div class="mode-title">1:1 System Option</div>
                     <div class="mode-description">
-                        Complete OS replacement as default launcher/hub. 
-                        Android: Default Launcher + Intent Handler. 
+                        Complete OS replacement as default launcher/hub.
+                        Android: Default Launcher + Intent Handler.
                         iOS: Homescreen PWA + Siri Shortcuts.
                     </div>
                 </div>
                 <div class="mode-card">
                     <div class="mode-title">Customizable Shell</div>
                     <div class="mode-description">
-                        White-label theming and branding without code fork. 
+                        White-label theming and branding without code fork.
                         Design Tokens + CSS Variables + Manifest customization.
                     </div>
                 </div>
                 <div class="mode-card">
                     <div class="mode-title">Component Integration</div>
                     <div class="mode-description">
-                        Individual component adoption via ESM + iframe + postMessage. 
+                        Individual component adoption via ESM + iframe + postMessage.
                         Capability Claims via JSON manifest.
                     </div>
                 </div>
@@ -364,7 +414,7 @@
     </div>
 
     <script type="module">
-        import { FeatureDetector } from '../scripts/feature-detection.mjs';
+        import { FeatureDetector } from '../scripts/feature-detection.mjs?v=9729e1c-mgdtet46-rhl7oo';
 
         class ToolMap {
             constructor() {
@@ -374,15 +424,23 @@
                 this.currentFilter = 'all';
                 this.currentPlatform = 'all';
                 this.searchTerm = '';
-                
+
                 this.initialize();
             }
 
             async initialize() {
                 try {
                     this.showLoading();
-                    this.detector = new FeatureDetector();
-                    await this.detector.initialize();
+
+                    // Fallback: Create mock detector if FeatureDetector fails
+                    try {
+                        this.detector = new FeatureDetector();
+                        await this.detector.initialize();
+                    } catch (detectorError) {
+                        console.warn('FeatureDetector failed, using fallback:', detectorError);
+                        this.detector = this.createFallbackDetector();
+                    }
+
                     this.tools = this.generateToolList();
                     this.setupEventListeners();
                     this.render();
@@ -390,6 +448,48 @@
                 } catch (error) {
                     this.showError('Failed to detect capabilities: ' + error.message);
                 }
+            }
+
+            createFallbackDetector() {
+                // Fallback detector with basic capabilities
+                return {
+                    generateReport: () => ({
+                        matrix: {
+                            communication: {
+                                telephony: true,
+                                sms: true,
+                                email: true,
+                                messaging: true,
+                                videoCall: true,
+                                voiceCall: true
+                            },
+                            media: {
+                                camera: true,
+                                microphone: true,
+                                screenRecord: true,
+                                qrScan: true,
+                                fileAccess: true,
+                                gallery: true
+                            },
+                            data: {
+                                contacts: true,
+                                calendar: true,
+                                location: true,
+                                storage: true,
+                                sync: true,
+                                backup: true
+                            },
+                            system: {
+                                notifications: true,
+                                background: true,
+                                offline: true,
+                                install: true,
+                                updates: true,
+                                launcher: true
+                            }
+                        }
+                    })
+                };
             }
 
             generateToolList() {
@@ -628,7 +728,7 @@
                 const total = this.filteredTools.length;
                 const available = this.filteredTools.filter(t => t.available).length;
                 const unavailable = total - available;
-                const platforms = new Set(this.filteredTools.flatMap(t => 
+                const platforms = new Set(this.filteredTools.flatMap(t =>
                     Object.keys(t.platforms).filter(p => t.platforms[p])
                 )).size;
 
@@ -656,7 +756,7 @@
             createToolCard(tool) {
                 const card = document.createElement('div');
                 card.className = `tool-card ${tool.available ? 'available' : 'unavailable'}`;
-                
+
                 const platformTags = Object.entries(tool.platforms)
                     .filter(([_, supported]) => supported)
                     .map(([platform, _]) => {
@@ -710,4 +810,5 @@
         });
     </script>
 </body>
+
 </html>

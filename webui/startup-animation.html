@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000000;
@@ -22,7 +23,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .startup-container {
             position: relative;
             width: 100vw;
@@ -32,7 +33,7 @@
             justify-content: center;
             background: radial-gradient(circle at center, #0f1419 0%, #000000 100%);
         }
-        
+
         .startup-icon {
             position: relative;
             width: 64px;
@@ -41,40 +42,44 @@
             filter: drop-shadow(0 0 20px #00ff88);
             z-index: 10;
         }
-        
+
         @keyframes iconPulse {
             0% {
                 transform: scale(1);
                 opacity: 1;
                 filter: drop-shadow(0 0 20px #00ff88);
             }
+
             25% {
                 transform: scale(2);
                 opacity: 0.9;
                 filter: drop-shadow(0 0 40px #00ff88);
             }
+
             50% {
                 transform: scale(4);
                 opacity: 0.8;
                 filter: drop-shadow(0 0 80px #00ff88);
             }
+
             75% {
                 transform: scale(8);
                 opacity: 0.6;
                 filter: drop-shadow(0 0 160px #00ff88);
             }
+
             100% {
                 transform: scale(16);
                 opacity: 0;
                 filter: drop-shadow(0 0 320px #00ff88);
             }
         }
-        
+
         .stars {
             position: absolute;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 radial-gradient(2px 2px at 20px 30px, #ffffff, transparent),
                 radial-gradient(2px 2px at 40px 70px, #ffffff, transparent),
                 radial-gradient(1px 1px at 90px 40px, #ffffff, transparent),
@@ -85,22 +90,24 @@
             animation: stars 6s linear infinite;
             opacity: 0;
         }
-        
+
         @keyframes stars {
             0% {
                 opacity: 0;
                 transform: scale(1);
             }
+
             50% {
                 opacity: 1;
                 transform: scale(1.5);
             }
+
             100% {
                 opacity: 0;
                 transform: scale(2);
             }
         }
-        
+
         .big-bang {
             position: absolute;
             width: 100%;
@@ -109,53 +116,58 @@
             animation: bigBang 3s ease-out;
             opacity: 0;
         }
-        
+
         @keyframes bigBang {
             0% {
                 opacity: 0;
                 transform: scale(0);
             }
+
             50% {
                 opacity: 1;
                 transform: scale(1);
             }
+
             100% {
                 opacity: 0;
                 transform: scale(2);
             }
         }
-        
+
         .energy-waves {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 50% 50%, transparent 0%, transparent 40%, rgba(0, 255, 136, 0.1) 50%, transparent 60%),
                 radial-gradient(circle at 50% 50%, transparent 0%, transparent 60%, rgba(255, 107, 53, 0.1) 70%, transparent 80%),
                 radial-gradient(circle at 50% 50%, transparent 0%, transparent 80%, rgba(139, 92, 246, 0.1) 90%, transparent 100%);
             animation: energyWaves 4s ease-out;
             opacity: 0;
         }
-        
+
         @keyframes energyWaves {
             0% {
                 opacity: 0;
                 transform: scale(0);
             }
+
             30% {
                 opacity: 1;
                 transform: scale(0.5);
             }
+
             70% {
                 opacity: 0.8;
                 transform: scale(1);
             }
+
             100% {
                 opacity: 0;
                 transform: scale(1.5);
             }
         }
-        
+
         .loading-text {
             position: absolute;
             bottom: 20%;
@@ -168,18 +180,19 @@
             opacity: 0;
             animation: loadingText 2s ease-in-out 2s forwards;
         }
-        
+
         @keyframes loadingText {
             0% {
                 opacity: 0;
                 transform: translateX(-50%) translateY(20px);
             }
+
             100% {
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
             }
         }
-        
+
         .progress-bar {
             position: absolute;
             bottom: 15%;
@@ -193,7 +206,7 @@
             opacity: 0;
             animation: progressBar 1s ease-in-out 3s forwards;
         }
-        
+
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #00ff88, #00d4aa);
@@ -201,27 +214,29 @@
             border-radius: 2px;
             animation: progressFill 3s ease-in-out 4s forwards;
         }
-        
+
         @keyframes progressBar {
             0% {
                 opacity: 0;
                 transform: translateX(-50%) translateY(20px);
             }
+
             100% {
                 opacity: 1;
                 transform: translateX(-50%) translateY(0);
             }
         }
-        
+
         @keyframes progressFill {
             0% {
                 width: 0%;
             }
+
             100% {
                 width: 100%;
             }
         }
-        
+
         .version-info {
             position: absolute;
             top: 20px;
@@ -231,18 +246,19 @@
             opacity: 0;
             animation: versionInfo 1s ease-in-out 6s forwards;
         }
-        
+
         @keyframes versionInfo {
             0% {
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             100% {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .copyright {
             position: absolute;
             bottom: 20px;
@@ -252,75 +268,78 @@
             opacity: 0;
             animation: copyright 1s ease-in-out 7s forwards;
         }
-        
+
         @keyframes copyright {
             0% {
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             100% {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .fade-out {
             animation: fadeOut 1s ease-in-out 8s forwards;
         }
-        
+
         @keyframes fadeOut {
             0% {
                 opacity: 1;
             }
+
             100% {
                 opacity: 0;
             }
         }
-        
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .startup-icon {
                 width: 48px;
                 height: 48px;
             }
-            
+
             .loading-text {
                 font-size: 16px;
                 bottom: 25%;
             }
-            
+
             .progress-bar {
                 width: 250px;
                 bottom: 20%;
             }
-            
+
             .version-info,
             .copyright {
                 font-size: 10px;
             }
         }
-        
+
         @media (max-width: 480px) {
             .startup-icon {
                 width: 32px;
                 height: 32px;
             }
-            
+
             .loading-text {
                 font-size: 14px;
                 bottom: 30%;
             }
-            
+
             .progress-bar {
                 width: 200px;
                 bottom: 25%;
             }
         }
-        
+
         /* High DPI Support */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        @media (-webkit-min-device-pixel-ratio: 2),
+        (min-resolution: 192dpi) {
             .stars {
-                background-image: 
+                background-image:
                     radial-gradient(1px 1px at 20px 30px, #ffffff, transparent),
                     radial-gradient(1px 1px at 40px 70px, #ffffff, transparent),
                     radial-gradient(0.5px 0.5px at 90px 40px, #ffffff, transparent),
@@ -328,9 +347,10 @@
                     radial-gradient(1px 1px at 160px 30px, #ffffff, transparent);
             }
         }
-        
+
         /* Reduced Motion */
         @media (prefers-reduced-motion: reduce) {
+
             .startup-icon,
             .stars,
             .big-bang,
@@ -342,12 +362,12 @@
             .copyright {
                 animation: none;
             }
-            
+
             .startup-icon {
                 transform: scale(2);
                 opacity: 1;
             }
-            
+
             .loading-text,
             .progress-bar,
             .version-info,
@@ -355,44 +375,45 @@
                 opacity: 1;
                 transform: none;
             }
-            
+
             .progress-fill {
                 width: 100%;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="startup-container" id="startupContainer">
         <!-- Big Bang Effect -->
         <div class="big-bang" id="bigBang"></div>
-        
+
         <!-- Energy Waves -->
         <div class="energy-waves" id="energyWaves"></div>
-        
+
         <!-- Stars -->
         <div class="stars" id="stars"></div>
-        
+
         <!-- Main Icon -->
         <img src="../icon.png" alt="HFRF" class="startup-icon" id="startupIcon">
-        
+
         <!-- Loading Text -->
         <div class="loading-text" id="loadingText">
             🌍 HFRF Universal SDR System<br>
             Raymond Demitrio Dr. Tel
         </div>
-        
+
         <!-- Progress Bar -->
         <div class="progress-bar" id="progressBar">
             <div class="progress-fill" id="progressFill"></div>
         </div>
-        
+
         <!-- Version Info -->
         <div class="version-info" id="versionInfo">
             Version 1.0.0<br>
             Build 2025.01.01
         </div>
-        
+
         <!-- Copyright -->
         <div class="copyright" id="copyright">
             © 2025 Raymond Demitrio Dr. Tel<br>
@@ -409,124 +430,124 @@
                 this.audioContext = null;
                 this.oscillator = null;
                 this.gainNode = null;
-                
+
                 this.init();
             }
-            
+
             init() {
                 this.playUrknallSound();
                 this.startAnimation();
                 this.setupCompletion();
             }
-            
+
             playUrknallSound() {
                 try {
                     // Create audio context for Urknall sound
                     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    
+
                     // Create oscillator for Urknall sound (low frequency rumble)
                     this.oscillator = this.audioContext.createOscillator();
                     this.gainNode = this.audioContext.createGain();
-                    
+
                     // Connect nodes
                     this.oscillator.connect(this.gainNode);
                     this.gainNode.connect(this.audioContext.destination);
-                    
+
                     // Configure Urknall sound
                     this.oscillator.type = 'sawtooth';
                     this.oscillator.frequency.setValueAtTime(20, this.audioContext.currentTime); // Very low frequency
                     this.oscillator.frequency.exponentialRampToValueAtTime(0.1, this.audioContext.currentTime + 3);
-                    
+
                     // Configure gain (volume)
                     this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
                     this.gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.5);
                     this.gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 3);
-                    
+
                     // Start the Urknall sound
                     this.oscillator.start(this.audioContext.currentTime);
                     this.oscillator.stop(this.audioContext.currentTime + 3);
-                    
+
                     // Add some high-frequency crackling for the "bang" effect
                     setTimeout(() => {
                         this.addCracklingEffect();
                     }, 500);
-                    
+
                 } catch (error) {
                     console.log('Audio not supported:', error);
                 }
             }
-            
+
             addCracklingEffect() {
                 try {
                     // Create crackling effect with noise
                     const bufferSize = this.audioContext.sampleRate * 0.5; // 0.5 seconds
                     const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
                     const data = buffer.getChannelData(0);
-                    
+
                     // Generate white noise
                     for (let i = 0; i < bufferSize; i++) {
                         data[i] = (Math.random() * 2 - 1) * 0.1;
                     }
-                    
+
                     const noiseSource = this.audioContext.createBufferSource();
                     noiseSource.buffer = buffer;
-                    
+
                     const filter = this.audioContext.createBiquadFilter();
                     filter.type = 'highpass';
                     filter.frequency.value = 1000;
-                    
+
                     const gain = this.audioContext.createGain();
                     gain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
-                    
+
                     noiseSource.connect(filter);
                     filter.connect(gain);
                     gain.connect(this.audioContext.destination);
-                    
+
                     noiseSource.start();
-                    
+
                 } catch (error) {
                     console.log('Crackling effect not supported:', error);
                 }
             }
-            
+
             startAnimation() {
                 // Trigger stars animation after 1 second
                 setTimeout(() => {
                     document.getElementById('stars').style.opacity = '1';
                 }, 1000);
-                
+
                 // Trigger big bang effect after 0.5 seconds
                 setTimeout(() => {
                     document.getElementById('bigBang').style.opacity = '1';
                 }, 500);
-                
+
                 // Trigger energy waves after 1.5 seconds
                 setTimeout(() => {
                     document.getElementById('energyWaves').style.opacity = '1';
                 }, 1500);
             }
-            
+
             setupCompletion() {
                 // Add fade-out effect after animation completes
                 setTimeout(() => {
                     document.getElementById('startupContainer').classList.add('fade-out');
                 }, this.duration - 1000);
-                
+
                 // Redirect to main app after animation
                 setTimeout(() => {
                     this.completeStartup();
                 }, this.duration);
             }
-            
+
             completeStartup() {
                 // Save startup completion
                 localStorage.setItem('hfrf_startup_completed', 'true');
                 localStorage.setItem('hfrf_startup_timestamp', Date.now().toString());
-                
+
                 // Redirect to main app
                 const targetUrl = 'universal-international-app.html';
-                
+
                 // Check if we're in an iframe or popup
                 if (window.opener) {
                     // We're in a popup, close it and redirect opener
@@ -540,34 +561,34 @@
                     window.location.href = targetUrl;
                 }
             }
-            
+
             // Public method to skip animation
             skipAnimation() {
                 this.completeStartup();
             }
         }
-        
+
         // Initialize startup animation
         let startupAnimation;
-        
+
         window.addEventListener('load', () => {
             startupAnimation = new StartupAnimation();
         });
-        
+
         // Allow skipping with Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && startupAnimation) {
                 startupAnimation.skipAnimation();
             }
         });
-        
+
         // Allow skipping with click
         document.addEventListener('click', () => {
             if (startupAnimation) {
                 startupAnimation.skipAnimation();
             }
         });
-        
+
         // Handle visibility change (tab switching)
         document.addEventListener('visibilitychange', () => {
             if (document.hidden && startupAnimation) {
@@ -582,18 +603,18 @@
                 }
             }
         });
-        
+
         // Handle page unload
         window.addEventListener('beforeunload', () => {
             if (startupAnimation && startupAnimation.audioContext) {
                 startupAnimation.audioContext.close();
             }
         });
-        
+
         // Service Worker registration for offline support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('../sw.js')
                     .then(registration => {
                         console.log('SW registered: ', registration);
                     })
@@ -602,7 +623,7 @@
                     });
             });
         }
-        
+
         // Performance monitoring
         window.addEventListener('load', () => {
             if ('performance' in window) {
@@ -618,11 +639,11 @@
                         loadComplete: performance.timing.loadEventEnd - performance.timing.navigationStart
                     } : null
                 };
-                
+
                 localStorage.setItem('hfrf_performance_data', JSON.stringify(perfData));
             }
         });
     </script>
 </body>
-</html>
 
+</html>

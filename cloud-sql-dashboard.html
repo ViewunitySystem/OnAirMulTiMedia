@@ -1,41 +1,164 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OAMTM Cloud SQL Dashboard - Raymond Demitrio Dr. Tel</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https:; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
   <script src="./js/error-handler.js"></script>
   <script src="./js/cloud-sql-api.js"></script>
   <style>
-    :root { color-scheme: dark; }
-    body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
-    header { background:#121a34; padding:16px; position:sticky; top:0; z-index:10; }
-    main { padding:16px; display:grid; gap:16px; max-width:1400px; margin:0 auto; }
-    .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px; }
-    .card { background:#111827; border:1px solid #1f2a52; border-radius:12px; padding:16px; }
-    .big { font-size:28px; font-weight:700; }
-    .muted { opacity:.8; font-size:12px; }
-    .hero { display:flex; align-items:center; gap:12px; }
-    a { color:#93c5fd; text-decoration: none; }
-    a:hover { color: #bfdbfe; }
-    button { padding:8px 16px; border-radius:8px; border:1px solid #374151; background:#3b82f6; color:white; cursor:pointer; }
-    button:hover { opacity: 0.8; }
-    .status-online { color: #10b981; }
-    .status-offline { color: #ef4444; }
-    .status-loading { color: #f59e0b; }
-    pre { background:#0b1020; padding:12px; border-radius:8px; overflow-x:auto; font-size:12px; }
-    .metric { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #1f2a52; }
-    .metric:last-child { border-bottom:none; }
-    .metric-value { font-weight:600; color:#93c5fd; }
-    .alert { padding:12px; border-radius:8px; margin:8px 0; }
-    .alert-success { background:#065f46; border:1px solid #10b981; }
-    .alert-error { background:#7f1d1d; border:1px solid #ef4444; }
-    .alert-warning { background:#78350f; border:1px solid #f59e0b; }
-    .alert-info { background:#1e3a8a; border:1px solid #3b82f6; }
-    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    :root {
+      color-scheme: dark;
+    }
+
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      background: #0b1020;
+      color: #e5e7eb;
+    }
+
+    header {
+      background: #121a34;
+      padding: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    main {
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1f2a52;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .big {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .muted {
+      opacity: .8;
+      font-size: 12px;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    a {
+      color: #93c5fd;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #bfdbfe;
+    }
+
+    button {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .status-online {
+      color: #10b981;
+    }
+
+    .status-offline {
+      color: #ef4444;
+    }
+
+    .status-loading {
+      color: #f59e0b;
+    }
+
+    pre {
+      background: #0b1020;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #1f2a52;
+    }
+
+    .metric:last-child {
+      border-bottom: none;
+    }
+
+    .metric-value {
+      font-weight: 600;
+      color: #93c5fd;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      margin: 8px 0;
+    }
+
+    .alert-success {
+      background: #065f46;
+      border: 1px solid #10b981;
+    }
+
+    .alert-error {
+      background: #7f1d1d;
+      border: 1px solid #ef4444;
+    }
+
+    .alert-warning {
+      background: #78350f;
+      border: 1px solid #f59e0b;
+    }
+
+    .alert-info {
+      background: #1e3a8a;
+      border: 1px solid #3b82f6;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
+
 <body>
   <header>
     <div class="hero">
@@ -156,7 +279,7 @@
         console.log('🔥 Cloud SQL Dashboard initialisiert');
         this.updateConfig();
         await this.runInitialChecks();
-        
+
         // Auto-refresh alle 30 Sekunden
         setInterval(() => {
           this.runInitialChecks();
@@ -192,77 +315,77 @@
           }
 
           const health = await window.cloudSQLAPI.healthCheck();
-          
+
           if (health.status === 'healthy') {
             healthDiv.className = 'alert alert-success';
-            healthDiv.innerHTML = '✅ System Healthy<br>' + 
+            healthDiv.innerHTML = '✅ System Healthy<br>' +
               `Services: ${Object.keys(health.services).length}<br>` +
               `Uptime: ${Math.floor(health.services?.system?.uptime || 0)}s`;
-            
+
             dbStatus.className = 'status-online';
             dbStatus.textContent = '✅ Connected';
-            
+
             apiStatus.className = 'status-online';
             apiStatus.textContent = '✅ Available';
-            
+
             envStatus.className = 'status-online';
             envStatus.textContent = '✅ Configured';
-            
+
           } else {
             healthDiv.className = 'alert alert-warning';
-            healthDiv.innerHTML = '⚠️ System Issues<br>' + 
+            healthDiv.innerHTML = '⚠️ System Issues<br>' +
               `Status: ${health.status}<br>` +
               `Error: ${health.error || 'Unknown'}`;
-            
+
             dbStatus.className = 'status-offline';
             dbStatus.textContent = '❌ Failed';
-            
+
             apiStatus.className = 'status-offline';
             apiStatus.textContent = '❌ Failed';
-            
+
             envStatus.className = 'status-offline';
             envStatus.textContent = '❌ Failed';
           }
-          
+
           lastCheck.textContent = new Date().toLocaleTimeString();
-          
+
         } catch (error) {
           healthDiv.className = 'alert alert-error';
           healthDiv.innerHTML = '❌ Health Check Failed<br>' + error.message;
-          
+
           dbStatus.className = 'status-offline';
           dbStatus.textContent = '❌ Error';
-          
+
           apiStatus.className = 'status-offline';
           apiStatus.textContent = '❌ Error';
-          
+
           envStatus.className = 'status-offline';
           envStatus.textContent = '❌ Error';
-          
+
           lastCheck.textContent = new Date().toLocaleTimeString();
         }
       }
 
       async loadEventsOverview() {
         const overviewDiv = document.getElementById('eventsOverview');
-        
+
         try {
           const stats = await window.cloudSQLAPI.getAuditStats();
-          
+
           if (stats.success !== false) {
             overviewDiv.className = 'alert alert-success';
             overviewDiv.innerHTML = '✅ Events Loaded Successfully';
-            
+
             document.getElementById('totalEvents').textContent = stats.overview?.total_events || 0;
             document.getElementById('events24h').textContent = stats.overview?.last_24_hours || 0;
             document.getElementById('events7d').textContent = stats.overview?.last_7_days || 0;
             document.getElementById('events30d').textContent = stats.overview?.last_30_days || 0;
-            
+
           } else {
             overviewDiv.className = 'alert alert-warning';
             overviewDiv.innerHTML = '⚠️ Statistics Load Failed<br>' + stats.error;
           }
-          
+
         } catch (error) {
           overviewDiv.className = 'alert alert-error';
           overviewDiv.innerHTML = '❌ Load Failed<br>' + error.message;
@@ -271,16 +394,16 @@
 
       async loadRecentEvents() {
         const eventsDiv = document.getElementById('recentEvents');
-        
+
         try {
           const events = await window.cloudSQLAPI.getAuditEvents(5);
-          
+
           if (events.success) {
             eventsDiv.className = 'alert alert-success';
-            
+
             if (events.data.length > 0) {
               eventsDiv.innerHTML = '✅ Recent Events Loaded<br>' +
-                events.data.map(event => 
+                events.data.map(event =>
                   `<div style="margin:4px 0; padding:4px; background:#0b1020; border-radius:4px;">
                     ${event.event_type} - ${new Date(event.timestamp).toLocaleString()}
                   </div>`
@@ -288,12 +411,12 @@
             } else {
               eventsDiv.innerHTML = 'ℹ️ No recent events found';
             }
-            
+
           } else {
             eventsDiv.className = 'alert alert-warning';
             eventsDiv.innerHTML = '⚠️ Events Load Failed<br>' + events.error;
           }
-          
+
         } catch (error) {
           eventsDiv.className = 'alert alert-error';
           eventsDiv.innerHTML = '❌ Load Failed<br>' + error.message;
@@ -302,22 +425,22 @@
 
       async loadDetailedStats() {
         const statsDiv = document.getElementById('detailedStats');
-        
+
         try {
           const stats = await window.cloudSQLAPI.getAuditStats();
-          
+
           if (stats.success !== false) {
             statsDiv.className = 'alert alert-success';
             statsDiv.innerHTML = '✅ Detailed Statistics Loaded';
-            
-            document.getElementById('testLogs').textContent = 
+
+            document.getElementById('testLogs').textContent =
               'Detailed Statistics:\n' + JSON.stringify(stats, null, 2);
-            
+
           } else {
             statsDiv.className = 'alert alert-warning';
             statsDiv.innerHTML = '⚠️ Statistics Load Failed<br>' + stats.error;
           }
-          
+
         } catch (error) {
           statsDiv.className = 'alert alert-error';
           statsDiv.innerHTML = '❌ Load Failed<br>' + error.message;
@@ -363,7 +486,7 @@
 
     async function addTestEvent() {
       window.dashboard.log('Adding test event...');
-      
+
       try {
         const testEvent = {
           event_type: 'dashboard_test',
@@ -375,16 +498,16 @@
           user_id: 'dashboard_user',
           timestamp: new Date().toISOString()
         };
-        
+
         const result = await window.cloudSQLAPI.addAuditEvent(testEvent);
-        
+
         if (result.success) {
           window.dashboard.log('✅ Test event added successfully: ID ' + result.id);
           setTimeout(loadRecentEvents, 1000);
         } else {
           window.dashboard.log('❌ Failed to add test event: ' + result.error);
         }
-        
+
       } catch (error) {
         window.dashboard.log('❌ Error adding test event: ' + error.message);
       }
@@ -392,18 +515,18 @@
 
     async function runFullTest() {
       window.dashboard.log('🧪 Starting full API test...');
-      
+
       try {
         const api = window.cloudSQLAPI;
         const results = await api.getStatusDashboard();
-        
+
         window.dashboard.log('🎉 Full test completed successfully!');
-        document.getElementById('testLogs').textContent = 
+        document.getElementById('testLogs').textContent =
           'Full Test Results:\n' + JSON.stringify(results, null, 2);
-        
+
         // Refresh all displays
         await window.dashboard.runInitialChecks();
-        
+
       } catch (error) {
         window.dashboard.log('❌ Full test failed: ' + error.message);
       }
@@ -413,11 +536,52 @@
       window.dashboard.clearLogs();
     }
 
+    // 🔒 ACCESS CONTROL - Nur für gentlyoverdone@outlook.com
+    const AUTHORIZED_EMAIL = 'gentlyoverdone@outlook.com';
+
+    function checkAccessControl() {
+      // Prüfe ob Zugriff von außen erfolgt
+      const isExternalAccess = !window.location.hostname.includes('localhost') &&
+        !window.location.hostname.includes('127.0.0.1');
+
+      if (isExternalAccess) {
+        // Zeige Zugriffskontrolle für externe Zugriffe
+        const accessKey = prompt('🔒 System-Zugriff erforderlich\n\nBitte geben Sie den Zugriffsschlüssel ein:');
+
+        if (accessKey !== 'gentlyoverdone@outlook.com') {
+          document.body.innerHTML = `
+            <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0b1020; color: #e5e7eb; font-family: system-ui;">
+              <div style="text-align: center; padding: 2rem; border: 1px solid #dc2626; border-radius: 12px; background: #111827;">
+                <h1 style="color: #dc2626; margin-bottom: 1rem;">🔒 Zugriff verweigert</h1>
+                <p>Dieses System ist nur für autorisierte Benutzer zugänglich.</p>
+                <button onclick="window.location.href='./index.html'" 
+                        style="margin-top: 1rem; padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                  Zurück zur Startseite
+                </button>
+              </div>
+            </div>
+          `;
+          return false;
+        }
+      }
+
+      // Interne Automatisierung läuft weiterhin unverändert
+      console.log('✅ Zugriff autorisiert - Cloud SQL läuft automatisch weiter');
+      return true;
+    }
+
+    // Zugriffskontrolle beim Laden
+    if (!checkAccessControl()) {
+      // Stoppe weitere Ausführung wenn Zugriff verweigert
+      throw new Error('Access denied');
+    }
+
     // Initialize Dashboard
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       window.dashboard = new CloudSQLDashboard();
       window.dashboard.log('🔥 Cloud SQL Dashboard initialized');
     });
   </script>
 </body>
+
 </html>

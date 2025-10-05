@@ -1,49 +1,49 @@
 {
-  "name": "oamtm-cloud-sql-api",
+  "name": "onair-multimedia",
   "version": "1.0.0",
-  "description": "OAMTM Cloud SQL API für Audit Events - Raymond Demitrio Dr. Tel",
+  "description": "OnAir MultiMedia System - Vollständige Architektur mit Cloudflare Worker, Firebase Functions und WebSocket Signaling",
   "main": "index.js",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'Build completed'",
-    "deploy": "vercel --prod",
-    "test": "echo 'Tests completed'",
-    "scan-modules": "node scripts/scan-all-modules.mjs",
-    "auto-detect": "node scripts/auto-module-detector.mjs",
-    "start-auto-detector": "node scripts/auto-module-detector.mjs",
-    "auto-audit": "node scripts/auto-audit-updater.mjs",
-    "start-auto-audit": "node scripts/auto-audit-updater.mjs",
-    "api-server": "node api-server.js",
-    "start-api": "node api-server.js",
-    "fix-console-errors": "node scripts/auto-console-error-fixer.mjs",
-    "auto-fix": "node scripts/auto-console-error-fixer.mjs",
-    "security": "npm audit && echo 'Security check completed'",
-    "security:ci": "npm audit --audit-level=high || echo '(non-blocking) audit warnings'",
-    "routes": "node scripts/gen-recovery-map.mjs && node scripts/scan-urls.mjs",
-    "heal": "node scripts/rule-recovery-bridge.mjs && node scripts/meta-reflector.mjs && node scripts/recursive-fix-engine.mjs",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "node scripts/build-hash-generator.mjs",
+    "build-hash": "node scripts/build-hash-generator.mjs",
+    "prebuild": "echo '🔧 Generating BUILD_HASH...'",
+    "firebase:deploy": "firebase deploy --only functions",
+    "firebase:logs": "firebase functions:log",
+    "test": "echo 'Tests werden implementiert...'",
+    "start": "python -m http.server 8080"
+  },
+  "keywords": [
+    "onair",
+    "multimedia",
+    "cloudflare",
+    "firebase",
+    "websocket",
+    "webrtc",
+    "obs",
+    "overlay"
+  ],
+  "author": "Raymond Demitrio Dr. Tel",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.114.14"
   },
   "dependencies": {
-    "mysql2": "^3.6.5"
+    "cors": "^2.8.5",
+    "express": "^4.18.0",
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": [
-    "oamtm",
-    "cloud-sql",
-    "audit-events",
-    "serverless",
-    "vercel",
-    "tel1nl"
-  ],
-  "author": "Raymond Demitrio Dr. Tel",
-  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ViewunitySystem/OnAirMulTiMedia"
-  }
+    "url": "https://github.com/viewunitysystem/OnAirMulTiMedia.git"
+  },
+  "bugs": {
+    "url": "https://github.com/viewunitysystem/OnAirMulTiMedia/issues"
+  },
+  "homepage": "https://viewunitysystem.github.io/OnAirMulTiMedia/"
 }

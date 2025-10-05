@@ -547,6 +547,194 @@
             border-left: 4px solid var(--accent-red);
         }
 
+        /* UI/UX Framework Rotation Styles - Elegant Carousel */
+        .ui-rotation-panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .ui-rotation-panel h3 {
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .ui-frameworks {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 1rem;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--bg-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .ui-frameworks::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .ui-frameworks::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+            border-radius: 4px;
+        }
+
+        .ui-frameworks::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 4px;
+        }
+
+        .ui-framework {
+            min-width: 280px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            scroll-snap-align: center;
+            position: relative;
+        }
+
+        .ui-framework:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+
+        .ui-framework.active {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .ui-framework-preview {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: var(--accent-blue);
+            border: 1px solid var(--border-color);
+        }
+
+        .ui-framework-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .ui-framework-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .ui-framework-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-tag {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .rotation-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .rotation-controls button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .rotation-controls button:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .rotation-controls button.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .live-preview {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .live-preview h4 {
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+
+        .preview-content {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 1rem;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Framework-spezifische Styles */
+        .framework-shadcn {
+            --accent-blue: #3b82f6;
+        }
+
+        .framework-radix {
+            --accent-blue: #8b5cf6;
+        }
+
+        .framework-tabler {
+            --accent-blue: #206bc4;
+        }
+
+        .framework-primereact {
+            --accent-blue: #6366f1;
+        }
+
+        .framework-daisyui {
+            --accent-blue: #1fb2a6;
+        }
+
+        .framework-mui {
+            --accent-blue: #1976d2;
+        }
+
         @media (max-width: 768px) {
             .header {
                 padding: 1rem;
@@ -636,41 +824,24 @@
             </div>
         </div>
 
-        <!-- UI/UX Rotation Panel -->
+        <!-- UI/UX Rotation Panel - Elegant Carousel -->
         <div class="ui-rotation-panel">
             <h3>🎨 UI/UX Framework Rotation</h3>
             <div class="ui-frameworks" id="ui-frameworks">
-                <div class="ui-framework active" data-framework="shadcn">
-                    <div class="ui-framework-name">shadcn/ui</div>
-                    <div class="ui-framework-desc">Minimal, zugänglich</div>
-                </div>
-                <div class="ui-framework" data-framework="radix">
-                    <div class="ui-framework-name">Radix UI</div>
-                    <div class="ui-framework-desc">Barrierefreie Primitives</div>
-                </div>
-                <div class="ui-framework" data-framework="tabler">
-                    <div class="ui-framework-name">Tabler</div>
-                    <div class="ui-framework-desc">Klassisches Dashboard</div>
-                </div>
-                <div class="ui-framework" data-framework="primereact">
-                    <div class="ui-framework-name">PrimeReact</div>
-                    <div class="ui-framework-desc">Umfangreiche Komponenten</div>
-                </div>
-                <div class="ui-framework" data-framework="daisyui">
-                    <div class="ui-framework-name">daisyUI</div>
-                    <div class="ui-framework-desc">Tailwind Plugin</div>
-                </div>
-                <div class="ui-framework" data-framework="mui">
-                    <div class="ui-framework-name">MUI</div>
-                    <div class="ui-framework-desc">Material Design</div>
-                </div>
+                <!-- Framework-Karten werden dynamisch generiert -->
             </div>
             <div class="rotation-controls">
                 <button class="rotation-btn" onclick="startAutoRotation()">🔄 Auto-Rotation</button>
                 <button class="rotation-btn" onclick="stopAutoRotation()">⏹️ Stop</button>
+                <button class="rotation-btn" onclick="resetFramework()">🔄 Reset</button>
                 <div class="auto-rotation-status">
-                    <span class="status-indicator inactive" id="rotation-status"></span>
-                    <span id="rotation-text">Auto-Rotation gestoppt</span>
+                    <span id="rotation-status">Bereit</span>
+                </div>
+            </div>
+            <div class="live-preview">
+                <h4>🎯 Live Preview</h4>
+                <div class="preview-content" id="preview-content">
+                    Wählen Sie ein UI-Framework aus, um die Live-Vorschau zu sehen
                 </div>
             </div>
         </div>
@@ -1037,38 +1208,176 @@
             showNotification(enabled ? 'Screen Reader Modus aktiviert' : 'Screen Reader Modus deaktiviert', 'success');
         }
 
-        // UI/UX Rotation Funktionen
+        // UI/UX Framework Rotation - Elegant Implementation
         let autoRotationInterval = null;
         let currentFrameworkIndex = 0;
-        const frameworks = ['shadcn', 'radix', 'tabler', 'primereact', 'daisyui', 'mui'];
 
-        function selectFramework(frameworkName) {
-            // Alle Framework-Karten deaktivieren
-            document.querySelectorAll('.ui-framework').forEach(framework => {
-                framework.classList.remove('active');
-            });
-
-            // Gewählte Framework-Karte aktivieren
-            const selectedFramework = document.querySelector(`[data-framework="${frameworkName}"]`);
-            if (selectedFramework) {
-                selectedFramework.classList.add('active');
+        const frameworks = [
+            {
+                id: 'shadcn',
+                name: 'shadcn/ui',
+                description: 'Minimal, zugänglich, Tailwind',
+                preview: '🎨',
+                features: ['Copy & Paste', 'Tailwind', 'A11y', 'Modern'],
+                description: 'Saubere, zugängliche Komponenten ideal für moderne SDR-Panels'
+            },
+            {
+                id: 'radix',
+                name: 'Radix UI',
+                description: 'Barrierefreie Primitives',
+                preview: '♿',
+                features: ['A11y', 'Unstyled', 'Modular', 'Flexible'],
+                description: 'Barrierefreie Grundbausteine für eigenes SDR-Designsystem'
+            },
+            {
+                id: 'tabler',
+                name: 'Tabler',
+                description: 'Klassisches Dashboard',
+                preview: '📊',
+                features: ['Dashboard', 'Icons', 'Widgets', 'Classic'],
+                description: 'Klassisches Dashboard-Kit für SDR-Monitoring und Telemetrie'
+            },
+            {
+                id: 'primereact',
+                name: 'PrimeReact',
+                description: 'Umfangreiche React-Komponenten',
+                preview: '⚡',
+                features: ['Virtual Scrolling', 'DataTables', 'Charts', 'Enterprise'],
+                description: 'Performante Komponenten für große Datenmengen'
+            },
+            {
+                id: 'daisyui',
+                name: 'daisyUI',
+                description: 'Tailwind Plugin',
+                preview: '🌼',
+                features: ['Tailwind', 'Theming', 'Fast', 'Prototype'],
+                description: 'Schnelles Theming via Klassen für SDR-Panels'
+            },
+            {
+                id: 'mui',
+                name: 'MUI + MUI X',
+                description: 'Enterprise-tauglich',
+                preview: '🏢',
+                features: ['Enterprise', 'DataGrid', 'Charts', 'Dense'],
+                description: 'Ausgereifte Komponenten für datenreiche SDR-Ansichten'
             }
+        ];
 
-            // Framework-spezifische Styles anwenden
-            applyFrameworkStyles(frameworkName);
+        function loadUIFrameworks() {
+            const container = document.getElementById('ui-frameworks');
+            container.innerHTML = '';
 
-            showNotification(`UI Framework "${frameworkName}" ausgewählt!`, 'success');
+            frameworks.forEach((framework, index) => {
+                const card = createFrameworkCard(framework, index);
+                container.appendChild(card);
+            });
         }
 
-        function applyFrameworkStyles(frameworkName) {
+        function createFrameworkCard(framework, index) {
+            const card = document.createElement('div');
+            card.className = `ui-framework ${index === currentFrameworkIndex ? 'active' : ''}`;
+            card.setAttribute('data-framework', framework.id);
+
+            card.innerHTML = `
+                <div class="ui-framework-preview">${framework.preview}</div>
+                <div class="ui-framework-name">${framework.name}</div>
+                <div class="ui-framework-desc">${framework.description}</div>
+                <div class="ui-framework-features">
+                    ${framework.features.map(feature => `<span class="feature-tag">${feature}</span>`).join('')}
+                </div>
+            `;
+
+            card.addEventListener('click', () => selectFramework(framework.id));
+            return card;
+        }
+
+        function selectFramework(frameworkId) {
+            const frameworkIndex = frameworks.findIndex(f => f.id === frameworkId);
+            if (frameworkIndex === -1) return;
+
+            currentFrameworkIndex = frameworkIndex;
+
+            // UI aktualisieren
+            document.querySelectorAll('.ui-framework').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`[data-framework="${frameworkId}"]`).classList.add('active');
+
+            // Framework-spezifische Styles anwenden
+            applyFrameworkStyles(frameworkId);
+
+            // Live-Preview aktualisieren
+            updateLivePreview(frameworkId);
+
+            // Status aktualisieren
+            document.getElementById('rotation-status').textContent = `${frameworks[frameworkIndex].name} aktiv`;
+
+            showNotification(`UI Framework "${frameworks[frameworkIndex].name}" ausgewählt!`, 'success');
+        }
+
+        function updateLivePreview(frameworkId) {
+            const framework = frameworks.find(f => f.id === frameworkId);
+            const previewContent = document.getElementById('preview-content');
+
+            previewContent.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">${framework.preview}</div>
+                    <div style="font-size: 1.3rem; font-weight: 600; margin-bottom: 0.5rem;">${framework.name}</div>
+                    <div style="color: var(--text-secondary); margin-bottom: 1rem;">${framework.description}</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary); max-width: 300px; margin: 0 auto;">
+                        ${framework.description}
+                    </div>
+                </div>
+            `;
+        }
+
+        function startAutoRotation() {
+            if (autoRotationInterval) {
+                clearInterval(autoRotationInterval);
+            }
+
+            autoRotationInterval = setInterval(() => {
+                currentFrameworkIndex = (currentFrameworkIndex + 1) % frameworks.length;
+                selectFramework(frameworks[currentFrameworkIndex].id);
+            }, 3000); // Wechsel alle 3 Sekunden
+
+            // Update Button States
+            document.querySelector('.rotation-btn[onclick="startAutoRotation()"]').classList.add('active');
+            document.querySelector('.rotation-btn[onclick="stopAutoRotation()"]').classList.remove('active');
+
+            document.getElementById('rotation-status').textContent = 'Auto-Rotation läuft';
+            showNotification('🔄 Auto-Rotation gestartet!', 'success');
+        }
+
+        function stopAutoRotation() {
+            if (autoRotationInterval) {
+                clearInterval(autoRotationInterval);
+                autoRotationInterval = null;
+            }
+
+            // Update Button States
+            document.querySelector('.rotation-btn[onclick="startAutoRotation()"]').classList.remove('active');
+            document.querySelector('.rotation-btn[onclick="stopAutoRotation()"]').classList.add('active');
+
+            document.getElementById('rotation-status').textContent = 'Auto-Rotation gestoppt';
+            showNotification('⏹️ Auto-Rotation gestoppt!', 'success');
+        }
+
+        function resetFramework() {
+            stopAutoRotation();
+            selectFramework('shadcn');
+            showNotification('🔄 Framework auf Standard zurückgesetzt!', 'success');
+        }
+
+        function applyFrameworkStyles(frameworkId) {
             // Entferne alle Framework-spezifischen CSS-Klassen
             document.body.classList.remove('framework-shadcn', 'framework-radix', 'framework-tabler', 'framework-primereact', 'framework-daisyui', 'framework-mui');
 
             // Füge neue Framework-Klasse hinzu
-            document.body.classList.add(`framework-${frameworkName}`);
+            document.body.classList.add(`framework-${frameworkId}`);
 
             // Framework-spezifische Anpassungen
-            switch (frameworkName) {
+            switch (frameworkId) {
                 case 'shadcn':
                     document.documentElement.style.setProperty('--accent-blue', '#3b82f6');
                     break;
@@ -1090,42 +1399,33 @@
             }
         }
 
-        function startAutoRotation() {
-            if (autoRotationInterval) return;
-
-            autoRotationInterval = setInterval(() => {
-                currentFrameworkIndex = (currentFrameworkIndex + 1) % frameworks.length;
-                selectFramework(frameworks[currentFrameworkIndex]);
-            }, 3000); // Alle 3 Sekunden wechseln
-
-            // Status aktualisieren
-            document.getElementById('rotation-status').classList.remove('inactive');
-            document.getElementById('rotation-text').textContent = 'Auto-Rotation aktiv';
-
-            showNotification('Auto-Rotation gestartet!', 'success');
-        }
-
-        function stopAutoRotation() {
-            if (autoRotationInterval) {
-                clearInterval(autoRotationInterval);
-                autoRotationInterval = null;
-            }
-
-            // Status aktualisieren
-            document.getElementById('rotation-status').classList.add('inactive');
-            document.getElementById('rotation-text').textContent = 'Auto-Rotation gestoppt';
-
-            showNotification('Auto-Rotation gestoppt!', 'success');
-        }
-
         // Framework-Karten klickbar machen
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.ui-framework').forEach(framework => {
-                framework.addEventListener('click', function () {
-                    const frameworkName = this.dataset.framework;
-                    selectFramework(frameworkName);
-                    stopAutoRotation(); // Auto-Rotation stoppen bei manueller Auswahl
-                });
+            // UI Frameworks laden
+            loadUIFrameworks();
+
+            // Standard-Framework auswählen
+            selectFramework('shadcn');
+
+            // Keyboard Navigation für UI Frameworks
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    const currentIndex = frameworks.findIndex(f => f.id === frameworks[currentFrameworkIndex].id);
+                    let newIndex;
+
+                    if (e.key === 'ArrowLeft') {
+                        newIndex = currentIndex > 0 ? currentIndex - 1 : frameworks.length - 1;
+                    } else {
+                        newIndex = currentIndex < frameworks.length - 1 ? currentIndex + 1 : 0;
+                    }
+
+                    selectFramework(frameworks[newIndex].id);
+                }
+
+                if (e.key === 'Enter' && e.target.classList.contains('ui-framework')) {
+                    e.target.click();
+                }
             });
         });
 
@@ -1167,6 +1467,17 @@
         }
 
         // Keyboard-Navigation
+        // Event Listeners für UI/UX Framework Rotation
+        document.addEventListener('DOMContentLoaded', function () {
+            // Framework-Karten klickbar machen
+            document.querySelectorAll('.ui-framework').forEach(framework => {
+                framework.addEventListener('click', function () {
+                    const frameworkName = this.getAttribute('data-framework');
+                    selectFramework(frameworkName);
+                });
+            });
+        });
+
         document.addEventListener('keydown', function (e) {
             // Escape-Taste schließt Barrierefreiheits-Panel
             if (e.key === 'Escape') {
