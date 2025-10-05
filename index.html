@@ -3,217 +3,104 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OnAir MultiMedia System</title>
-  <style>
-    :root {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif;
-    }
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>OnAirMulTiMedia – Start</title>
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://onair-edge.telcotelekom.workers.dev wss://onair-edge.telcotelekom.workers.dev; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; upgrade-insecure-requests">
+  <link rel="stylesheet" href="./assets/landing.css" />
+  <script src="./self-healing-system.js"></script>
+  <!-- Keine Meta‑Refresh/JS‑Redirects mehr -->
+  <!-- Keine X-Frame-Options im <meta> (nur per Header wirksam) -->
+  <!-- Links RELATIV halten (./...), damit Pages‑Subpfad funktioniert -->
 
-    body {
-      margin: 0;
-      padding: 2rem;
-      color: #0f172a;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .header h1 {
-      color: white;
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .header p {
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.2rem;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .card h2 {
-      color: #1e293b;
-      margin-bottom: 1rem;
-    }
-
-    .card p {
-      color: #64748b;
-      line-height: 1.6;
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 12px 24px;
-      background: #3b82f6;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .btn:hover {
-      background: #2563eb;
-      transform: translateY(-2px);
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin: 1rem 0;
-    }
-
-    .status-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #22c55e;
-    }
-
-    .status-text {
-      color: #16a34a;
-      font-weight: 600;
-    }
-
-    .api-info {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 1rem;
-      margin: 1rem 0;
-    }
-
-    .api-info code {
-      background: #e2e8f0;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-    }
-  </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🎛️ OnAir MultiMedia System</h1>
-      <p>Vollständige Architektur mit Cloudflare Worker, Firebase Functions und WebSocket Signaling</p>
-    </div>
+  <header class="top">
+    <h1>OnAirMulTiMedia</h1>
+    <nav>
+      <a href="./info.html">Info</a>
+      <a href="./blueprints.html">Blueprints</a>
+      <a href="./manifest.html">Manifest</a>
+      <a href="./regulatory.html">Regulatory</a>
+      <a href="./serverfarm-dashboard.html">Serverfarm</a>
+      <a href="./onair-overlay.html">OnAir Widget</a>
+    </nav>
+  </header>
 
-    <div class="grid">
-      <div class="card">
-        <h2>🎯 Live Demo</h2>
-        <p>Testen Sie das System mit dem interaktiven Demo-Client</p>
-        <div class="status">
-          <div class="status-dot"></div>
-          <div class="status-text">System Online</div>
-        </div>
-        <a href="client.html" class="btn">Demo öffnen</a>
-      </div>
-
-      <div class="card">
-        <h2>📺 OBS Overlay</h2>
-        <p>Browser Source Widget für OBS Studio mit Live-KPIs</p>
-        <div class="api-info">
-          <strong>OBS Browser Source URL:</strong><br>
-          <code>https://viewunitysystem.github.io/OnAirMulTiMedia/overlay.html?api=https://onair-edge.telcotelekom.workers.dev&theme=dark&compact=1</code>
-        </div>
-        <a href="overlay.html?api=https://onair-edge.telcotelekom.workers.dev&theme=dark&compact=1" class="btn">Overlay
-          anzeigen</a>
-      </div>
-
-      <div class="card">
-        <h2>🔧 API Endpoints</h2>
-        <p>Verfügbare API-Endpunkte des Systems</p>
-        <div class="api-info">
-          <strong>Base URL:</strong> <code>https://onair-edge.telcotelekom.workers.dev</code><br>
-          <strong>Endpoints:</strong><br>
-          • <code>/health</code> - System Health Check<br>
-          • <code>/status</code> - Live Status & KPIs<br>
-          • <code>/metrics</code> - GitHub Metrics<br>
-          • <code>/rtc-config</code> - WebRTC Configuration<br>
-          • <code>/ws</code> - WebSocket Signaling
-        </div>
-        <a href="https://onair-edge.telcotelekom.workers.dev/health" class="btn" target="_blank">API testen</a>
-      </div>
-
-      <div class="card">
-        <h2>📚 Dokumentation</h2>
-        <p>Vollständige Anleitung und Deployment-Guide</p>
-        <div class="api-info">
-          <strong>Features:</strong><br>
-          • Self-Healing Edge-Gateway<br>
-          • WebSocket Rooms (Durable Objects)<br>
-          • Live Overlay-Widget<br>
-          • TURN/STUN Server Integration<br>
-          • CORS & Caching optimiert
-        </div>
-        <a href="README.md" class="btn">Dokumentation lesen</a>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top: 2rem; text-align: center;">
-      <h2>🚀 Deployment Status</h2>
-      <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-        <div class="status">
-          <div class="status-dot"></div>
-          <div class="status-text">Cloudflare Worker</div>
-        </div>
-        <div class="status">
-          <div class="status-dot"></div>
-          <div class="status-text">GitHub Pages</div>
-        </div>
-        <div class="status">
-          <div class="status-dot"></div>
-          <div class="status-text">WebSocket Signaling</div>
-        </div>
-        <div class="status">
-          <div class="status-dot"></div>
-          <div class="status-text">OBS Integration</div>
+  <main class="hero">
+    <section class="panel">
+      <h2>Self‑Healing System Status</h2>
+      <div class="frame-wrap">
+        <div id="self-healing-status" style="padding: 1rem; background: #1a1f2e; border-radius: 8px; color: #e5e7eb;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+            <div>
+              <div style="font-size: 12px; opacity: 0.8;">Cloudflare Worker</div>
+              <div id="worker-status" style="font-size: 18px; font-weight: bold; color: #22c55e;">Online</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; opacity: 0.8;">WebSocket</div>
+              <div id="ws-status" style="font-size: 18px; font-weight: bold; color: #22c55e;">Active</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; opacity: 0.8;">Auto-Recovery</div>
+              <div id="recovery-status" style="font-size: 18px; font-weight: bold; color: #22c55e;">Enabled</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; opacity: 0.8;">Last Check</div>
+              <div id="last-check" style="font-size: 18px; font-weight: bold; color: #93c5fd;">Now</div>
+            </div>
+          </div>
+          <div style="margin-top: 1rem;">
+            <button onclick="testSelfHealing()" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; margin-right: 0.5rem;">
+              🧪 Test Self-Healing
+            </button>
+            <button onclick="showRecoveryLog()" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer;">
+              📋 Recovery Log
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+
+    <section class="panel">
+      <h2>Info‑Dashboard (eingebettet)</h2>
+      <div class="frame-wrap">
+        <iframe src="./info.html" title="Info‑Dashboard" loading="lazy" referrerpolicy="no-referrer"
+          sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
+      </div>
+    </section>
+  </main>
 
   <script>
-    // Live Status Check
-    async function checkStatus() {
-      try {
-        const response = await fetch('https://onair-edge.telcotelekom.workers.dev/health');
-        const data = await response.json();
-        console.log('✅ System Status:', data);
-      } catch (error) {
-        console.warn('⚠️ Status Check failed:', error);
+    // Self-Healing Test Functions
+    function testSelfHealing() {
+      if (window.selfHealingSystem) {
+        window.selfHealingSystem.testSelfHealing();
+      } else {
+        console.warn('Self-Healing System not initialized');
+        alert('Self-Healing System nicht verfügbar');
       }
     }
 
-    // Check status on load
-    checkStatus();
+    function showRecoveryLog() {
+      if (window.selfHealingSystem) {
+        const log = window.selfHealingSystem.getRecoveryLog();
+        const logText = log.map(entry => 
+          `${entry.timestamp}: [${entry.type.toUpperCase()}] ${entry.message}`
+        ).join('\n');
+        
+        alert(`Self-Healing Recovery Log:\n\n${logText || 'Keine Recovery-Versuche bisher'}`);
+      } else {
+        console.warn('Self-Healing System not initialized');
+        alert('Self-Healing System nicht verfügbar');
+      }
+    }
 
-    // Update status every 30 seconds
-    setInterval(checkStatus, 30000);
+    // Initialize Self-Healing System when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🔧 OnAirMulTiMedia Self-Healing System aktiviert');
+    });
   </script>
 </body>
 

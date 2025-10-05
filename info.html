@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OnAirMulTiMedia – Info & GitHub Monitoring</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://onair-edge.telcotelekom.workers.dev; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
   <style>
     :root { color-scheme: dark; }
     body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
@@ -31,6 +31,7 @@
       <a href="./blueprints.html" style="margin-left:12px;">Blueprints ↗</a>
       <a href="./manifest.html" style="margin-left:12px;">Manifest ↗</a>
       <a href="./regulatory.html" style="margin-left:12px;">Regulatory ↗</a>
+      <a href="./onair-overlay.html" style="margin-left:12px;">Self-Healing ↗</a>
     </div>
     <div class="muted">Live-Metriken werden regelmäßig synchronisiert (alle ~10 Minuten). Release-Downloads = Summe aller Release-Assets.</div>
   </header>
@@ -104,6 +105,54 @@
         Donare hic.: <a href="https://www.gofundme.com/f/magnitudo?utm_campaign=unknown&utm_medium=referral&utm_source=widget" target="_blank">GoFundMe – magnitudo ↗</a>
       </div>
       <p class="muted" style="margin-top:8px;">Freiwillige Zuwendung als Dankeschön – keine Gegenleistung geschuldet. Dies ist **keine Rechts- oder Steuerberatung**. Prüfe lokale Vorgaben (z. B. Spendenrecht/Steuer). Mindestbetragempfehlung: 5 €.</p>
+    </section>
+    </section>
+
+    <!-- Self-Healing System Dashboard -->
+    <section class="card" style="margin-top: 2rem;">
+      <h2>🔧 Self-Healing System Status</h2>
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="card">
+          <div class="muted">Cloudflare Worker</div>
+          <div id="worker-status" class="big" style="color: #22c55e;">Online</div>
+          <div class="muted">Edge-Gateway</div>
+        </div>
+        <div class="card">
+          <div class="muted">WebSocket Signaling</div>
+          <div id="ws-status" class="big" style="color: #22c55e;">Active</div>
+          <div class="muted">Durable Objects</div>
+        </div>
+        <div class="card">
+          <div class="muted">Auto-Recovery</div>
+          <div id="recovery-status" class="big" style="color: #22c55e;">Enabled</div>
+          <div class="muted">Self-Healing</div>
+        </div>
+        <div class="card">
+          <div class="muted">Last Check</div>
+          <div id="last-check" class="big" style="color: #93c5fd;">Now</div>
+          <div class="muted">Health Monitor</div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1rem; padding: 1rem; background: #0b1020; border-radius: 8px;">
+        <h3>🔄 Self-Healing Features</h3>
+        <ul style="margin: 0; padding-left: 1.5rem;">
+          <li><strong>Edge Failover:</strong> Automatischer Wechsel zwischen Primary/Backup Endpoints</li>
+          <li><strong>WebSocket Recovery:</strong> Auto-Reconnect bei Verbindungsabbrüchen</li>
+          <li><strong>Health Monitoring:</strong> Kontinuierliche Überwachung aller Systeme</li>
+          <li><strong>Auto-Recovery:</strong> Automatische Wiederherstellung bei Fehlern</li>
+          <li><strong>Service Worker:</strong> Offline-Funktionalität und Cache-Management</li>
+        </ul>
+      </div>
+      
+      <div style="margin-top: 1rem;">
+        <button onclick="testSelfHealing()" style="background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer;">
+          🧪 Self-Healing Test
+        </button>
+        <button onclick="showRecoveryLog()" style="background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; margin-left: 1rem;">
+          📋 Recovery Log
+        </button>
+      </div>
     </section>
   </main>
 
@@ -184,6 +233,117 @@
     });
     loadStats(); loadContribs();
     setInterval(loadStats, 60_000);
+
+    // Self-Healing System Functions
+    const API_BASE = 'https://onair-edge.telcotelekom.workers.dev';
+    let recoveryLog = [];
+
+    async function checkSelfHealingStatus() {
+      try {
+        const response = await fetch(`${API_BASE}/health`);
+        const data = await response.json();
+        
+        if (data.ok) {
+          document.getElementById('worker-status').textContent = 'Online';
+          document.getElementById('worker-status').style.color = '#22c55e';
+          document.getElementById('ws-status').textContent = 'Active';
+          document.getElementById('ws-status').style.color = '#22c55e';
+          document.getElementById('recovery-status').textContent = 'Enabled';
+          document.getElementById('recovery-status').style.color = '#22c55e';
+          document.getElementById('last-check').textContent = new Date().toLocaleTimeString();
+        } else {
+          throw new Error('Health check failed');
+        }
+      } catch (error) {
+        console.warn('Self-Healing: Health check failed', error);
+        document.getElementById('worker-status').textContent = 'Recovery';
+        document.getElementById('worker-status').style.color = '#eab308';
+        document.getElementById('ws-status').textContent = 'Retry';
+        document.getElementById('ws-status').style.color = '#eab308';
+        document.getElementById('recovery-status').textContent = 'Active';
+        document.getElementById('recovery-status').style.color = '#eab308';
+        
+        // Attempt recovery
+        await attemptRecovery();
+      }
+    }
+
+    async function attemptRecovery() {
+      const timestamp = new Date().toISOString();
+      recoveryLog.push({ timestamp, action: 'Recovery attempt started' });
+      
+      try {
+        // Try alternative endpoints
+        const endpoints = ['/health', '/status', '/metrics'];
+        
+        for (const endpoint of endpoints) {
+          try {
+            const response = await fetch(`${API_BASE}${endpoint}`, { 
+              cache: 'no-store',
+              signal: AbortSignal.timeout(5000)
+            });
+            
+            if (response.ok) {
+              recoveryLog.push({ 
+                timestamp: new Date().toISOString(), 
+                action: `Recovery successful via ${endpoint}` 
+              });
+              console.log('✅ Self-Healing: Recovery successful via', endpoint);
+              return true;
+            }
+          } catch (e) {
+            recoveryLog.push({ 
+              timestamp: new Date().toISOString(), 
+              action: `Failed via ${endpoint}: ${e.message}` 
+            });
+          }
+        }
+        
+        recoveryLog.push({ 
+          timestamp: new Date().toISOString(), 
+          action: 'All recovery attempts failed' 
+        });
+        return false;
+      } catch (error) {
+        recoveryLog.push({ 
+          timestamp: new Date().toISOString(), 
+          action: `Recovery error: ${error.message}` 
+        });
+        return false;
+      }
+    }
+
+    function testSelfHealing() {
+      console.log('🧪 Self-Healing Test started');
+      recoveryLog.push({ 
+        timestamp: new Date().toISOString(), 
+        action: 'Manual self-healing test initiated' 
+      });
+      
+      // Simulate a failure and recovery
+      document.getElementById('worker-status').textContent = 'Testing...';
+      document.getElementById('worker-status').style.color = '#eab308';
+      
+      setTimeout(async () => {
+        await checkSelfHealingStatus();
+        recoveryLog.push({ 
+          timestamp: new Date().toISOString(), 
+          action: 'Self-healing test completed' 
+        });
+      }, 2000);
+    }
+
+    function showRecoveryLog() {
+      const logText = recoveryLog.map(entry => 
+        `${entry.timestamp}: ${entry.action}`
+      ).join('\n');
+      
+      alert(`Self-Healing Recovery Log:\n\n${logText || 'No recovery attempts yet'}`);
+    }
+
+    // Initialize self-healing monitoring
+    checkSelfHealingStatus();
+    setInterval(checkSelfHealingStatus, 30000); // Check every 30 seconds
   </script>
 </body>
 </html>

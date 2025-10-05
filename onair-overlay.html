@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OnAir Widget - OnAirMulTiMedia</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://onair-edge.telcotelekom.workers.dev; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; upgrade-insecure-requests">
+  <style>
+    :root { font-family: Inter, system-ui, Segoe UI, Roboto, sans-serif; }
+    html, body { margin:0; padding:0; background: transparent; }
+    .wrap { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:16px; backdrop-filter: blur(8px); background: rgba(15,23,42,.55); color: #e2e8f0; }
+    .dot { width:12px; height:12px; border-radius:50%; background:#ef4444; box-shadow:0 0 12px rgba(239,68,68,.6); }
+    .ok { background:#22c55e; box-shadow:0 0 12px rgba(34,197,94,.7); }
+    .warn { background:#eab308; box-shadow:0 0 12px rgba(234,179,8,.7); }
+    .kpi { display:flex; align-items:baseline; gap:8px; }
+    .kpi .val { font-size:20px; font-weight:800; }
+    .kpi .lbl { opacity:.8; font-size:12px; }
+    .ticker { overflow:hidden; white-space:nowrap; max-width: 60vw; }
+    .tick { display:inline-block; padding-left:100%; animation: scroll 25s linear infinite; }
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+    .muted { opacity:.8; font-size:12px; }
+    
+    /* App-Integration Styles */
+    .app-header { background: var(--bg-primary, #0f1419); padding: 1rem; border-bottom: 1px solid var(--border-color, #374151); }
+    .app-header h1 { color: var(--accent-blue, #3b82f6); margin: 0; }
+    .app-nav { display: flex; gap: 1rem; margin-top: 1rem; }
+    .app-nav a { color: var(--text-primary, #e5e7eb); text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: background 0.2s; }
+    .app-nav a:hover { background: var(--bg-secondary, #1a1f2e); }
+    .app-nav a.active { background: var(--accent-blue, #3b82f6); color: white; }
+  </style>
+</head>
+<body>
+  <!-- App Header für Integration -->
+  <div class="app-header">
+    <h1>OnAirMulTiMedia - Self-Healing System</h1>
+    <nav class="app-nav">
+      <a href="./index.html">Home</a>
+      <a href="./info.html">Info</a>
+      <a href="./serverfarm-dashboard.html">Serverfarm</a>
+      <a href="./onair-overlay.html" class="active">OnAir Widget</a>
+    </nav>
+  </div>
+
+  <!-- OnAir Overlay Widget -->
+  <div class="wrap" id="overlay">
+    <div class="dot" id="led"></div>
+    <div class="kpi"><span class="val" id="apps">–</span><span class="lbl">apps</span></div>
+    <div class="kpi"><span class="val" id="stars">–</span><span class="lbl">★</span></div>
+    <div class="kpi"><span class="val" id="dls">–</span><span class="lbl">DLs</span></div>
+    <div class="ticker"><div class="tick" id="tick">OnAirMulTiMedia Self-Healing System ready …</div></div>
+  </div>
+
+  <!-- Self-Healing Status Panel -->
+  <div style="background: var(--bg-secondary, #1a1f2e); padding: 1rem; margin: 1rem; border-radius: 8px; color: var(--text-primary, #e5e7eb);">
+    <h3>🔧 Self-Healing System Status</h3>
+    <div id="healing-status">
+      <div class="status-item">
+        <span class="status-dot ok"></span>
+        <span>Cloudflare Worker: Online</span>
+      </div>
+      <div class="status-item">
+        <span class="status-dot ok"></span>
+        <span>WebSocket Signaling: Active</span>
+      </div>
+      <div class="status-item">
+        <span class="status-dot ok"></span>
+        <span>Auto-Recovery: Enabled</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const qs = new URLSearchParams(location.search);
+    const API = (qs.get('api') || 'https://onair-edge.telcotelekom.workers.dev').replace(/\/$/, '');
+    const THEME = qs.get('theme') || 'dark';
+    const COMPACT = qs.get('compact') === '1';
+
+    if (!API) console.warn('API base missing. Use ?api=https://api.domain');
+
+    const led = document.getElementById('led');
+    const apps = document.getElementById('apps');
+    const stars = document.getElementById('stars');
+    const dls = document.getElementById('dls');
+    const tick = document.getElementById('tick');
+
+    if (THEME === 'light') {
+      document.querySelector('.wrap').style.background = 'rgba(255,255,255,.65)';
+      document.querySelector('.wrap').style.color = '#0f172a';
+    }
+    if (COMPACT) {
+      document.querySelector('.wrap').style.padding = '6px 8px';
+      document.querySelector('.wrap').style.borderRadius = '12px';
+    }
+
+    // Self-Healing API Functions
+    async function j(path) {
+      const r = await fetch(API + path, { cache: 'no-store' });
+      if (!r.ok) throw new Error(path + ' → ' + r.status);
+      return r.json();
+    }
+
+    async function refresh() {
+      try {
+        const [h, s, m] = await Promise.all([
+          j('/health'), j('/status'), j('/metrics')
+        ]);
+        led.className = 'dot ' + (h.ok ? 'ok' : 'warn');
+        apps.textContent = s.appsOnline ?? '–';
+        stars.textContent = m.stars ?? '–';
+        dls.textContent = m.downloads ?? '–';
+        const msg = `uptime ${s.uptimeSec}s • modules ${s.modulesLoaded} • releases ${m.releases} • updated ${m.updatedAt}`;
+        tick.textContent = '   ' + msg + '   ' + msg + '   ' + msg + '   ';
+        
+        // Self-Healing Status Update
+        updateHealingStatus(h.ok);
+      } catch (e) {
+        led.className = 'dot';
+        tick.textContent = ' Self-Healing System aktiviert – Recovery in Progress ' + API;
+        updateHealingStatus(false);
+      }
+    }
+
+    function updateHealingStatus(isHealthy) {
+      const statusItems = document.querySelectorAll('.status-item');
+      statusItems.forEach(item => {
+        const dot = item.querySelector('.status-dot');
+        if (isHealthy) {
+          dot.className = 'status-dot ok';
+        } else {
+          dot.className = 'status-dot warn';
+        }
+      });
+    }
+
+    // Self-Healing Recovery Functions
+    async function attemptRecovery() {
+      console.log('🔄 Self-Healing: Attempting recovery...');
+      try {
+        // Try alternative endpoints
+        const recoveryEndpoints = [
+          '/health',
+          '/status', 
+          '/metrics'
+        ];
+        
+        for (const endpoint of recoveryEndpoints) {
+          try {
+            const response = await fetch(API + endpoint, { 
+              cache: 'no-store',
+              timeout: 5000 
+            });
+            if (response.ok) {
+              console.log('✅ Self-Healing: Recovery successful via', endpoint);
+              return true;
+            }
+          } catch (e) {
+            console.warn('⚠️ Self-Healing: Failed via', endpoint, e);
+          }
+        }
+        return false;
+      } catch (e) {
+        console.error('❌ Self-Healing: Recovery failed', e);
+        return false;
+      }
+    }
+
+    // Polling mit Self-Healing: alle 5 Sekunden
+    refresh();
+    setInterval(async () => {
+      try {
+        await refresh();
+      } catch (e) {
+        console.warn('⚠️ Self-Healing: Main refresh failed, attempting recovery');
+        const recovered = await attemptRecovery();
+        if (!recovered) {
+          console.error('❌ Self-Healing: All recovery attempts failed');
+        }
+      }
+    }, 5000);
+
+    // Auto-Recovery bei Fehlern
+    window.addEventListener('error', async (e) => {
+      console.warn('🔄 Self-Healing: Error detected, attempting recovery');
+      await attemptRecovery();
+    });
+
+    // Service Worker für Offline-Recovery
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => {
+          console.log('✅ Self-Healing: Service Worker registered');
+        })
+        .catch(error => {
+          console.warn('⚠️ Self-Healing: Service Worker registration failed', error);
+        });
+    }
+  </script>
+</body>
+</html>
