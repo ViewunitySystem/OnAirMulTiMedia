@@ -1056,19 +1056,19 @@
 
             // Framework-spezifische Styles anwenden
             applyFrameworkStyles(frameworkName);
-            
+
             showNotification(`UI Framework "${frameworkName}" ausgewählt!`, 'success');
         }
 
         function applyFrameworkStyles(frameworkName) {
             // Entferne alle Framework-spezifischen CSS-Klassen
             document.body.classList.remove('framework-shadcn', 'framework-radix', 'framework-tabler', 'framework-primereact', 'framework-daisyui', 'framework-mui');
-            
+
             // Füge neue Framework-Klasse hinzu
             document.body.classList.add(`framework-${frameworkName}`);
 
             // Framework-spezifische Anpassungen
-            switch(frameworkName) {
+            switch (frameworkName) {
                 case 'shadcn':
                     document.documentElement.style.setProperty('--accent-blue', '#3b82f6');
                     break;
@@ -1101,7 +1101,7 @@
             // Status aktualisieren
             document.getElementById('rotation-status').classList.remove('inactive');
             document.getElementById('rotation-text').textContent = 'Auto-Rotation aktiv';
-            
+
             showNotification('Auto-Rotation gestartet!', 'success');
         }
 
@@ -1114,14 +1114,14 @@
             // Status aktualisieren
             document.getElementById('rotation-status').classList.add('inactive');
             document.getElementById('rotation-text').textContent = 'Auto-Rotation gestoppt';
-            
+
             showNotification('Auto-Rotation gestoppt!', 'success');
         }
 
         // Framework-Karten klickbar machen
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.ui-framework').forEach(framework => {
-                framework.addEventListener('click', function() {
+                framework.addEventListener('click', function () {
                     const frameworkName = this.dataset.framework;
                     selectFramework(frameworkName);
                     stopAutoRotation(); // Auto-Rotation stoppen bei manueller Auswahl
