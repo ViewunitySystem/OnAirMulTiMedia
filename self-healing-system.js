@@ -1,5 +1,6 @@
 // Self-Healing System für OnAirMulTiMedia
 // Integriert Cloudflare Worker, WebSocket Recovery und Auto-Recovery
+// SICHERHEIT: Nur für autorisierte Benutzer zugänglich
 
 class SelfHealingSystem {
   constructor(config = {}) {
@@ -13,15 +14,121 @@ class SelfHealingSystem {
     this.healthCheckInterval = null;
     this.wsConnection = null;
     
+    // SICHERHEIT: Access Control
+    this.authorizedUsers = ['gentlyoverdone@outlook.com']; // Nur autorisierte E-Mail
+    this.isAuthorized = false;
+    this.sessionToken = null;
+    
     this.init();
+  }
+
+  // SICHERHEIT: Zugriffskontrolle
+  async checkAuthorization() {
+    const storedEmail = localStorage.getItem('onair_authorized_email');
+    const storedToken = localStorage.getItem('onair_session_token');
+    
+    if (storedEmail && this.authorizedUsers.includes(storedEmail) && storedToken) {
+      // Token validieren
+      try {
+        const response = await fetch(`${this.apiBase}/auth/validate`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${storedToken}` },
+          body: JSON.stringify({ email: storedEmail })
+        });
+        
+        if (response.ok) {
+          this.isAuthorized = true;
+          this.sessionToken = storedToken;
+          return true;
+        }
+      } catch (error) {
+        console.warn('Token validation failed:', error);
+      }
+    }
+    
+    return false;
+  }
+
+  async requestAuthorization() {
+    const email = prompt('🔐 OnAir Self-Healing System\n\nZugriff nur für autorisierte Benutzer.\n\nE-Mail-Adresse eingeben:');
+    
+    if (!email) {
+      this.showAccessDenied();
+      return false;
+    }
+    
+    if (!this.authorizedUsers.includes(email)) {
+      alert('❌ Zugriff verweigert!\n\nDiese E-Mail-Adresse ist nicht autorisiert.');
+      this.showAccessDenied();
+      return false;
+    }
+    
+    // Token anfordern
+    try {
+      const response = await fetch(`${this.apiBase}/auth/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        this.sessionToken = data.token;
+        this.isAuthorized = true;
+        
+        // Token speichern
+        localStorage.setItem('onair_authorized_email', email);
+        localStorage.setItem('onair_session_token', this.sessionToken);
+        
+        this.log(`Authorization granted for ${email}`, 'success');
+        return true;
+      } else {
+        throw new Error('Token request failed');
+      }
+    } catch (error) {
+      alert('❌ Authentifizierung fehlgeschlagen!\n\nBitte versuchen Sie es später erneut.');
+      this.showAccessDenied();
+      return false;
+    }
+  }
+
+  showAccessDenied() {
+    // Alle Self-Healing UI-Elemente ausblenden
+    const elements = document.querySelectorAll('[id*="worker-status"], [id*="ws-status"], [id*="recovery-status"], [id*="last-check"]');
+    elements.forEach(el => {
+      el.textContent = '🔒 Zugriff verweigert';
+      el.style.color = '#ef4444';
+    });
+    
+    // Buttons deaktivieren
+    const buttons = document.querySelectorAll('button[onclick*="testSelfHealing"], button[onclick*="showRecoveryLog"]');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      btn.textContent = '🔒 Nicht autorisiert';
+      btn.style.background = '#6b7280';
+    });
+    
+    this.log('Access denied - unauthorized user', 'error');
   }
 
   async init() {
     console.log('🔧 Self-Healing System initializing...');
+    
+    // SICHERHEIT: Erst Autorisierung prüfen
+    const authorized = await this.checkAuthorization();
+    if (!authorized) {
+      const requested = await this.requestAuthorization();
+      if (!requested) {
+        this.showAccessDenied();
+        return;
+      }
+    }
+    
     await this.startHealthMonitoring();
     await this.setupWebSocketRecovery();
-    this.log('Self-Healing System initialized');
+    this.log('Self-Healing System initialized with authorization', 'success');
   }
+
 
   log(message, type = 'info') {
     const timestamp = new Date().toISOString();
@@ -39,10 +146,16 @@ class SelfHealingSystem {
   }
 
   async performHealthCheck() {
+    if (!this.isAuthorized) {
+      this.log('Health check blocked - not authorized', 'error');
+      return;
+    }
+
     try {
       const response = await fetch(`${this.apiBase}/health`, {
         cache: 'no-store',
-        signal: AbortSignal.timeout(5000)
+        signal: AbortSignal.timeout(5000),
+        headers: this.sessionToken ? { 'Authorization': `Bearer ${this.sessionToken}` } : {}
       });
       
       const data = await response.json();
@@ -64,6 +177,11 @@ class SelfHealingSystem {
   }
 
   async attemptRecovery() {
+    if (!this.isAuthorized) {
+      this.log('Recovery blocked - not authorized', 'error');
+      return false;
+    }
+
     this.log('Starting recovery attempt...', 'warn');
     
     const endpoints = ['/health', '/status', '/metrics'];
@@ -72,7 +190,8 @@ class SelfHealingSystem {
       try {
         const response = await fetch(`${this.apiBase}${endpoint}`, {
           cache: 'no-store',
-          signal: AbortSignal.timeout(5000)
+          signal: AbortSignal.timeout(5000),
+          headers: this.sessionToken ? { 'Authorization': `Bearer ${this.sessionToken}` } : {}
         });
         
         if (response.ok) {

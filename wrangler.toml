@@ -12,10 +12,11 @@ mode = "smart"
 ALLOWED_ORIGINS = "https://viewunitysystem.github.io,https://<deine-domain>"
 TURN_REALM = "turn.<deine-domain>"
 
-# ⚠️ Diese beiden als Secrets setzen (wrangler secret put ...)
+# ⚠️ Diese als Secrets setzen (wrangler secret put ...)
 # PRIMARY_BASE = "https://europe-west1-<project>.cloudfunctions.net/api"
 # BACKUP_BASE  = "https://us-central1-<project>.cloudfunctions.net/api"
 # TURN_SHARED_SECRET = "<coturn-static-auth-secret>"
+# AUTHORIZED_TOKEN = "OnAir2024SecureToken" # SICHERHEIT: Token für API-Zugriff
 
 [[durable_objects.bindings]]
 name = "ROOMS"

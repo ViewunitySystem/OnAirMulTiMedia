@@ -4,11 +4,75 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Backup System - OnAirMulTiMedia</title>
+  <title>Backup System - OnAirMulTiMedia (GESCHÜTZT)</title>
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://viewunitysystem.github.io https://onairmultimedia.web.app https://back-ee052.web.app; frame-src 'self' blob:; base-uri 'self'">
   <link rel="stylesheet" href="../assets/landing.css" />
   <style>
+    /* SICHERHEIT: Access Control Styles */
+    .access-denied {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0f1419;
+      color: #ef4444;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-family: system-ui, sans-serif;
+    }
+    
+    .access-denied h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .access-denied p {
+      font-size: 1.2rem;
+      text-align: center;
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+    
+    .auth-form {
+      background: #1a1f2e;
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid #374151;
+    }
+    
+    .auth-form input {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      background: #0f1419;
+      color: #e5e7eb;
+    }
+    
+    .auth-form button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .auth-form button:hover {
+      background: #2563eb;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
     .backup-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -54,6 +118,25 @@
 </head>
 
 <body>
+  <!-- SICHERHEIT: Access Control Overlay -->
+  <div id="access-control" class="access-denied">
+    <h1>🔒 Backup System - Zugriffskontrolle</h1>
+    <p>Dieses System ist nur für autorisierte Benutzer zugänglich.<br>
+    Unbefugter Zugriff wird protokolliert und kann rechtliche Konsequenzen haben.</p>
+    
+    <div class="auth-form">
+      <input type="email" id="auth-email" placeholder="E-Mail-Adresse" required>
+      <input type="password" id="auth-password" placeholder="Zugangscode" required>
+      <button onclick="authenticate()">🔐 Authentifizieren</button>
+    </div>
+    
+    <p style="font-size: 0.9rem; margin-top: 1rem; opacity: 0.7;">
+      Bei Problemen kontaktieren Sie: gentlyoverdone@outlook.com
+    </p>
+  </div>
+
+  <!-- Hauptinhalt (versteckt bis Authentifizierung) -->
+  <div id="main-content" class="hidden">
   <header class="top">
     <h1>🔄 Backup System</h1>
     <nav>
@@ -273,6 +356,66 @@
       updateBackupLogs();
     }, 2000);
   </script>
+
+  <!-- SICHERHEIT: Authentifizierungslogik -->
+  <script>
+    // Autorisiert nur gentlyoverdone@outlook.com
+    const AUTHORIZED_EMAIL = 'gentlyoverdone@outlook.com';
+    const ACCESS_CODE = 'OnAir2024Secure'; // In Produktion: komplexeres Passwort
+    
+    function authenticate() {
+      const email = document.getElementById('auth-email').value;
+      const password = document.getElementById('auth-password').value;
+      
+      if (email === AUTHORIZED_EMAIL && password === ACCESS_CODE) {
+        // Authentifizierung erfolgreich
+        document.getElementById('access-control').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+        
+        // Session speichern (nur für diese Session)
+        sessionStorage.setItem('backup_authenticated', 'true');
+        sessionStorage.setItem('backup_user', email);
+        
+        console.log('✅ Backup System: Authentifizierung erfolgreich für', email);
+      } else {
+        // Authentifizierung fehlgeschlagen
+        alert('❌ Zugriff verweigert!\n\nUngültige E-Mail-Adresse oder Zugangscode.');
+        
+        // Fehlversuch protokollieren
+        console.warn('🚨 Backup System: Unbefugter Zugriffsversuch von', email);
+        
+        // E-Mail-Feld leeren
+        document.getElementById('auth-email').value = '';
+        document.getElementById('auth-password').value = '';
+      }
+    }
+    
+    // Prüfe Session beim Laden
+    document.addEventListener('DOMContentLoaded', () => {
+      const isAuthenticated = sessionStorage.getItem('backup_authenticated') === 'true';
+      const user = sessionStorage.getItem('backup_user');
+      
+      if (isAuthenticated && user === AUTHORIZED_EMAIL) {
+        // Bereits authentifiziert
+        document.getElementById('access-control').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+        console.log('✅ Backup System: Session wiederhergestellt für', user);
+      } else {
+        // Nicht authentifiziert - Session löschen
+        sessionStorage.removeItem('backup_authenticated');
+        sessionStorage.removeItem('backup_user');
+        console.log('🔒 Backup System: Zugriffskontrolle aktiv');
+      }
+    });
+    
+    // Enter-Taste für Authentifizierung
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !document.getElementById('main-content').classList.contains('hidden')) {
+        authenticate();
+      }
+    });
+  </script>
+  </div> <!-- Ende main-content -->
 </body>
 
 </html>

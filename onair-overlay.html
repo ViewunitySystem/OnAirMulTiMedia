@@ -70,12 +70,40 @@
   </div>
 
   <script>
-    const qs = new URLSearchParams(location.search);
-    const API = (qs.get('api') || 'https://onair-edge.telcotelekom.workers.dev').replace(/\/$/, '');
-    const THEME = qs.get('theme') || 'dark';
-    const COMPACT = qs.get('compact') === '1';
+    // SICHERHEIT: Access Control für OnAir Widget
+    const AUTHORIZED_EMAIL = 'gentlyoverdone@outlook.com';
+    const ACCESS_CODE = 'OnAir2024Secure';
+    
+    // Prüfe Autorisierung beim Laden
+    document.addEventListener('DOMContentLoaded', () => {
+      const isAuthenticated = sessionStorage.getItem('onair_authenticated') === 'true';
+      const user = sessionStorage.getItem('onair_user');
+      
+      if (!isAuthenticated || user !== AUTHORIZED_EMAIL) {
+        // Nicht autorisiert - Widget ausblenden
+        document.body.innerHTML = `
+          <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f1419; color: #ef4444; font-family: system-ui, sans-serif;">
+            <div style="text-align: center;">
+              <h1>🔒 OnAir Widget - Zugriff verweigert</h1>
+              <p>Dieses Widget ist nur für autorisierte Benutzer zugänglich.</p>
+              <p style="font-size: 0.9rem; opacity: 0.7;">Kontakt: gentlyoverdone@outlook.com</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+      
+      // Autorisiert - Widget initialisieren
+      initializeWidget();
+    });
+    
+    function initializeWidget() {
+      const qs = new URLSearchParams(location.search);
+      const API = (qs.get('api') || 'https://onair-edge.telcotelekom.workers.dev').replace(/\/$/, '');
+      const THEME = qs.get('theme') || 'dark';
+      const COMPACT = qs.get('compact') === '1';
 
-    if (!API) console.warn('API base missing. Use ?api=https://api.domain');
+      if (!API) console.warn('API base missing. Use ?api=https://api.domain');
 
     const led = document.getElementById('led');
     const apps = document.getElementById('apps');
@@ -193,6 +221,11 @@
         .catch(error => {
           console.warn('⚠️ Self-Healing: Service Worker registration failed', error);
         });
+    }
+    
+    // Initialize self-healing monitoring
+    checkSelfHealingStatus();
+    setInterval(checkSelfHealingStatus, 30000); // Check every 30 seconds
     }
   </script>
 </body>

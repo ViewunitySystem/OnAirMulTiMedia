@@ -1,16 +1,35 @@
 // Cloudflare Worker - Edge Gateway mit Self-Healing
+// SICHERHEIT: Nur für autorisierte Benutzer zugänglich
 export default {
-    async fetch(request, env) {
-        const url = new URL(request.url);
-        const origin = request.headers.get('Origin') || '';
-        const allow = (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim());
-        const corsHeaders = {
-            'Access-Control-Allow-Origin': allow.includes(origin) ? origin : allow[0] || '*',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-            'Vary': 'Origin',
-        };
-        if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const origin = request.headers.get('Origin') || '';
+    const allow = (env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim());
+    
+    // SICHERHEIT: Authorization Header prüfen
+    const authHeader = request.headers.get('Authorization');
+    const isAuthorized = await this.checkAuthorization(authHeader, env);
+    
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': allow.includes(origin) ? origin : allow[0] || '*',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+      'Vary': 'Origin',
+    };
+    
+    if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+    
+    // SICHERHEIT: Für kritische Endpunkte Autorisierung erforderlich
+    if (['/status', '/metrics', '/auth'].includes(url.pathname) && !isAuthorized) {
+      return new Response(JSON.stringify({
+        error: 'Unauthorized',
+        message: 'Access denied. Authorization required.',
+        code: 401
+      }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
 
         // WebSocket Signaling via Durable Object
         if (url.pathname.startsWith('/ws')) {
@@ -77,6 +96,19 @@ export default {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
     },
+
+    // SICHERHEIT: Authentifizierungsfunktion
+    async checkAuthorization(authHeader, env) {
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return false;
+      }
+      
+      const token = authHeader.substring(7);
+      const authorizedToken = env.AUTHORIZED_TOKEN || 'OnAir2024SecureToken';
+      
+      // Einfache Token-Validierung (in Produktion: JWT oder komplexere Validierung)
+      return token === authorizedToken;
+    }
 };
 
 // TURN Credentials Generator
