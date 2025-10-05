@@ -91,6 +91,107 @@
             font-size: 1.1rem;
         }
 
+        .ui-rotation-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .ui-rotation-panel h3 {
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ui-frameworks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .ui-framework {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .ui-framework:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .ui-framework.active {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .ui-framework-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .ui-framework-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .rotation-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .rotation-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .rotation-btn:hover {
+            background: #2563eb;
+        }
+
+        .rotation-btn:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .auto-rotation-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-green);
+        }
+
+        .status-indicator.inactive {
+            background: var(--text-secondary);
+        }
+
         .filters {
             display: flex;
             gap: 1rem;
@@ -535,6 +636,45 @@
             </div>
         </div>
 
+        <!-- UI/UX Rotation Panel -->
+        <div class="ui-rotation-panel">
+            <h3>🎨 UI/UX Framework Rotation</h3>
+            <div class="ui-frameworks" id="ui-frameworks">
+                <div class="ui-framework active" data-framework="shadcn">
+                    <div class="ui-framework-name">shadcn/ui</div>
+                    <div class="ui-framework-desc">Minimal, zugänglich</div>
+                </div>
+                <div class="ui-framework" data-framework="radix">
+                    <div class="ui-framework-name">Radix UI</div>
+                    <div class="ui-framework-desc">Barrierefreie Primitives</div>
+                </div>
+                <div class="ui-framework" data-framework="tabler">
+                    <div class="ui-framework-name">Tabler</div>
+                    <div class="ui-framework-desc">Klassisches Dashboard</div>
+                </div>
+                <div class="ui-framework" data-framework="primereact">
+                    <div class="ui-framework-name">PrimeReact</div>
+                    <div class="ui-framework-desc">Umfangreiche Komponenten</div>
+                </div>
+                <div class="ui-framework" data-framework="daisyui">
+                    <div class="ui-framework-name">daisyUI</div>
+                    <div class="ui-framework-desc">Tailwind Plugin</div>
+                </div>
+                <div class="ui-framework" data-framework="mui">
+                    <div class="ui-framework-name">MUI</div>
+                    <div class="ui-framework-desc">Material Design</div>
+                </div>
+            </div>
+            <div class="rotation-controls">
+                <button class="rotation-btn" onclick="startAutoRotation()">🔄 Auto-Rotation</button>
+                <button class="rotation-btn" onclick="stopAutoRotation()">⏹️ Stop</button>
+                <div class="auto-rotation-status">
+                    <span class="status-indicator inactive" id="rotation-status"></span>
+                    <span id="rotation-text">Auto-Rotation gestoppt</span>
+                </div>
+            </div>
+        </div>
+
         <div class="filters">
             <div class="filter-group">
                 <label class="filter-label" for="level-filter">Schwierigkeitsgrad</label>
@@ -896,6 +1036,98 @@
             localStorage.setItem('screenReader', enabled);
             showNotification(enabled ? 'Screen Reader Modus aktiviert' : 'Screen Reader Modus deaktiviert', 'success');
         }
+
+        // UI/UX Rotation Funktionen
+        let autoRotationInterval = null;
+        let currentFrameworkIndex = 0;
+        const frameworks = ['shadcn', 'radix', 'tabler', 'primereact', 'daisyui', 'mui'];
+
+        function selectFramework(frameworkName) {
+            // Alle Framework-Karten deaktivieren
+            document.querySelectorAll('.ui-framework').forEach(framework => {
+                framework.classList.remove('active');
+            });
+
+            // Gewählte Framework-Karte aktivieren
+            const selectedFramework = document.querySelector(`[data-framework="${frameworkName}"]`);
+            if (selectedFramework) {
+                selectedFramework.classList.add('active');
+            }
+
+            // Framework-spezifische Styles anwenden
+            applyFrameworkStyles(frameworkName);
+            
+            showNotification(`UI Framework "${frameworkName}" ausgewählt!`, 'success');
+        }
+
+        function applyFrameworkStyles(frameworkName) {
+            // Entferne alle Framework-spezifischen CSS-Klassen
+            document.body.classList.remove('framework-shadcn', 'framework-radix', 'framework-tabler', 'framework-primereact', 'framework-daisyui', 'framework-mui');
+            
+            // Füge neue Framework-Klasse hinzu
+            document.body.classList.add(`framework-${frameworkName}`);
+
+            // Framework-spezifische Anpassungen
+            switch(frameworkName) {
+                case 'shadcn':
+                    document.documentElement.style.setProperty('--accent-blue', '#3b82f6');
+                    break;
+                case 'radix':
+                    document.documentElement.style.setProperty('--accent-blue', '#8b5cf6');
+                    break;
+                case 'tabler':
+                    document.documentElement.style.setProperty('--accent-blue', '#206bc4');
+                    break;
+                case 'primereact':
+                    document.documentElement.style.setProperty('--accent-blue', '#6366f1');
+                    break;
+                case 'daisyui':
+                    document.documentElement.style.setProperty('--accent-blue', '#1fb2a6');
+                    break;
+                case 'mui':
+                    document.documentElement.style.setProperty('--accent-blue', '#1976d2');
+                    break;
+            }
+        }
+
+        function startAutoRotation() {
+            if (autoRotationInterval) return;
+
+            autoRotationInterval = setInterval(() => {
+                currentFrameworkIndex = (currentFrameworkIndex + 1) % frameworks.length;
+                selectFramework(frameworks[currentFrameworkIndex]);
+            }, 3000); // Alle 3 Sekunden wechseln
+
+            // Status aktualisieren
+            document.getElementById('rotation-status').classList.remove('inactive');
+            document.getElementById('rotation-text').textContent = 'Auto-Rotation aktiv';
+            
+            showNotification('Auto-Rotation gestartet!', 'success');
+        }
+
+        function stopAutoRotation() {
+            if (autoRotationInterval) {
+                clearInterval(autoRotationInterval);
+                autoRotationInterval = null;
+            }
+
+            // Status aktualisieren
+            document.getElementById('rotation-status').classList.add('inactive');
+            document.getElementById('rotation-text').textContent = 'Auto-Rotation gestoppt';
+            
+            showNotification('Auto-Rotation gestoppt!', 'success');
+        }
+
+        // Framework-Karten klickbar machen
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.ui-framework').forEach(framework => {
+                framework.addEventListener('click', function() {
+                    const frameworkName = this.dataset.framework;
+                    selectFramework(frameworkName);
+                    stopAutoRotation(); // Auto-Rotation stoppen bei manueller Auswahl
+                });
+            });
+        });
 
         // Gespeicherte Barrierefreiheits-Einstellungen anwenden
         function applySavedAccessibilitySettings() {
