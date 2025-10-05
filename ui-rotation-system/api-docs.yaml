@@ -1,0 +1,487 @@
+openapi: 3.0.3
+info:
+  title: SDR UI Rotation System API
+  description: |
+    Produktionsreife API für UI/UX-Rotationssystem der SDR-App.
+    Bietet REST-Endpoints für UI-Varianten, Live-Status-Updates und WebSocket-Verbindungen.
+  version: 1.0.0
+  contact:
+    name: Raymond Demitrio Dr. Tel
+    email: tel@tel1.nl
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: https://api.sdr-ui-rotation.tel1.nl
+    description: Production server
+
+paths:
+  /api/ui-variants:
+    get:
+      summary: Liste aller verfügbaren UI/UX-Varianten
+      description: |
+        Gibt alle verfügbaren UI-Kits für das Rotationssystem zurück.
+        Unterstützt Filterung nach Kategorie, Aktivität und Limitierung.
+      parameters:
+        - name: active
+          in: query
+          description: Nur aktive Varianten (Popularity > 70)
+          schema:
+            type: boolean
+            default: false
+        - name: limit
+          in: query
+          description: Maximale Anzahl der Ergebnisse
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: category
+          in: query
+          description: Filter nach Kategorie
+          schema:
+            type: string
+            enum: [modern, primitives, dashboard, enterprise, utility, material]
+      responses:
+        '200':
+          description: Erfolgreiche Antwort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UiVariant'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+        '500':
+          description: Server-Fehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/ui-variants/{id}:
+    get:
+      summary: Einzelne UI-Variante abrufen
+      description: Gibt Details zu einer spezifischen UI-Variante zurück
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Eindeutige ID der UI-Variante
+          schema:
+            type: string
+            example: shadcn
+      responses:
+        '200':
+          description: Erfolgreiche Antwort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/UiVariant'
+                  meta:
+                    $ref: '#/components/schemas/ResponseMeta'
+        '404':
+          description: UI-Variante nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/status/feeds:
+    get:
+      summary: Status aller Live-Feeds
+      description: |
+        Gibt den aktuellen Status aller SDR-Feeds zurück.
+        Inkludiert Freshness, Region und letzte Updates.
+      responses:
+        '200':
+          description: Erfolgreiche Antwort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/FeedStatus'
+                  meta:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      overall:
+                        type: string
+                        enum: [healthy, degraded, down]
+                        example: healthy
+
+  /api/status/freshness:
+    get:
+      summary: Freshness-Status aller Domänen
+      description: Gibt die Aktualität aller Datenfeeds zurück
+      responses:
+        '200':
+          description: Erfolgreiche Antwort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FreshnessStatus'
+                  meta:
+                    type: object
+                    properties:
+                      timestamp:
+                        type: string
+                        format: date-time
+                      averageFreshness:
+                        type: number
+                        description: Durchschnittliche Freshness in Sekunden
+
+  /api/status/license:
+    get:
+      summary: Lizenz-Compliance-Status
+      description: Gibt den aktuellen Lizenz-Compliance-Status zurück
+      responses:
+        '200':
+          description: Erfolgreiche Antwort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/LicenseStatus'
+
+  /api/status/compliance:
+    get:
+      summary: Gesamt-Compliance-Score
+      description: Gibt den aktuellen Compliance-Score und Evidenzen zurück
+      responses:
+        '200':
+          description: Erfolgreiche Antwort
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ComplianceStatus'
+
+  /health:
+    get:
+      summary: System Health Check
+      description: Gibt den aktuellen System-Status zurück
+      responses:
+        '200':
+          description: System ist gesund
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptime:
+                    type: number
+                    description: Uptime in Sekunden
+                  memory:
+                    type: object
+                    properties:
+                      rss:
+                        type: number
+                      heapTotal:
+                        type: number
+                      heapUsed:
+                        type: number
+                      external:
+                        type: number
+                  clients:
+                    type: integer
+                    description: Anzahl verbundener WebSocket-Clients
+
+components:
+  schemas:
+    UiVariant:
+      type: object
+      required: [id, name, repo, license, tagline, preview, a11y]
+      properties:
+        id:
+          type: string
+          description: Eindeutige ID der UI-Variante
+          example: shadcn
+        name:
+          type: string
+          description: Name der UI-Variante
+          example: shadcn/ui
+        repo:
+          type: string
+          format: uri
+          description: GitHub Repository URL
+          example: https://github.com/shadcn-ui/ui
+        license:
+          type: string
+          description: Lizenz der UI-Variante
+          example: MIT
+        tagline:
+          type: string
+          description: Kurze Beschreibung
+          example: Minimal, zugänglich, Tailwind
+        preview:
+          type: string
+          description: URL zum Preview-Bild
+          example: /img/shadcn-preview.png
+        a11y:
+          type: string
+          description: Barrierefreiheits-Informationen
+          example: WCAG 2.1 AA compliant, keyboard navigation
+        features:
+          type: array
+          items:
+            type: string
+          description: Liste der Hauptfeatures
+          example: ["Copy & Paste Components", "Tailwind CSS", "Radix Primitives"]
+        category:
+          type: string
+          enum: [modern, primitives, dashboard, enterprise, utility, material]
+          description: Kategorie der UI-Variante
+          example: modern
+        popularity:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Popularitäts-Score (0-100)
+          example: 95
+        lastUpdated:
+          type: string
+          format: date
+          description: Letztes Update der Variante
+          example: "2025-01-15"
+
+    FeedStatus:
+      type: object
+      required: [ok, freshnessSec, region, lastUpdate]
+      properties:
+        ok:
+          type: boolean
+          description: Feed ist aktiv
+          example: true
+        freshnessSec:
+          type: integer
+          description: Freshness in Sekunden
+          example: 12
+        region:
+          type: string
+          description: Region des Feeds
+          example: eu-central
+        lastUpdate:
+          type: string
+          format: date-time
+          description: Letztes Update
+          example: "2025-01-15T12:00:00Z"
+
+    FreshnessStatus:
+      type: object
+      required: [domain, region, freshnessSec, status]
+      properties:
+        domain:
+          type: string
+          description: Domäne des Feeds
+          example: weather
+        region:
+          type: string
+          description: Region
+          example: eu-central
+        freshnessSec:
+          type: integer
+          description: Freshness in Sekunden
+          example: 12
+        status:
+          type: string
+          enum: [fresh, stale, expired]
+          description: Freshness-Status
+          example: fresh
+
+    LicenseStatus:
+      type: object
+      required: [overall, violations, lastCheck, details]
+      properties:
+        overall:
+          type: string
+          enum: [compliant, warning, violation]
+          description: Gesamt-Compliance-Status
+          example: compliant
+        violations:
+          type: integer
+          description: Anzahl der Verletzungen
+          example: 0
+        lastCheck:
+          type: string
+          format: date-time
+          description: Letzte Lizenz-Prüfung
+          example: "2025-01-15T12:00:00Z"
+        details:
+          type: object
+          properties:
+            mit:
+              type: integer
+              description: Anzahl MIT-lizenzierter Komponenten
+            apache:
+              type: integer
+              description: Anzahl Apache-2.0-lizenzierter Komponenten
+            gpl:
+              type: integer
+              description: Anzahl GPL-lizenzierter Komponenten
+            proprietary:
+              type: integer
+              description: Anzahl proprietärer Komponenten
+
+    ComplianceStatus:
+      type: object
+      required: [score, lastAudit, evidences]
+      properties:
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Compliance-Score (0-100)
+          example: 98
+        lastAudit:
+          type: string
+          format: date-time
+          description: Letzte Compliance-Prüfung
+          example: "2025-01-15T12:00:00Z"
+        evidences:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: Art der Evidenz
+                example: license_check
+              status:
+                type: string
+                enum: [passed, failed, warning]
+                description: Status der Prüfung
+                example: passed
+              timestamp:
+                type: string
+                format: date-time
+                description: Zeitstempel der Prüfung
+
+    ResponseMeta:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Gesamtanzahl der Ergebnisse
+          example: 6
+        categories:
+          type: array
+          items:
+            type: string
+          description: Verfügbare Kategorien
+          example: ["modern", "primitives", "dashboard"]
+        timestamp:
+          type: string
+          format: date-time
+          description: Zeitstempel der Antwort
+          example: "2025-01-15T12:00:00Z"
+
+    ErrorResponse:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          description: Fehlermeldung
+          example: UI variant not found
+        code:
+          type: integer
+          description: HTTP-Status-Code
+          example: 404
+        timestamp:
+          type: string
+          format: date-time
+          description: Zeitstempel des Fehlers
+          example: "2025-01-15T12:00:00Z"
+
+# WebSocket API Documentation
+websocket:
+  url: ws://localhost:3000
+  description: |
+    WebSocket-Verbindung für Live-Status-Updates.
+    
+    **Verbindung:**
+    ```javascript
+    const ws = new WebSocket('ws://localhost:3000');
+    ```
+    
+    **Nachrichtenformate:**
+    
+    **Client → Server:**
+    ```json
+    {
+      "type": "ping",
+      "timestamp": "2025-01-15T12:00:00Z"
+    }
+    ```
+    
+    **Server → Client:**
+    ```json
+    {
+      "type": "status_update",
+      "data": {
+        "feeds": { ... },
+        "license": { ... },
+        "compliance": { ... }
+      },
+      "timestamp": "2025-01-15T12:00:00Z"
+    }
+    ```
+    
+    **Nachrichtentypen:**
+    - `status`: Initialer Status nach Verbindung
+    - `status_update`: Regelmäßige Status-Updates (alle 30 Sekunden)
+    - `pong`: Antwort auf Ping-Nachrichten

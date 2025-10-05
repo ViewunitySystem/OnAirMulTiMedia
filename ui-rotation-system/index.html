@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDR UI Rotation System - Professionelles UI/UX-Rotationssystem</title>
+    <meta name="description" content="Produktionsreife UI/UX-Rotations-App für SDR-Dashboard mit Live-Status und Theme-Switching">
+    <meta name="author" content="Raymond Demitrio Dr. Tel">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzMzNjZGRiIvPgo8dGV4dCB4PSIxNiIgeT0iMjAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPuKdpDwvdGV4dD4KPC9zdmc+Cg==">
+    
+    <!-- CSS Reset und Base Styles -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* App Container */
+        .sdr-ui-rotation-app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .app-header p {
+            font-size: 1.125rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .encyclopedia-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .encyclopedia-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        /* Main Content */
+        .app-main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Theme Selector */
+        .theme-selector {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .selector-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .selector-header h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .selector-description {
+            color: #6b7280;
+            font-size: 1.125rem;
+        }
+
+        .variants-container {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f1f5f9;
+        }
+
+        .variants-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .variants-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .variants-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .variants-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* UI Variant Card */
+        .ui-variant-card {
+            min-width: 320px;
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        .ui-variant-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .ui-variant-card.selected {
+            border: 3px solid #3b82f6;
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            position: relative;
+            height: 160px;
+            overflow: hidden;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .ui-variant-card:hover .preview-image {
+            transform: scale(1.05);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .ui-variant-card:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .details-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .details-btn:hover {
+            background: white;
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .variant-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .variant-tagline {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .variant-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .license-badge {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .popularity-score {
+            color: #f59e0b;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .variant-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-tag {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .feature-tag.more {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: center;
+        }
+
+        .repo-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .repo-link:hover {
+            color: #2563eb;
+        }
+
+        /* Selector Controls */
+        .selector-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .variant-indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+            background: #d1d5db;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .indicator.active {
+            background: #3b82f6;
+            transform: scale(1.2);
+        }
+
+        /* Status Dashboard */
+        .status-dashboard {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .connection-status {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .connection-status.connected {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .connection-status.disconnected {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .status-section h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .feeds-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .feed-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+        }
+
+        .feed-icon {
+            font-size: 1.25rem;
+        }
+
+        .feed-name {
+            font-weight: 500;
+            color: #1f2937;
+            min-width: 80px;
+        }
+
+        .feed-region {
+            color: #6b7280;
+            font-size: 0.875rem;
+            flex: 1;
+        }
+
+        .feed-freshness {
+            color: #059669;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .compliance-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .compliance-score,
+        .license-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+        }
+
+        .score-label,
+        .status-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .score-value,
+        .status-value {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        /* Selected Variant Info */
+        .selected-variant-info {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .selected-variant-info h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .selected-variant-info p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .variant-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .variant-details p {
+            margin: 0;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .encyclopedia-section {
+            margin-bottom: 2rem;
+        }
+
+        .encyclopedia-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+
+        .encyclopedia-section p {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .bands-list,
+        .features-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .band-item {
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            color: #6b7280;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .features-list li:last-child {
+            border-bottom: none;
+        }
+
+        .legal-notice {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .legal-notice p {
+            margin-bottom: 0.5rem;
+            color: #92400e;
+        }
+
+        .legal-notice p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Details Modal */
+        .details-modal {
+            max-width: 800px;
+        }
+
+        .variant-detail-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .detail-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+
+        .detail-info h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .detail-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-info li {
+            padding: 0.5rem 0;
+            color: #6b7280;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .detail-info li:last-child {
+            border-bottom: none;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .repo-link-btn,
+        .select-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .repo-link-btn {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .repo-link-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .select-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .select-btn:hover {
+            background: #2563eb;
+        }
+
+        /* Loading States */
+        .app-loading,
+        .app-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .app-error h2 {
+            color: #dc2626;
+            margin-bottom: 1rem;
+        }
+
+        .app-error button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .app-error button:hover {
+            background: #2563eb;
+        }
+
+        .status-loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 1rem;
+            }
+
+            .app-header h1 {
+                font-size: 2rem;
+            }
+
+            .app-main {
+                padding: 1rem;
+            }
+
+            .theme-selector,
+            .status-dashboard,
+            .selected-variant-info {
+                padding: 1rem;
+            }
+
+            .variants-container {
+                gap: 1rem;
+            }
+
+            .ui-variant-card {
+                min-width: 280px;
+            }
+
+            .variant-detail-content {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .detail-actions {
+                flex-direction: column;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ui-variant-card {
+                min-width: 260px;
+            }
+
+            .modal-content {
+                margin: 0.5rem;
+                max-height: 90vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- React und ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel für JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- App Script -->
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { createRoot } = ReactDOM;
+
+        // WebSocket Hook für Live-Updates
+        function useWebSocket(url) {
+          const [socket, setSocket] = useState(null);
+          const [status, setStatus] = useState(null);
+          const [connected, setConnected] = useState(false);
+          const reconnectTimeoutRef = useRef(null);
+          const reconnectAttempts = useRef(0);
+          const maxReconnectAttempts = 5;
+
+          useEffect(() => {
+            const connect = () => {
+              try {
+                const ws = new WebSocket(url);
+                
+                ws.onopen = () => {
+                  console.log('WebSocket connected');
+                  setConnected(true);
+                  reconnectAttempts.current = 0;
+                  setSocket(ws);
+                };
+
+                ws.onmessage = (event) => {
+                  try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'status_update' || data.type === 'status') {
+                      setStatus(data.data);
+                    }
+                  } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                  }
+                };
+
+                ws.onclose = () => {
+                  console.log('WebSocket disconnected');
+                  setConnected(false);
+                  setSocket(null);
+                  
+                  // Reconnect with exponential backoff
+                  if (reconnectAttempts.current < maxReconnectAttempts) {
+                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
+                    reconnectTimeoutRef.current = setTimeout(() => {
+                      reconnectAttempts.current++;
+                      connect();
+                    }, delay);
+                  }
+                };
+
+                ws.onerror = (error) => {
+                  console.error('WebSocket error:', error);
+                };
+
+                return ws;
+              } catch (error) {
+                console.error('Failed to create WebSocket:', error);
+                return null;
+              }
+            };
+
+            const ws = connect();
+            
+            return () => {
+              if (reconnectTimeoutRef.current) {
+                clearTimeout(reconnectTimeoutRef.current);
+              }
+              if (ws) {
+                ws.close();
+              }
+            };
+          }, [url]);
+
+          const sendMessage = (message) => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+              socket.send(JSON.stringify(message));
+            }
+          };
+
+          return { socket, status, connected, sendMessage };
+        }
+
+        // API Hook für REST-Endpoints
+        function useApi() {
+          const [uiVariants, setUiVariants] = useState([]);
+          const [loading, setLoading] = useState(true);
+          const [error, setError] = useState(null);
+
+          const fetchUiVariants = async (params = {}) => {
+            try {
+              setLoading(true);
+              const queryString = new URLSearchParams(params).toString();
+              const response = await fetch(`/api/ui-variants?${queryString}`);
+              
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              
+              const data = await response.json();
+              setUiVariants(data.data);
+              setError(null);
+            } catch (err) {
+              setError(err.message);
+              console.error('Error fetching UI variants:', err);
+            } finally {
+              setLoading(false);
+            }
+          };
+
+          const fetchStatus = async (endpoint) => {
+            try {
+              const response = await fetch(`/api/status/${endpoint}`);
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return await response.json();
+            } catch (err) {
+              console.error(`Error fetching ${endpoint} status:`, err);
+              return null;
+            }
+          };
+
+          useEffect(() => {
+            fetchUiVariants();
+          }, []);
+
+          return {
+            uiVariants,
+            loading,
+            error,
+            fetchUiVariants,
+            fetchStatus
+          };
+        }
+
+        // UI-Varianten-Komponente
+        function UiVariantCard({ variant, isSelected, onSelect, onShowDetails }) {
+          return (
+            <div 
+              className={`ui-variant-card ${isSelected ? 'selected' : ''}`}
+              onClick={() => onSelect(variant)}
+            >
+              <div className="card-header">
+                <img 
+                  src={variant.preview} 
+                  alt={`${variant.name} preview`}
+                  className="preview-image"
+                  onError={(e) => {
+                    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI4MCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+Cjx0ZXh0IHg9IjE0MCIgeT0iNjQiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZCNzI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJldmlldyBOb3QgQXZhaWxhYmxlPC90ZXh0Pgo8L3N2Zz4K';
+                  }}
+                />
+                <div className="card-overlay">
+                  <button 
+                    className="details-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onShowDetails(variant);
+                    }}
+                  >
+                    ℹ️ Details
+                  </button>
+                </div>
+              </div>
+              
+              <div className="card-content">
+                <h3 className="variant-name">{variant.name}</h3>
+                <p className="variant-tagline">{variant.tagline}</p>
+                
+                <div className="variant-meta">
+                  <span className="license-badge">{variant.license}</span>
+                  <span className="popularity-score">⭐ {variant.popularity}</span>
+                </div>
+                
+                <div className="variant-features">
+                  {variant.features.slice(0, 3).map((feature, index) => (
+                    <span key={index} className="feature-tag">{feature}</span>
+                  ))}
+                  {variant.features.length > 3 && (
+                    <span className="feature-tag more">+{variant.features.length - 3}</span>
+                  )}
+                </div>
+                
+                <div className="card-actions">
+                  <a 
+                    href={variant.repo} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="repo-link"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    🔗 Repository
+                  </a>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // Theme-Selector-Komponente
+        function ThemeSelector({ variants, selectedVariant, onSelect, onShowDetails }) {
+          const scrollContainerRef = useRef(null);
+
+          const scrollToVariant = (index) => {
+            if (scrollContainerRef.current) {
+              const cardWidth = 320; // card width + gap
+              scrollContainerRef.current.scrollTo({
+                left: index * cardWidth,
+                behavior: 'smooth'
+              });
+            }
+          };
+
+          return (
+            <div className="theme-selector">
+              <div className="selector-header">
+                <h2>🎨 UI/UX-Varianten wählen</h2>
+                <p className="selector-description">
+                  Wählen Sie aus verschiedenen UI-Kits für Ihr SDR-Dashboard. 
+                  Alle Varianten sind Open-Source und rechtssicher.
+                </p>
+              </div>
+              
+              <div 
+                ref={scrollContainerRef}
+                className="variants-container"
+              >
+                {variants.map((variant, index) => (
+                  <UiVariantCard
+                    key={variant.id}
+                    variant={variant}
+                    isSelected={selectedVariant?.id === variant.id}
+                    onSelect={onSelect}
+                    onShowDetails={onShowDetails}
+                  />
+                ))}
+              </div>
+              
+              <div className="selector-controls">
+                <div className="variant-indicators">
+                  {variants.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`indicator ${selectedVariant === variants[index] ? 'active' : ''}`}
+                      onClick={() => scrollToVariant(index)}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // Status-Dashboard-Komponente
+        function StatusDashboard({ status, connected }) {
+          if (!status) {
+            return (
+              <div className="status-dashboard">
+                <h3>📊 Live-Status</h3>
+                <div className="status-loading">Lade Status...</div>
+              </div>
+            );
+          }
+
+          const getStatusIcon = (ok) => ok ? '✅' : '❌';
+          const getStatusColor = (ok) => ok ? '#10B981' : '#EF4444';
+
+          return (
+            <div className="status-dashboard">
+              <div className="dashboard-header">
+                <h3>📊 Live-Status</h3>
+                <div className={`connection-status ${connected ? 'connected' : 'disconnected'}`}>
+                  {connected ? '🔗 Verbunden' : '🔌 Getrennt'}
+                </div>
+              </div>
+              
+              <div className="status-grid">
+                <div className="status-section">
+                  <h4>📡 SDR-Feeds</h4>
+                  <div className="feeds-list">
+                    {Object.entries(status.feeds || {}).map(([domain, feed]) => (
+                      <div key={domain} className="feed-item">
+                        <span className="feed-icon">{getStatusIcon(feed.ok)}</span>
+                        <span className="feed-name">{domain}</span>
+                        <span className="feed-region">{feed.region}</span>
+                        <span className="feed-freshness">{feed.freshnessSec}s</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="status-section">
+                  <h4>📋 Lizenz-Compliance</h4>
+                  <div className="compliance-info">
+                    <div className="compliance-score">
+                      <span className="score-label">Score:</span>
+                      <span className="score-value">{status.compliance?.score || 0}%</span>
+                    </div>
+                    <div className="license-status">
+                      <span className="status-label">Status:</span>
+                      <span 
+                        className="status-value"
+                        style={{ color: getStatusColor(status.license?.overall === 'compliant') }}
+                      >
+                        {status.license?.overall || 'unknown'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // SDR-Enzyklopädie-Modal
+        function SdrEncyclopediaModal({ isOpen, onClose }) {
+          if (!isOpen) return null;
+
+          const sdrInfo = {
+            definition: "Software-Defined Radio (SDR) ist eine Funktechnologie, bei der Hardware-Komponenten durch Software ersetzt werden.",
+            bands: [
+              { name: "HF", range: "3-30 MHz", description: "Kurzwellen, Amateurfunk" },
+              { name: "VHF", range: "30-300 MHz", description: "UKW, Flugfunk" },
+              { name: "UHF", range: "300-3000 MHz", description: "Mobilfunk, Satelliten" }
+            ],
+            features: [
+              "Empfang verschiedener Frequenzbänder",
+              "Digitale Signalverarbeitung",
+              "Spektrumanalyse",
+              "Aufzeichnung und Wiedergabe"
+            ]
+          };
+
+          return (
+            <div className="modal-overlay" onClick={onClose}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h2>📚 SDR-Enzyklopädie</h2>
+                  <button className="close-btn" onClick={onClose}>✕</button>
+                </div>
+                
+                <div className="modal-body">
+                  <div className="encyclopedia-section">
+                    <h3>Was ist SDR?</h3>
+                    <p>{sdrInfo.definition}</p>
+                  </div>
+                  
+                  <div className="encyclopedia-section">
+                    <h3>Frequenzbänder</h3>
+                    <div className="bands-list">
+                      {sdrInfo.bands.map((band, index) => (
+                        <div key={index} className="band-item">
+                          <strong>{band.name}</strong> ({band.range}): {band.description}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="encyclopedia-section">
+                    <h3>Hauptfunktionen</h3>
+                    <ul className="features-list">
+                      {sdrInfo.features.map((feature, index) => (
+                        <li key={index}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  <div className="encyclopedia-section">
+                    <h3>Rechtliche Hinweise</h3>
+                    <div className="legal-notice">
+                      <p>⚠️ <strong>Wichtig:</strong> Beachten Sie die lokalen Gesetze und Vorschriften für den Betrieb von SDR-Empfängern.</p>
+                      <p>📋 Informieren Sie sich über Frequenzzuteilungen und Sendelizenzen in Ihrer Region.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        // Haupt-App-Komponente
+        function SdrUiRotationApp() {
+          const [selectedVariant, setSelectedVariant] = useState(null);
+          const [showEncyclopedia, setShowEncyclopedia] = useState(false);
+          const [showDetails, setShowDetails] = useState(null);
+          
+          const { uiVariants, loading, error, fetchUiVariants } = useApi();
+          // WebSocket deaktiviert für Deployment
+          const { status, connected } = { status: null, connected: false };
+
+          const handleVariantSelect = (variant) => {
+            setSelectedVariant(variant);
+            console.log('Selected UI variant:', variant);
+          };
+
+          const handleShowDetails = (variant) => {
+            setShowDetails(variant);
+          };
+
+          const handleCloseDetails = () => {
+            setShowDetails(null);
+          };
+
+          if (loading) {
+            return (
+              <div className="app-loading">
+                <div className="loading-spinner"></div>
+                <p>Lade UI-Varianten...</p>
+              </div>
+            );
+          }
+
+          if (error) {
+            return (
+              <div className="app-error">
+                <h2>❌ Fehler beim Laden</h2>
+                <p>{error}</p>
+                <button onClick={() => fetchUiVariants()}>Erneut versuchen</button>
+              </div>
+            );
+          }
+
+          return (
+            <div className="sdr-ui-rotation-app">
+              <header className="app-header">
+                <h1>🎛️ SDR UI Rotation System</h1>
+                <p>Professionelles UI/UX-Rotationssystem für Software-Defined Radio</p>
+                <div className="header-actions">
+                  <button 
+                    className="encyclopedia-btn"
+                    onClick={() => setShowEncyclopedia(true)}
+                  >
+                    📚 SDR-Enzyklopädie
+                  </button>
+                </div>
+              </header>
+
+              <main className="app-main">
+                <ThemeSelector
+                  variants={uiVariants}
+                  selectedVariant={selectedVariant}
+                  onSelect={handleVariantSelect}
+                  onShowDetails={handleShowDetails}
+                />
+
+                <StatusDashboard status={status} connected={connected} />
+
+                {selectedVariant && (
+                  <div className="selected-variant-info">
+                    <h3>✅ Ausgewählte Variante: {selectedVariant.name}</h3>
+                    <p>{selectedVariant.tagline}</p>
+                    <div className="variant-details">
+                      <p><strong>Kategorie:</strong> {selectedVariant.category}</p>
+                      <p><strong>Popularität:</strong> {selectedVariant.popularity}/100</p>
+                      <p><strong>Barrierefreiheit:</strong> {selectedVariant.a11y}</p>
+                    </div>
+                  </div>
+                )}
+              </main>
+
+              <SdrEncyclopediaModal 
+                isOpen={showEncyclopedia} 
+                onClose={() => setShowEncyclopedia(false)} 
+              />
+
+              {showDetails && (
+                <div className="modal-overlay" onClick={handleCloseDetails}>
+                  <div className="modal-content details-modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                      <h2>{showDetails.name}</h2>
+                      <button className="close-btn" onClick={handleCloseDetails}>✕</button>
+                    </div>
+                    <div className="modal-body">
+                      <div className="variant-detail-content">
+                        <img src={showDetails.preview} alt={`${showDetails.name} preview`} className="detail-preview" />
+                        <div className="detail-info">
+                          <p><strong>Beschreibung:</strong> {showDetails.tagline}</p>
+                          <p><strong>Lizenz:</strong> {showDetails.license}</p>
+                          <p><strong>Barrierefreiheit:</strong> {showDetails.a11y}</p>
+                          <p><strong>Letztes Update:</strong> {showDetails.lastUpdated}</p>
+                          
+                          <h4>Features:</h4>
+                          <ul>
+                            {showDetails.features.map((feature, index) => (
+                              <li key={index}>{feature}</li>
+                            ))}
+                          </ul>
+                          
+                          <div className="detail-actions">
+                            <a 
+                              href={showDetails.repo} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="repo-link-btn"
+                            >
+                              🔗 Repository besuchen
+                            </a>
+                            <button 
+                              className="select-btn"
+                              onClick={() => {
+                                handleVariantSelect(showDetails);
+                                handleCloseDetails();
+                              }}
+                            >
+                              ✅ Diese Variante auswählen
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // App initialisieren
+        const root = createRoot(document.getElementById('root'));
+        root.render(<SdrUiRotationApp />);
+    </script>
+</body>
+</html>
