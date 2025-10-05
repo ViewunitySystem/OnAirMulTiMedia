@@ -1,0 +1,3 @@
+GitHub Pages ist NICHT konfiguriert!
+Alle Actions schlagen fehl!
+Manuelle Konfiguration erforderlich!
