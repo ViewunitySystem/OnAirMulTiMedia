@@ -1,38 +1,49 @@
 {
-  "module": "GlobalMeetingClock",
+  "id": "global_meeting_clock",
+  "name": "Global Meeting Clock",
   "version": "1.0.0",
-  "description": "Erzeugt und verteilt global synchronisierte Meeting-Codes (QR, Link) mit Zeitzonen- und Sprachunterstützung.",
-  "interfaces": {
-    "inputs": [
-      { "name": "timezone", "type": "IANA string", "required": true, "example": "Europe/Amsterdam" },
-      { "name": "lang", "type": "BCP-47", "required": false, "example": "de" }
-    ],
-    "outputs": [
-      { "name": "qr", "type": "PNG data URL" },
-      { "name": "url", "type": "HTTPS" }
-    ],
-    "logs": [
-      { "event": "COMM_INIT", "level": "info", "description": "Kommunikation initialisiert" },
-      { "event": "LICENSE_CHECK", "level": "info", "description": "Lizenzprüfung erfolgreich" },
-      { "event": "SIGNAL_TX", "level": "info", "description": "Meeting-Link ausgesendet" },
-      { "event": "RECOVERY_TRIGGER", "level": "warn", "description": "Recovery-Pfad aktiviert" }
-    ]
+  "description": "Ein globaler Meeting-Clock für internationale Zusammenarbeit mit Zeitzonen-Anzeige",
+  "type": "meeting",
+  "components": [
+    {
+      "id": "clock-display",
+      "type": "clock",
+      "config": {
+        "timezones": [
+          { "name": "UTC", "offset": 0 },
+          { "name": "CET", "offset": 1 },
+          { "name": "EST", "offset": -5 },
+          { "name": "PST", "offset": -8 },
+          { "name": "JST", "offset": 9 }
+        ],
+        "format": "24h",
+        "showSeconds": true
+      }
+    },
+    {
+      "id": "meeting-timer",
+      "type": "timer",
+      "config": {
+        "duration": 60,
+        "warningTime": 10,
+        "autoStart": false
+      }
+    },
+    {
+      "id": "participant-list",
+      "type": "participants",
+      "config": {
+        "maxParticipants": 50,
+        "showStatus": true,
+        "showTimeZone": true
+      }
+    }
+  ],
+  "settings": {
+    "autoStart": false,
+    "recording": true,
+    "quality": "high"
   },
-  "validation": {
-    "ci": true,
-    "tests": ["unit: URL-Format", "unit: QR-Generierung", "int: Timezone mapping"],
-    "hil_tests": ["Display-Scan mit Smartphone"],
-    "recovery": ["Fallback-Link bei QR-Fehler"]
-  },
-  "regulatory": {
-    "license_required": false,
-    "references": [ { "jurisdiction": "EU", "section": "Allg. Verbraucher- & Datenschutzrecht" } ]
-  },
-  "checklist": [
-    "Modul initialisiert korrekt",
-    "Lizenzprüfung erfolgt lokal",
-    "Signalpfad dokumentiert",
-    "Recovery bei Fehler getestet"
-  ]
+  "createdAt": "2024-01-15T10:00:00Z",
+  "updatedAt": "2024-01-15T10:00:00Z"
 }
-
