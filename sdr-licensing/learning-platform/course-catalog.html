@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -430,6 +431,7 @@
                 transform: translateX(100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
@@ -494,6 +496,7 @@
         }
     </style>
 </head>
+
 <body>
     <header class="header">
         <div class="logo">
@@ -663,7 +666,7 @@
         const userLanguage = 'de';
 
         // Initialisierung
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             loadCourses();
             updateStats();
             applySavedAccessibilitySettings();
@@ -686,11 +689,11 @@
             card.className = 'course-card';
             card.id = `course-${course.id}`;
 
-            const levelClass = course.level === 'beginner' ? 'beginner' : 
-                             course.level === 'intermediate' ? 'intermediate' : 'advanced';
+            const levelClass = course.level === 'beginner' ? 'beginner' :
+                course.level === 'intermediate' ? 'intermediate' : 'advanced';
 
             const levelText = course.level === 'beginner' ? 'Anfänger' :
-                             course.level === 'intermediate' ? 'Fortgeschritten' : 'Experte';
+                course.level === 'intermediate' ? 'Fortgeschritten' : 'Experte';
 
             const canEnroll = canUserEnroll(course);
 
@@ -756,14 +759,14 @@
                 </div>
 
                 <div class="course-actions">
-                    ${course.completed ? 
-                        '<button class="btn btn-primary" disabled>✅ Abgeschlossen</button>' :
-                        course.enrolled ?
-                            '<button class="btn btn-primary" onclick="continueCourse(\'' + course.id + '\')">📖 Fortfahren</button>' :
-                            canEnroll ?
-                                '<button class="btn btn-primary" onclick="enrollCourse(\'' + course.id + '\')">📝 Anmelden</button>' :
-                                '<button class="btn btn-secondary" disabled>🔒 Voraussetzungen fehlen</button>'
-                    }
+                    ${course.completed ?
+                    '<button class="btn btn-primary" disabled>✅ Abgeschlossen</button>' :
+                    course.enrolled ?
+                        '<button class="btn btn-primary" onclick="continueCourse(\'' + course.id + '\')">📖 Fortfahren</button>' :
+                        canEnroll ?
+                            '<button class="btn btn-primary" onclick="enrollCourse(\'' + course.id + '\')">📝 Anmelden</button>' :
+                            '<button class="btn btn-secondary" disabled>🔒 Voraussetzungen fehlen</button>'
+                }
                     <button class="btn btn-secondary" onclick="viewCourseDetails('${course.id}')">ℹ️ Details</button>
                 </div>
             `;
@@ -775,17 +778,17 @@
         function canUserEnroll(course) {
             // Prüfe Voraussetzungen
             if (course.prerequisites.length > 0) {
-                const completedPrereqs = courses.filter(c => 
+                const completedPrereqs = courses.filter(c =>
                     course.prerequisites.includes(c.id) && c.completed
                 );
                 return completedPrereqs.length === course.prerequisites.length;
             }
-            
+
             // Profil C kann nur Anfänger-Kurse belegen
             if (userProfile === 'C' && course.level !== 'beginner') {
                 return false;
             }
-            
+
             return true;
         }
 
@@ -796,18 +799,18 @@
             const languageFilter = document.getElementById('language-filter').value;
 
             const cards = document.querySelectorAll('.course-card');
-            
+
             cards.forEach(card => {
                 const courseId = card.id.replace('course-', '');
                 const course = courses.find(c => c.id === courseId);
-                
+
                 let show = true;
-                
+
                 // Level-Filter
                 if (levelFilter !== 'all' && course.level !== levelFilter) {
                     show = false;
                 }
-                
+
                 // Status-Filter
                 if (statusFilter !== 'all') {
                     if (statusFilter === 'available' && (course.enrolled || course.completed)) {
@@ -818,12 +821,12 @@
                         show = false;
                     }
                 }
-                
+
                 // Sprache-Filter
                 if (languageFilter !== 'all' && !course.languages.includes(languageFilter)) {
                     show = false;
                 }
-                
+
                 card.style.display = show ? 'block' : 'none';
             });
         }
@@ -834,7 +837,7 @@
             if (course) {
                 course.enrolled = true;
                 course.progress = 0;
-                
+
                 loadCourses();
                 updateStats();
                 showNotification('Erfolgreich für Kurs angemeldet!', 'success');
@@ -857,7 +860,7 @@
         function updateStats() {
             const enrolled = courses.filter(c => c.enrolled).length;
             const completed = courses.filter(c => c.completed).length;
-            
+
             document.getElementById('enrolled-courses').textContent = enrolled;
             document.getElementById('completed-courses').textContent = completed;
         }
@@ -898,12 +901,12 @@
         function applySavedAccessibilitySettings() {
             const highContrast = localStorage.getItem('highContrast') === 'true';
             const largeFont = localStorage.getItem('largeFont') === 'true';
-            
+
             if (highContrast) {
                 document.getElementById('high-contrast').checked = true;
                 document.body.classList.add('high-contrast');
             }
-            
+
             if (largeFont) {
                 document.getElementById('large-font').checked = true;
                 document.body.classList.add('large-font');
@@ -914,10 +917,10 @@
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             const messageElement = document.getElementById('notification-message');
-            
+
             messageElement.textContent = message;
             notification.className = `notification ${type} show`;
-            
+
             setTimeout(() => {
                 notification.classList.remove('show');
             }, 3000);
@@ -932,12 +935,12 @@
         }
 
         // Keyboard-Navigation
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             // Escape-Taste schließt Barrierefreiheits-Panel
             if (e.key === 'Escape') {
                 document.getElementById('accessibility-options').classList.remove('active');
             }
-            
+
             // Alt + A öffnet Barrierefreiheits-Panel
             if (e.altKey && e.key === 'a') {
                 e.preventDefault();
@@ -946,4 +949,5 @@
         });
     </script>
 </body>
+
 </html>
