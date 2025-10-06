@@ -1,0 +1,16 @@
+# GitHub Actions komplett deaktiviert
+# Alle Workflows sind deaktiviert (.disabled)
+# Keine automatischen Pushes mehr
+
+name: DISABLED - No Actions
+on:
+  workflow_dispatch: false
+  push: false
+  pull_request: false
+
+jobs:
+  disabled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disabled
+        run: echo "All GitHub Actions are disabled"
