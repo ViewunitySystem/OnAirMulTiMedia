@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OnAirMulTiMedia – Info & GitHub Monitoring</title>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com https://onair-edge.telcotelekom.workers.dev; frame-src 'self' blob: https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'">
   <style>
     :root { color-scheme: dark; }
     body { font-family: system-ui, sans-serif; margin:0; background:#0b1020; color:#e5e7eb; }
@@ -40,7 +40,7 @@
       <div class="card">
         <div class="muted">Stars</div>
         <div id="stars" class="big">–</div>
-        <img src="/api/github/history/sparkline.svg?metric=stars&points=60" style="width:100%;margin-top:8px;" alt="Stars Trend">
+        <img src="https://onair-edge.telcotelekom.workers.dev/api/github/history/sparkline.svg?metric=stars&points=60" style="width:100%;margin-top:8px;" alt="Stars Trend">
       </div>
       <div class="card"><div class="muted">Forks</div><div id="forks" class="big">–</div></div>
       <div class="card"><div class="muted">Watcher</div><div id="watchers" class="big">–</div></div>
@@ -49,13 +49,13 @@
       <div class="card">
         <div class="muted">Release-Downloads</div>
         <div id="downloads" class="big">–</div>
-        <img src="/api/github/history/sparkline.svg?metric=release_downloads&points=60" style="width:100%;margin-top:8px;" alt="Downloads Trend">
+        <img src="https://onair-edge.telcotelekom.workers.dev/api/github/history/sparkline.svg?metric=release_downloads&points=60" style="width:100%;margin-top:8px;" alt="Downloads Trend">
       </div>
       <div class="card"><div class="muted">Letztes Release</div><div id="latest" class="big" style="font-size:20px;">–</div></div>
       <div class="card">
         <div class="muted">Stand</div>
         <div id="ts" class="big" style="font-size:20px;">–</div>
-        <a href="./api/github/history.csv" download style="font-size:12px;margin-top:8px;display:block;">📊 CSV Export</a>
+        <a href="https://onair-edge.telcotelekom.workers.dev/api/github/history.csv" download style="font-size:12px;margin-top:8px;display:block;">📊 CSV Export</a>
       </div>
     </section>
 
@@ -107,13 +107,13 @@
     </section>
   </main>
 
-  <script src="../webtrit-swipe.js"></script>
+  <script src="./webtrit-swipe.js"></script>
   <script>
     function fmt(ts){ try { return new Date(ts).toLocaleString(); } catch { return '–'; } }
     function esc(s){ const d=document.createElement('div'); d.textContent=String(s||''); return d.textContent; }
 
     async function loadStats(){
-      const r = await fetch('/api/github/stats'); if (!r.ok) return;
+      const r = await fetch('https://onair-edge.telcotelekom.workers.dev/api/github/stats'); if (!r.ok) return;
       const s = await r.json();
       document.getElementById('stars').textContent = s.stars;
       document.getElementById('forks').textContent = s.forks;
@@ -126,7 +126,7 @@
     }
 
     async function loadContribs(){
-      const r = await fetch('/api/contribs'); if (!r.ok) return;
+      const r = await fetch('https://onair-edge.telcotelekom.workers.dev/api/contribs'); if (!r.ok) return;
       const list = await r.json();
       const root = document.getElementById('contribs'); root.innerHTML = '';
       list.forEach(c => {
@@ -140,7 +140,7 @@
     document.getElementById('send').onclick = async ()=>{
       const user = document.getElementById('user').value;
       const text = document.getElementById('text').value;
-      const r = await fetch('/api/contribs', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ user_id: user, content: text }) });
+      const r = await fetch('https://onair-edge.telcotelekom.workers.dev/api/contribs', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ user_id: user, content: text }) });
       const msg = document.getElementById('msg');
       if (r.ok){ msg.textContent = 'Danke! Dein Beitrag wurde übermittelt und erscheint nach Freigabe.'; document.getElementById('text').value=''; }
       else { const j = await r.json().catch(()=>({error:'Fehler'})); msg.textContent = `Fehler: ${j.error}`; }
@@ -155,7 +155,7 @@
     
     async function loadPending(){
       const key = sessionStorage.getItem('ADMIN_KEY');
-      const r = await fetch('/api/contribs?state=pending'); if (!r.ok) return;
+      const r = await fetch('https://onair-edge.telcotelekom.workers.dev/api/contribs?state=pending'); if (!r.ok) return;
       const list = await r.json();
       const root = document.getElementById('pending'); root.innerHTML = '';
       list.forEach(c => {
@@ -164,8 +164,8 @@
         el.innerHTML = `${u} <span class="muted">• ${fmt(c.created_at)}</span><br/>${esc(c.content)}<br/>`;
         const approve = document.createElement('button'); approve.textContent='✅ Approve'; approve.style.cssText='margin-right:8px;padding:4px 8px;background:#10b981;color:white;border:none;border-radius:4px;cursor:pointer;';
         const reject = document.createElement('button'); reject.textContent='❌ Reject'; reject.style.cssText='padding:4px 8px;background:#ef4444;color:white;border:none;border-radius:4px;cursor:pointer;';
-        approve.onclick = async ()=>{ await fetch(`/api/contribs/${c.id}/approve`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); loadContribs(); };
-        reject.onclick = async ()=>{ await fetch(`/api/contribs/${c.id}/reject`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); };
+        approve.onclick = async ()=>{ await fetch(`https://onair-edge.telcotelekom.workers.dev/api/contribs/${c.id}/approve`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); loadContribs(); };
+        reject.onclick = async ()=>{ await fetch(`https://onair-edge.telcotelekom.workers.dev/api/contribs/${c.id}/reject`, { method:'POST', headers:{'X-ADMIN-KEY': key} }); loadPending(); };
         el.appendChild(approve); el.appendChild(reject);
         root.appendChild(el);
       });

@@ -18,13 +18,13 @@ TURN_REALM = "turn.<deine-domain>"
 # TURN_SHARED_SECRET = "<coturn-static-auth-secret>"
 # AUTHORIZED_TOKEN = "OnAir2024SecureToken" # SICHERHEIT: Token für API-Zugriff
 
-[[durable_objects.bindings]]
-name = "ROOMS"
-class_name = "RoomsDO"
+# [[durable_objects.bindings]]
+# name = "ROOMS"
+# class_name = "RoomsDO"
 
 [[migrations]]
-tag = "v1"
-new_sqlite_classes = ["RoomsDO"]
+tag = "v2"
+deleted_classes = ["RoomsDO"]
 
 # (Optional) KV für Edge-Caching leichter Metriken
 # [[kv_namespaces]]
